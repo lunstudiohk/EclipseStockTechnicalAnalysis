@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+	<Properties>
+		<Property name="log-path">/Volumes/HD2/Temp</Property>
+	</Properties>
+	<Appenders>	
+		<RollingFile name="AppLog" fileName="${log-path}/Application.log" filePattern="${log-path}/Application-%d{MM-dd}-%i.log" >
+			<PatternLayout>
+				<pattern>%d{dd/MM HH:mm:ss,SSS} [%t] %c{1}: %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="4"/>
+		</RollingFile>
+		<RollingFile name="SystemLog" fileName="${log-path}/System.log" filePattern="${log-path}/System-%d{MM-dd}-%i.log" >
+			<PatternLayout>
+				<pattern>%d{dd/MM HH:mm:ss,SSS} [%t] %-5p %c{1}: %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="4"/>
+		</RollingFile>
+		<RollingFile name="ErrorLog" fileName="${log-path}/Error.log" filePattern="${log-path}/Error-%d{MM-dd}-%i.log" >
+			<PatternLayout>
+				<pattern>%d{dd/MM HH:mm:ss,SSS} [%t] %c{1}: %m%n</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="4"/>
+		</RollingFile>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="[%-5level] %d{yyyy-MM HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="INFO" additivity="false">
+			<appender-ref ref="console"/>
+			<appender-ref ref="SystemLog"/>
+		</Root>
+		<Logger name="com.lunstudio" level="INFO" additivity="false">
+			<appender-ref ref="console"/>
+			<appender-ref ref="AppLog" level="INFO"/>
+			<appender-ref ref="ErrorLog" level="ERROR"/>
+		</Logger>
+	</Loggers>
+</Configuration>
