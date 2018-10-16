@@ -63,7 +63,6 @@
 	<classpathentry kind="lib" path="lib/spring-jdbc-4.3.9.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-orm-4.3.9.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-4.3.9.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/StockAnalysisDev.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl-2.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/xmlParserAPIs-2.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-runtime-2.4.0-b180830.0438.jar"/>
