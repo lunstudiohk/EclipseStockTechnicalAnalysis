@@ -19,10 +19,7 @@ public class SystemUtils {
 
     @Value("${GOOGLE.STOCK_PRICE_URL}")
     private String DAILY_STOCK_PRICE_URL;
-    
-    @Value("${GOOGLE.STOCK_PRICE_URL_DEV}")
-    private String DAILY_STOCK_PRICE_URL_DEV;
-    
+        
     @Value("${GOOGLE.STOCK_DATE_PRICE_URL}")
     private String DAILY_STOCK_DATE_PRICE_URL;
     
@@ -117,11 +114,7 @@ public class SystemUtils {
     public static final String getGoogleStockPriceUrl() {
     		return SystemUtils.getInstance().DAILY_STOCK_PRICE_URL;
     }
-    
-    public static final String getGoogleStockPriceUrlDev() {
-		return SystemUtils.getInstance().DAILY_STOCK_PRICE_URL_DEV;
-    }
-    
+        
     public static final String getGoogleStockDatePriceUrl() {
     		return SystemUtils.getInstance().DAILY_STOCK_DATE_PRICE_URL;
     }
