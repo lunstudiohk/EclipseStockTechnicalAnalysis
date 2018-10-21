@@ -16,11 +16,9 @@
               			http://www.springframework.org/schema/cache/spring-cache.xsd
         				http://www.springframework.org/schema/tx 
         				http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
-
- 	<context:component-scan base-package="com.lunstudio"/>
- 	
+ 	<context:component-scan base-package="com.lunstudio.stocktechnicalanalysis"/>
  	<context:spring-configured/>
- 	<aop:aspectj-autoproxy />
+	<aop:aspectj-autoproxy/>
 
  	<!--
 	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" 

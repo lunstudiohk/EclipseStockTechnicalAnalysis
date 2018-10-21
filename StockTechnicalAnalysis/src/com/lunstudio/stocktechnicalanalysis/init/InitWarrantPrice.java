@@ -16,12 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.lunstudio.stocktechnicalanalysis.batch.GetWarrantData;
-import com.lunstudio.stocktechnicalanalysis.entity.WarrantInfoEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.WarrantPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 import com.lunstudio.stocktechnicalanalysis.service.WarrantSrv;
-import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
 
 @Component
 public class InitWarrantPrice {
@@ -47,35 +44,36 @@ public class InitWarrantPrice {
 	}
 
 	private void start(String[] args) throws Exception {
-		List<String> dataList = this.getWarrantDataList();
+		List<String> dataList = this.getWarrantDataList(args[0]);
 		List<String> stockCodeList = this.stockSrv.getStockHkexCodeList();
 		List<WarrantPriceEntity> warrantPriceList = new ArrayList<WarrantPriceEntity>();
 		for (String line : dataList) {
 			String[] data = this.getData(line);
-			if (this.isNumeric(data[0].replace("\"", ""))) {
-				if (stockCodeList.contains(data[19].replace("\"", "")) ) {
+			
+			if (this.isNumeric(data[0])) {
+				if (stockCodeList.contains(data[19]) ) {
 					WarrantPriceEntity warrantPriceEntity = new WarrantPriceEntity();
-					warrantPriceEntity.setWarrantCode(data[0].replace("\"", ""));
-					warrantPriceEntity.setWarrantIssuer(data[18].replace("\"", ""));
-					warrantPriceEntity.setWarrantListDate(Date.valueOf(data[22].replace("\"", "")));
-					warrantPriceEntity.setWarrantMaturityDate(Date.valueOf(data[24].replace("\"", "")));
-					warrantPriceEntity.setWarrantRatio(new BigDecimal(data[27].replace("\"", "")));
-					warrantPriceEntity.setWarrantStrikePrice(new BigDecimal(data[26].replace("\"", "")));
-					if ("Call".equals(data[20].replace("\"", "").trim())) {
-						warrantPriceEntity.setWarrantType(WarrantInfoEntity.WARRANT_TYPE_CALL);
-					} else if ("Put".equals(data[20].replace("\"", "").trim())) {
-						warrantPriceEntity.setWarrantType(WarrantInfoEntity.WARRANT_TYPE_PUT);
+					warrantPriceEntity.setWarrantCode(data[0]);
+					warrantPriceEntity.setWarrantIssuer(data[18]);
+					warrantPriceEntity.setWarrantListDate(Date.valueOf(data[22]));
+					warrantPriceEntity.setWarrantMaturityDate(Date.valueOf(data[24]));
+					warrantPriceEntity.setWarrantRatio(new BigDecimal(data[27]));
+					warrantPriceEntity.setWarrantStrikePrice(new BigDecimal(data[26]));
+					if ("Call".equals(data[20].trim())) {
+						warrantPriceEntity.setWarrantType(WarrantPriceEntity.WARRANT_TYPE_CALL);
+					} else if ("Put".equals(data[20].trim())) {
+						warrantPriceEntity.setWarrantType(WarrantPriceEntity.WARRANT_TYPE_PUT);
 					}
-					warrantPriceEntity.setWarrantUnderlying(data[19].replace("\"", ""));
-					warrantPriceEntity.setClosePrice(this.getWarrantPrice(data[15].replace("\"", "")));
-					warrantPriceEntity.setDayHigh(this.getWarrantPrice(data[13].replace("\"", "")));
-					warrantPriceEntity.setDayLow(this.getWarrantPrice(data[14].replace("\"", "")));
-					warrantPriceEntity.setDelta(this.getDelta(data[10].replace("\"", "")));
-					warrantPriceEntity.setImpVol(this.getImpVol(data[11].replace("\"", "")));
-					warrantPriceEntity.setIssueSize(Long.parseLong(data[9].replaceAll("\"", "")));
-					warrantPriceEntity.setQustanding(this.getWarrantPrice(data[8].replaceAll("\"", "")));
-					warrantPriceEntity.setTradeDate(Date.valueOf(data[2].replace("\"", "")));
-					warrantPriceEntity.setTurnover(this.getTurnover(data[17].replace("\"", "")));
+					warrantPriceEntity.setWarrantUnderlying(data[19]);
+					warrantPriceEntity.setClosePrice(this.getWarrantPrice(data[15]));
+					warrantPriceEntity.setDayHigh(this.getWarrantPrice(data[13]));
+					warrantPriceEntity.setDayLow(this.getWarrantPrice(data[14]));
+					warrantPriceEntity.setDelta(this.getDelta(data[10]));
+					warrantPriceEntity.setImpVol(this.getImpVol(data[11]));
+					warrantPriceEntity.setIssueSize(Long.parseLong(data[9]));
+					warrantPriceEntity.setQustanding(this.getWarrantPrice(data[8]));
+					warrantPriceEntity.setTradeDate(Date.valueOf(data[2]));
+					warrantPriceEntity.setTurnover(this.getTurnover(data[17]));
 					warrantPriceList.add(warrantPriceEntity);
 				}
 			}
@@ -117,9 +115,9 @@ public class InitWarrantPrice {
 		}
 	}
 
-	private List<String> getWarrantDataList() throws Exception {
+	private List<String> getWarrantDataList(String filePath) throws Exception {
 		List<String> dataList = new ArrayList<String>();
-		File file = new File("/Volumes/HD3/Download/DW01.csv");
+		File file = new File(filePath);
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-16"));
 		String line = null;
 		while ((line = bufferedReader.readLine()) != null) {
@@ -139,6 +137,7 @@ public class InitWarrantPrice {
 	}
 
 	private String[] getData(String line) throws Exception {
+		line = line.replace("\"", "");
 		String[] data = new String[29];
 		data = line.split("\\t");
 		return data;

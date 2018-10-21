@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lunstudio.stocktechnicalanalysis.entity.WarrantPriceEntity;
 
-@Repository ("warrantPriceDao")
+@Repository ("cbbcPriceDao")
 @Transactional(propagation = Propagation.REQUIRES_NEW)
-public class WarrantPriceDaoImpl extends BaseDaoImpl implements WarrantPriceDao {
+public class CbbcPriceDaoImpl extends BaseDaoImpl implements CbbcPriceDao {
 	
 }

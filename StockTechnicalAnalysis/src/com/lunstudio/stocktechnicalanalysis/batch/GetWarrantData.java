@@ -54,65 +54,41 @@ public class GetWarrantData {
 
 	private void start() throws Exception {
 
-		// List<String> dataList =
-		// HttpUtils.downloadCsv(SystemUtils.getWarrantFullListUrl(), "UTF-16");
 		List<String> dataList = this.getWarrantData();
 		List<String> stockCodeList = this.stockSrv.getStockHkexCodeList();
-		List<String> warrantCodeList = this.warrantSrv.getWarrantCodeList();
-		List<WarrantInfoEntity> warrantList = new ArrayList<WarrantInfoEntity>();
 		List<WarrantPriceEntity> warrantPriceList = new ArrayList<WarrantPriceEntity>();
 		Date tradeDate = DateUtils.getCsvDate(this.getUpdateDate(dataList.get(0)));
 		for (int i = 2; i < dataList.size() - 3; i++) {
 			String[] data = this.getData(dataList.get(i));
 			if (stockCodeList.contains(data[2])) {
-				if (!warrantCodeList.contains(data[0])) {
-					WarrantInfoEntity warrantInfoEntity = new WarrantInfoEntity();
-					try {
-						warrantInfoEntity.setWarrantCode(data[0]);
-						warrantInfoEntity.setWarrantIssuer(data[1]);
-						warrantInfoEntity.setWarrantListDate(DateUtils.getHkexDate(data[5]));
-						warrantInfoEntity.setWarrantMaturityDate(DateUtils.getHkexDate(data[6]));
-						warrantInfoEntity.setWarrantRatio(new BigDecimal(data[9]));
-						warrantInfoEntity.setWarrantStrikePrice(new BigDecimal(data[8]));
-						if ("Call".equals(data[3].trim())) {
-							warrantInfoEntity.setWarrantType(WarrantInfoEntity.WARRANT_TYPE_CALL);
-						} else if ("Put".equals(data[3].trim())) {
-							warrantInfoEntity.setWarrantType(WarrantInfoEntity.WARRANT_TYPE_PUT);
-						}
-						warrantInfoEntity.setWarrantUnderlying(data[2]);
-						warrantList.add(warrantInfoEntity);
-					} catch (Exception e) {
-						logger.error("Warrant Info - Fail to parse line: " + dataList.get(i));
-					}
-				}
 				WarrantPriceEntity warrantPriceEntity = new WarrantPriceEntity();
-				try {
-					warrantPriceEntity.setClosePrice(this.getWarrantPrice(data[17]));
-					warrantPriceEntity.setDayHigh(this.getWarrantPrice(data[15]));
-					warrantPriceEntity.setDayLow(this.getWarrantPrice(data[16]));
-					warrantPriceEntity.setDelta(this.getDelta(data[12]));
-					warrantPriceEntity.setImpVol(this.getImpVol(data[13]));
-					// warrantPriceEntity.setIssueSize(new Long(data[10].replaceAll(",", "")));
-					warrantPriceEntity.setIssueSize(Long.parseLong(data[10].replaceAll(",", "")));
-					warrantPriceEntity.setQustanding(this.getWarrantPrice(data[11]));
-					warrantPriceEntity.setTradeDate(tradeDate);
-					warrantPriceEntity.setTurnover(this.getWarrantPrice(data[18]));
-					warrantPriceEntity.setWarrantCode(data[0]);
-					warrantPriceList.add(warrantPriceEntity);
-				} catch (Exception e) {
-					e.printStackTrace();
-					logger.error("Warrant Price - Fail to parse line: " + dataList.get(i));
+				warrantPriceEntity.setClosePrice(this.getWarrantPrice(data[17]));
+				warrantPriceEntity.setDayHigh(this.getWarrantPrice(data[15]));
+				warrantPriceEntity.setDayLow(this.getWarrantPrice(data[16]));
+				warrantPriceEntity.setDelta(this.getDelta(data[12]));
+				warrantPriceEntity.setImpVol(this.getImpVol(data[13]));
+				warrantPriceEntity.setIssueSize(Long.parseLong(data[10].replaceAll(",", "")));
+				warrantPriceEntity.setQustanding(this.getWarrantPrice(data[11]));
+				warrantPriceEntity.setTradeDate(tradeDate);
+				warrantPriceEntity.setTurnover(this.getWarrantPrice(data[18]));
+				warrantPriceEntity.setWarrantCode(data[0]);
+				
+				warrantPriceEntity.setWarrantIssuer(data[1]);
+				warrantPriceEntity.setWarrantListDate(DateUtils.getHkexDate(data[5]));
+				warrantPriceEntity.setWarrantMaturityDate(DateUtils.getHkexDate(data[6]));
+				warrantPriceEntity.setWarrantRatio(new BigDecimal(data[9]));
+				warrantPriceEntity.setWarrantStrikePrice(new BigDecimal(data[8]));
+				if ("Call".equals(data[3].trim())) {
+					warrantPriceEntity.setWarrantType(WarrantPriceEntity.WARRANT_TYPE_CALL);
+				} else if ("Put".equals(data[3].trim())) {
+					warrantPriceEntity.setWarrantType(WarrantPriceEntity.WARRANT_TYPE_PUT);
 				}
+				warrantPriceEntity.setWarrantUnderlying(data[2]);
+				warrantPriceList.add(warrantPriceEntity);
 			}
 		}
-		logger.info("No. of warrant Info: " + warrantList.size() + " , Price List : " + warrantPriceList.size());
-		// warrantPriceDao.save(warrantPriceList, warrantPriceList.size());
-		// warrantInfoDao.save(warrantList, warrantList.size());
-
-		// String filePath = SystemUtils.getWarrantDownloadPath() +
-		// DateUtils.getFirebaseDateString(tradeDate) + "W";
-		// System.out.println("Backup the file to: " + filePath);
-		// FileUtils.writeToFile(dataList, filePath);
+		logger.info("No. of Warrant Price List : " + warrantPriceList.size());
+		this.warrantSrv.saveWarrantPriceList(warrantPriceList);
 		return;
 	}
 

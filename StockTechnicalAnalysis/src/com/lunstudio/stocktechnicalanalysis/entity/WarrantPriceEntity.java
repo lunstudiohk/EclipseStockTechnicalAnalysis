@@ -16,6 +16,9 @@ public class WarrantPriceEntity extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String WARRANT_TYPE_CALL = "C";
+	public static final String WARRANT_TYPE_PUT = "P";
+	
 	@Id
 	private String warrantCode;
 

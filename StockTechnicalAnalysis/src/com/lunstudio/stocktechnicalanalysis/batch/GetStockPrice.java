@@ -19,12 +19,13 @@ import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
 import com.lunstudio.stocktechnicalanalysis.util.HttpUtils;
 import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
 
-@Component
+
 /**
  * Get latest stock price from google csv
  * @author alankam
  *
  */
+@Component
 public class GetStockPrice {
 
 	private static final Logger logger = LogManager.getLogger();
