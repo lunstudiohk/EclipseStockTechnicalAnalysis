@@ -21,7 +21,7 @@ public class CbbcSrv {
 	@Autowired
 	private CbbcPriceDao cbbcPriceDao;
 		
-	public void saveWarrantPriceList(List<CbbcPriceEntity> cbbcPriceList) throws Exception {
+	public void saveCbbcPriceList(List<CbbcPriceEntity> cbbcPriceList) throws Exception {
 		this.cbbcPriceDao.save(cbbcPriceList, 10000);
 		return;
 	}

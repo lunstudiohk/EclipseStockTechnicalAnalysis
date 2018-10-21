@@ -84,7 +84,9 @@ public class GetWarrantData {
 					warrantPriceEntity.setWarrantType(WarrantPriceEntity.WARRANT_TYPE_PUT);
 				}
 				warrantPriceEntity.setWarrantUnderlying(data[2]);
-				warrantPriceList.add(warrantPriceEntity);
+				if( warrantPriceEntity.getClosePrice() != null ) {
+					warrantPriceList.add(warrantPriceEntity);
+				}
 			}
 		}
 		logger.info("No. of Warrant Price List : " + warrantPriceList.size());

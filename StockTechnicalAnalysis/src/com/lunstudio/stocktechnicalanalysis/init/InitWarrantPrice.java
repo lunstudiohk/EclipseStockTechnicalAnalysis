@@ -74,7 +74,9 @@ public class InitWarrantPrice {
 					warrantPriceEntity.setQustanding(this.getWarrantPrice(data[8]));
 					warrantPriceEntity.setTradeDate(Date.valueOf(data[2]));
 					warrantPriceEntity.setTurnover(this.getTurnover(data[17]));
-					warrantPriceList.add(warrantPriceEntity);
+					if( warrantPriceEntity.getClosePrice() != null ) {
+						warrantPriceList.add(warrantPriceEntity);
+					}
 				}
 			}
 		}

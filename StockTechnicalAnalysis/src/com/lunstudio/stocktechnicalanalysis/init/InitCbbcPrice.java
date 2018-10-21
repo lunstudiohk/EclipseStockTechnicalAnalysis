@@ -67,12 +67,14 @@ public class InitCbbcPrice {
 					cbbcPriceEntity.setQustanding(this.getCbbcPrice(data[8]));
 					cbbcPriceEntity.setTradeDate(Date.valueOf(data[2]));
 					//cbbcPriceEntity.setTurnover(this.getCbbcPrice(data[15]));
-					cbbcPriceList.add(cbbcPriceEntity);
+					if( cbbcPriceEntity.getClosePrice() != null ) {
+						cbbcPriceList.add(cbbcPriceEntity);
+					}
 				}
 			}
 		}
 		logger.info("No. of Cbbc Price List : " + cbbcPriceList.size());
-		cbbcSrv.saveWarrantPriceList(cbbcPriceList);
+		cbbcSrv.saveCbbcPriceList(cbbcPriceList);
 		return;
 	}
 
