@@ -2,7 +2,6 @@ package com.lunstudio.stocktechnicalanalysis.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
@@ -47,8 +46,130 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 	private BigDecimal dayLow;
 	private BigDecimal dayVolume;
 
+	@Transient
+	private BigDecimal dailyMacd;
+	
+	@Transient
+	private BigDecimal dailyMacdSignal;
+
+	@Transient
+	private BigDecimal dailyMacdHistogram;
+	
+	@Transient
+	private BigDecimal weeklyMacdSignal;
+	
+	@Transient
+	private BigDecimal weeklyMacd;
+	
+	@Transient
+	private BigDecimal weeklyMacdHistogram;
+	
+	@Transient
+	private BigDecimal dailyShortRsi;
+	
+	@Transient
+	private BigDecimal dailyLongRsi;
+
+	@Transient
+	private BigDecimal dailyShortSma;
+	
+	@Transient
+	private BigDecimal dailyMediumSma;
+	
+	@Transient
+	private BigDecimal dailyLongSma;
+	
+	
+	public BigDecimal getDailyShortSma() {
+		return dailyShortSma;
+	}
+
+	public void setDailyShortSma(BigDecimal dailyShortSma) {
+		this.dailyShortSma = dailyShortSma;
+	}
+
+	public BigDecimal getDailyMediumSma() {
+		return dailyMediumSma;
+	}
+
+	public void setDailyMediumSma(BigDecimal dailyMediumSma) {
+		this.dailyMediumSma = dailyMediumSma;
+	}
+
+	public BigDecimal getDailyLongSma() {
+		return dailyLongSma;
+	}
+
+	public void setDailyLongSma(BigDecimal dailyLongSma) {
+		this.dailyLongSma = dailyLongSma;
+	}
+
+	public BigDecimal getDailyShortRsi() {
+		return dailyShortRsi;
+	}
+
+	public void setDailyShortRsi(BigDecimal dailyShortRsi) {
+		this.dailyShortRsi = dailyShortRsi;
+	}
+
+	public BigDecimal getDailyLongRsi() {
+		return dailyLongRsi;
+	}
+
+	public void setDailyLongRsi(BigDecimal dailyLongRsi) {
+		this.dailyLongRsi = dailyLongRsi;
+	}
+
+	public BigDecimal getWeeklyMacdSignal() {
+		return weeklyMacdSignal;
+	}
+
+	public void setWeeklyMacdSignal(BigDecimal weeklyMacdSignal) {
+		this.weeklyMacdSignal = weeklyMacdSignal;
+	}
+
+	public BigDecimal getWeeklyMacd() {
+		return weeklyMacd;
+	}
+
+	public void setWeeklyMacd(BigDecimal weeklyMacd) {
+		this.weeklyMacd = weeklyMacd;
+	}
+
+	public BigDecimal getWeeklyMacdHistogram() {
+		return weeklyMacdHistogram;
+	}
+
+	public void setWeeklyMacdHistogram(BigDecimal weeklyMacdHistogram) {
+		this.weeklyMacdHistogram = weeklyMacdHistogram;
+	}
+
+	public BigDecimal getDailyMacdHistogram() {
+		return dailyMacdHistogram;
+	}
+
+	public void setDailyMacdHistogram(BigDecimal dailyMacdHistogram) {
+		this.dailyMacdHistogram = dailyMacdHistogram;
+	}
+
 	public Date getTradeDate() {
 		return tradeDate;
+	}
+
+	public BigDecimal getDailyMacd() {
+		return dailyMacd;
+	}
+
+	public void setDailyMacd(BigDecimal dailyMacd) {
+		this.dailyMacd = dailyMacd;
+	}
+
+	public BigDecimal getDailyMacdSignal() {
+		return dailyMacdSignal;
+	}
+
+	public void setDailyMacdSignal(BigDecimal dailyMacdSignal) {
+		this.dailyMacdSignal = dailyMacdSignal;
 	}
 
 	public void setTradeDate(Date tradeDate) {

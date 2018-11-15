@@ -14,6 +14,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
 import com.lunstudio.stocktechnicalanalysis.util.HttpUtils;
@@ -32,6 +33,9 @@ public class GetStockPrice {
 
 	@Autowired
 	private StockSrv stockSrv;
+	
+	@Autowired
+	private StockPriceSrv stockPriceSrv;
 	
 	public static void main(String[] args) {
 		try{
@@ -52,7 +56,8 @@ public class GetStockPrice {
 		String csvData = HttpUtils.sendGet(SystemUtils.getGoogleStockPriceUrl());
 		//String csvData = HttpUtils.sendGet(SystemUtils.getGoogleStockDatePriceUrl());
 		List<StockPriceEntity> stockPriceEntityList = this.getLatestStockPriceFromGoogle(csvData);
-		this.stockSrv.saveStockPrice(stockPriceEntityList);
+		//System.out.println(stockPriceEntityList);
+		this.stockPriceSrv.saveStockPrice(stockPriceEntityList);
 		logger.info("Number of Stock Price  : " + stockPriceEntityList.size());
 		logger.info("Get Stock Price End");
 		return;
@@ -69,7 +74,7 @@ public class GetStockPrice {
 				String[] val = line.split(",");
 				String stockCode = val[1];
 				Date tradeDate = DateUtils.getGoogleDateString(val[3]);
-				StockPriceEntity model = this.stockSrv.getDailyStockPrice(stockCode, tradeDate);
+				StockPriceEntity model = this.stockPriceSrv.getDailyStockPrice(stockCode, tradeDate);
 				if( model == null ) {
 					model = new StockPriceEntity();
 				} else {
