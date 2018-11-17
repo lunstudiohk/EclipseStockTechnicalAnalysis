@@ -79,6 +79,23 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 	@Transient
 	private BigDecimal dailyLongSma;
 	
+	public StockPriceEntity() {
+		super();
+		return;
+	}
+	
+	public StockPriceEntity(String stockCode, String tradeDate, String type, JSONObject json) {
+		super();
+		this.setStockCode(stockCode);
+		this.setTradeDate(Date.valueOf(tradeDate));
+		this.setPriceType(type);
+		this.setOpenPrice(new BigDecimal((String)json.get("1. open")));
+		this.setDayHigh(new BigDecimal((String)json.get("2. high")));
+		this.setDayLow(new BigDecimal((String)json.get("3. low")));
+		this.setClosePrice(new BigDecimal((String)json.get("4. close")));
+		this.setDayVolume(new BigDecimal((String)json.get("5. volume")));
+		return;
+	}
 	
 	public BigDecimal getDailyShortSma() {
 		return dailyShortSma;

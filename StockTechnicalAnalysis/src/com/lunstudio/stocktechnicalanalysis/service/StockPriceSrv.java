@@ -88,6 +88,30 @@ public class StockPriceSrv {
 				}
 			}
 
+			if( current.getClosePrice().compareTo(current.getDailyShortSma()) > 0 && 
+					previous.getClosePrice().compareTo(current.getDailyShortSma()) < 0 ) {
+				stockPriceData.setSsc(StockPriceData.UP);
+			} else if( current.getClosePrice().compareTo(current.getDailyShortSma()) < 0 && 
+					previous.getClosePrice().compareTo(current.getDailyShortSma()) > 0 ) {
+				stockPriceData.setSsc(StockPriceData.DOWN);
+			}
+			
+			if( current.getClosePrice().compareTo(current.getDailyMediumSma()) > 0 && 
+					previous.getClosePrice().compareTo(current.getDailyMediumSma()) < 0 ) {
+				stockPriceData.setMsc(StockPriceData.UP);
+			} else if( current.getClosePrice().compareTo(current.getDailyMediumSma()) < 0 && 
+					previous.getClosePrice().compareTo(current.getDailyMediumSma()) > 0 ) {
+				stockPriceData.setMsc(StockPriceData.DOWN);
+			}
+			
+			if( current.getClosePrice().compareTo(current.getDailyLongSma()) > 0 && 
+					previous.getClosePrice().compareTo(current.getDailyLongSma()) < 0 ) {
+				stockPriceData.setLsc(StockPriceData.UP);
+			} else if( current.getClosePrice().compareTo(current.getDailyLongSma()) < 0 && 
+					previous.getClosePrice().compareTo(current.getDailyLongSma()) > 0 ) {
+				stockPriceData.setLsc(StockPriceData.DOWN);
+			}
+			
 			if( previous.getDailyMacd().compareTo(previous.getDailyMacdSignal()) < 0 
 					&& current.getDailyMacd().compareTo(current.getDailyMacdSignal()) > 0 ) {
 				stockPriceData.setDmc(StockPriceData.UP);

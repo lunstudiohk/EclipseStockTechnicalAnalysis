@@ -1,4 +1,4 @@
-package com.lunstudio.stocktechnicalanalysis.batch;
+package com.lunstudio.stocktechnicalanalysis.init;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +37,7 @@ public class InitStockPriceDataToFirebase {
 			FileSystemXmlApplicationContext context = 
 					new FileSystemXmlApplicationContext(configPath);
 			InitStockPriceDataToFirebase instance = context.getBean(InitStockPriceDataToFirebase.class);
-			instance.start();
+			instance.start(args);
 			context.close();
 		}catch(Exception e) {
 			e.printStackTrace(System.out);
@@ -46,20 +46,19 @@ public class InitStockPriceDataToFirebase {
 		return;
 	}
 
-	private void start() throws Exception {
-		this.dailyUpdate();
-		return;
-	}
-	
-	private void dailyUpdate() throws Exception {
-		this.clearStockPriceData();
+	private void start(String[] stockCode) throws Exception {
+		if( stockCode == null ) {
+			this.clearStockPriceData();
+		}
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
-			this.updateToFirebase(stock);
+			if( stockCode != null && stockCode[0].equals(stock.getStockCode()) ) {
+				this.updateToFirebase(stock);
+			}
 		}
 		return;
 	}
-	
+		
 	private void updateToFirebase(StockEntity stock) throws Exception {
 		InitStockPriceDataToFirebase.isUpdated = false;
 		String stockCode = stock.getStockCode();

@@ -26,7 +26,7 @@ public class StockEntity extends BaseEntity implements Serializable {
 
 	private String stockCname;
 
-	private Date stockProcessed;
+	//private Date stockProcessed;
 
 	private Boolean isHSI;
 
@@ -49,7 +49,7 @@ public class StockEntity extends BaseEntity implements Serializable {
 	public void setStockCname(String stockCname) {
 		this.stockCname = stockCname;
 	}
-
+/*
 	public Date getStockProcessed() {
 		return stockProcessed;
 	}
@@ -57,7 +57,7 @@ public class StockEntity extends BaseEntity implements Serializable {
 	public void setStockProcessed(Date stockProcessed) {
 		this.stockProcessed = stockProcessed;
 	}
-
+*/
 	public Boolean getIsHSI() {
 		return isHSI;
 	}

@@ -36,8 +36,11 @@ public class StockPriceData {
 	private Double d20 = null;	//Break 20-days Diff
 	
 	private Double ss = null;	//Short Sma
+	private String ssc = null;	//Short Sma Cross
 	private Double ms = null;	//Medium Sma
+	private String msc = null;	//Medium Sma Cross
 	private Double ls = null;	//Long Sma
+	private String lsc = null;	//Long Sma Cross
 
 	public StockPriceData(StockPriceEntity stockPrice) {
 		this.s = stockPrice.getStockCode();
@@ -63,6 +66,30 @@ public class StockPriceData {
 		this.ms = stockPrice.getDailyMediumSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.ls = stockPrice.getDailyLongSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		return;
+	}
+
+	public String getSsc() {
+		return ssc;
+	}
+
+	public void setSsc(String ssc) {
+		this.ssc = ssc;
+	}
+
+	public String getMsc() {
+		return msc;
+	}
+
+	public void setMsc(String msc) {
+		this.msc = msc;
+	}
+
+	public String getLsc() {
+		return lsc;
+	}
+
+	public void setLsc(String lsc) {
+		this.lsc = lsc;
 	}
 
 	public Double getSs() {
