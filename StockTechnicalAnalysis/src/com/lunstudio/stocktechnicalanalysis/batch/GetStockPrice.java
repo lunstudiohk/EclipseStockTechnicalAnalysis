@@ -76,9 +76,10 @@ public class GetStockPrice {
 				Date tradeDate = DateUtils.getGoogleDateString(val[3]);
 				StockPriceEntity model = this.stockPriceSrv.getDailyStockPrice(stockCode, tradeDate);
 				if( model == null ) {
+					logger.info("Stock Code: " + stockCode + " - New stock price create");
 					model = new StockPriceEntity();
 				} else {
-					logger.info("Stock Code: " + stockCode + " stock price not update");
+					logger.info("Stock Code: " + stockCode + " - Stock price update");
 				}
 				model.setStockCode(stockCode);
 				model.setTradeDate(tradeDate);

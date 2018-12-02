@@ -47,12 +47,14 @@ public class InitStockPriceDataToFirebase {
 	}
 
 	private void start(String[] stockCode) throws Exception {
-		if( stockCode == null ) {
+		if( stockCode == null || stockCode.length == 0 ) {
 			this.clearStockPriceData();
 		}
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
-			if( stockCode != null && stockCode[0].equals(stock.getStockCode()) ) {
+			if( stockCode != null && stockCode.length > 0 && stockCode[0].equals(stock.getStockCode()) ) {
+				this.updateToFirebase(stock);
+			} else if( stockCode == null || stockCode.length == 0 ) {
 				this.updateToFirebase(stock);
 			}
 		}
@@ -60,6 +62,7 @@ public class InitStockPriceDataToFirebase {
 	}
 		
 	private void updateToFirebase(StockEntity stock) throws Exception {
+		logger.info("Initial Stock Data: " + stock.getStockCode());
 		InitStockPriceDataToFirebase.isUpdated = false;
 		String stockCode = stock.getStockCode();
 		

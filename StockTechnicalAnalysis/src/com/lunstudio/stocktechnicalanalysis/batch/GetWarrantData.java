@@ -1,7 +1,5 @@
 package com.lunstudio.stocktechnicalanalysis.batch;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -16,11 +14,6 @@ import org.springframework.stereotype.Component;
 import com.lunstudio.stocktechnicalanalysis.entity.*;
 import com.lunstudio.stocktechnicalanalysis.service.*;
 import com.lunstudio.stocktechnicalanalysis.util.*;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebLink;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
 
 /**
  * Get warrant data from hkex website
@@ -135,21 +128,7 @@ public class GetWarrantData {
 	}
 
 	private List<String> getWarrantData() throws Exception {
-		List<String> dataList = new ArrayList<String>();
-		WebConversation wc = new WebConversation();
-		HttpUnitOptions.setScriptingEnabled(false);
-		WebResponse resp = wc.getResponse("https://www.hkex.com.hk/chi/dwrc/search/listsearch_c.asp");
-		WebLink downloadLink = resp.getLinkWithName("downloadlink");
-		WebRequest clickRequest = downloadLink.getRequest();
-		WebResponse csv = wc.getResponse(clickRequest);
-
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(csv.getInputStream(), "UTF-16"));
-		String line = null;
-		while ((line = bufferedReader.readLine()) != null) {
-			dataList.add(line);
-		}
-		bufferedReader.close();
-		return dataList;
+		return HttpUtils.downloadCsv(SystemUtils.getWarrantFullListUrl(), "UTF-16");
 	}
-
+	
 }

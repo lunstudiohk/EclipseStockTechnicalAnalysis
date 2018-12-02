@@ -61,8 +61,16 @@ public class StockPriceSrv {
 			StockPriceEntity previous = stockPriceList.get(i-1);
 			StockPriceData stockPriceData = new StockPriceData(current);
 			stockPriceData.initDetail(current);
-			Double dayDiff = MathUtils.getPriceDiff(previous.getClosePrice(), current.getClosePrice(), 5).doubleValue();
+			Double dayDiff = null;
+			try {
+				dayDiff = MathUtils.getPriceDiff(previous.getClosePrice(), current.getClosePrice(), 5).doubleValue();
+			}catch(Exception e) {
+				return null;
+			}
 			stockPriceData.setD(dayDiff);
+			
+			Double openDiff = MathUtils.getPriceDiff(previous.getClosePrice(), current.getOpenPrice(), 5).doubleValue();
+			stockPriceData.setOc(openDiff);
 			
 			if( current.getDailyShortRsi().compareTo(current.getDailyLongRsi()) > 0 && 
 					previous.getDailyShortRsi().compareTo(previous.getDailyLongRsi()) < 0 ) {

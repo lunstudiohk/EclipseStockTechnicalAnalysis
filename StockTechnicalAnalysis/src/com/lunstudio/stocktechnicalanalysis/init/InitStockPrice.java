@@ -1,5 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.init;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,13 @@ public class InitStockPrice {
 		for(Object key : daily.keySet() ) {
 			StockPriceEntity stockPrice = new StockPriceEntity(stock.getStockCode(), (String) key, StockPriceEntity.PRICE_TYPE_DAILY, (JSONObject) daily.get(key));
 			if( stockPrice.getTradeDate().compareTo(StockPriceInitDate) >= 0 ) {
-				stockPriceList.add(stockPrice);
+				if( stockPrice.getStockCode().startsWith("HKG:") ) {
+					if( stockPrice.getDayVolume() != null && stockPrice.getDayVolume().compareTo(BigDecimal.ZERO) > 0 ) {
+						stockPriceList.add(stockPrice);
+					}
+				} else {
+					stockPriceList.add(stockPrice);
+				}
 			}
 		}
 		this.stockPriceSrv.saveStockPrice(stockPriceList);

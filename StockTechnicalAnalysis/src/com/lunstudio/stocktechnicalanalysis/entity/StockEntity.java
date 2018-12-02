@@ -1,7 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

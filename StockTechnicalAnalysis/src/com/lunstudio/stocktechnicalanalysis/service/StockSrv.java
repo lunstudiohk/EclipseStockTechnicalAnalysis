@@ -21,6 +21,9 @@ public class StockSrv {
 	@Autowired
 	private StockDao stockDao;
 	
+	public StockEntity getStockInfo(String stockCode) {
+		return this.stockDao.getStock(stockCode);
+	}
 	
 	public List<StockEntity> getStockInfoList() {
 		return this.stockDao.getStockList();

@@ -24,6 +24,9 @@ public class DateUtils {
 	private static Calendar firstCal = Calendar.getInstance();
 	private static Calendar secondCal = Calendar.getInstance();
 	
+	public static String calendarDateToString(Calendar date) {
+		return dateFormat.format(date.getTime());
+	}
 	public static boolean isSameWeek(Date firstDate, Date secondDate) {
 		firstCal.setTime(firstDate);
 		secondCal.setTime(secondDate);

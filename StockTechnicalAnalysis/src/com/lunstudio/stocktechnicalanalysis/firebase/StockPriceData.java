@@ -18,6 +18,8 @@ public class StockPriceData {
 	private Double d = null;	//Day Change
 	private Long v = null;		//Volume
 	
+	private Double oc = null;	//Open Price Change
+	
 	private Double sr = null;	//Short RSI
 	private Double lr = null;	//Long RSI
 	private String rc = null;	//RSI-Cross
@@ -66,6 +68,14 @@ public class StockPriceData {
 		this.ms = stockPrice.getDailyMediumSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.ls = stockPrice.getDailyLongSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		return;
+	}
+
+	public Double getOc() {
+		return oc;
+	}
+
+	public void setOc(Double oc) {
+		this.oc = oc;
 	}
 
 	public String getSsc() {

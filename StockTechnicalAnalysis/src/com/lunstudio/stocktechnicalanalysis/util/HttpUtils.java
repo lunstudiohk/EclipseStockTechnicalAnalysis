@@ -121,11 +121,13 @@ public class HttpUtils {
 	public static String sendGet(String url, Map<String, String> params) throws Exception {
 		StringBuffer buf = new StringBuffer();
 		buf.append(url).append("?");
+		if( params != null ) {
 		Iterator<String> paramsKeyIt = params.keySet().iterator();
 		while(paramsKeyIt.hasNext()){
 			String key = paramsKeyIt.next();
 			String val = params.get(key);
 			buf.append(key).append("=").append(val).append("&");
+		}
 		}
 		URL obj = new URL(buf.toString());
 		System.out.println("Call URL : " + buf.toString());
@@ -211,7 +213,9 @@ public class HttpUtils {
 		String inputLine;
 		List<String> lineList = new ArrayList<String>();
 		while ((inputLine = in.readLine()) != null) {
-			lineList.add(inputLine);
+			if( inputLine.trim().length() > 0 ) {
+				lineList.add(inputLine);
+			}
 		}
 		in.close();
 		return lineList;

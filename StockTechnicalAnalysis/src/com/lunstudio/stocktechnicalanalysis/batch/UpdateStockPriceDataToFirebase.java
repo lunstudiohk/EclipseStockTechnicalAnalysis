@@ -33,7 +33,7 @@ public class UpdateStockPriceDataToFirebase {
 	@Autowired
 	private StockPriceSrv stockPriceSrv;
 	
-	private static int UPDATE_DAYS = 5;
+	private static int UPDATE_DAYS = 10;
 	
 	public static void main(String[] args) {
 		try{
@@ -95,7 +95,7 @@ public class UpdateStockPriceDataToFirebase {
 		UpdateStockPriceDataToFirebase.isUpdated = false;
 		String stockCode = stock.getStockCode();
 		
-		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList(stockCode, 100);
+		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList(stockCode, 300);
 		
 		Map<String, Object> stockPriceDataeMap = new HashMap<String, Object>();
 		

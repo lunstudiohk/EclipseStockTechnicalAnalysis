@@ -1,15 +1,10 @@
 package com.lunstudio.stocktechnicalanalysis.batch;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,11 +16,8 @@ import com.lunstudio.stocktechnicalanalysis.entity.CbbcPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.service.CbbcSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebLink;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+import com.lunstudio.stocktechnicalanalysis.util.HttpUtils;
+import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
 
 @Component
 public class GetCbbcData {
@@ -83,28 +75,13 @@ public class GetCbbcData {
 		}
 		logger.info("No. of Cbbc Price List : " + cbbcPriceList.size());
 		this.cbbcSrv.saveCbbcPriceList(cbbcPriceList);
-
 		return;
 	}
 
 	private List<String> getCbbcData() throws Exception {
-		List<String> dataList = new ArrayList<String>();
-		WebConversation wc = new WebConversation();
-		HttpUnitOptions.setScriptingEnabled(false);
-		WebResponse resp = wc.getResponse("https://www.hkex.com.hk/chi/cbbc/search/listsearch_c.asp");
-		WebLink downloadLink = resp.getLinkWithName("downloadlink");
-		WebRequest clickRequest = downloadLink.getRequest();
-		WebResponse csv = wc.getResponse(clickRequest);
-
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(csv.getInputStream(), "UTF-16"));
-		String line = null;
-		while ((line = bufferedReader.readLine()) != null) {
-			dataList.add(line);
-		}
-		bufferedReader.close();
-		return dataList;
+		return HttpUtils.downloadCsv(SystemUtils.getCbbcFullListUrl(), "UTF-16");
 	}
-	
+
 	private BigDecimal getCbbcPrice(String val) throws Exception {
 		if (val.trim().equals("N/A") || val.trim().equals("-")) {
 			return null;
