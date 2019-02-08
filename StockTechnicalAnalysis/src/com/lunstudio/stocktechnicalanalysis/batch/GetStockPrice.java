@@ -30,9 +30,6 @@ import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
 public class GetStockPrice {
 
 	private static final Logger logger = LogManager.getLogger();
-
-	@Autowired
-	private StockSrv stockSrv;
 	
 	@Autowired
 	private StockPriceSrv stockPriceSrv;

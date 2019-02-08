@@ -5,9 +5,8 @@ import java.math.RoundingMode;
 
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 
-public class StockPriceData {
-	public static final String UP = "U";
-	public static final String DOWN = "D";
+public class StockPriceData extends FirebaseData{
+	
 	
 	private String s = null;	//Stock Code
 	private String t = null;	//Trade Date

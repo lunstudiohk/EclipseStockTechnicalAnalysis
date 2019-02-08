@@ -11,16 +11,14 @@ public abstract class BaseEntity {
 	public String toString(){
 		Object myself = this;
 	    ReflectionToStringBuilder builder = new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE) {
-
-	            @Override
-	            protected boolean accept(Field field) {
-	                try {
-	                    return super.accept(field) && field.get(myself) != null;
-	                } catch (IllegalAccessException e) {
-	                    return super.accept(field);
-	                }
-	            }
-
+            @Override
+            protected boolean accept(Field field) {
+                try {
+                    return super.accept(field) && field.get(myself) != null;
+                } catch (IllegalAccessException e) {
+                    return super.accept(field);
+                }
+            }
 	    };
 
 	    return builder.toString();

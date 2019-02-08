@@ -54,7 +54,7 @@ public class GetStockHolding {
 	}
 
 	private void start(String[] stockCodeList) throws Exception {
-		if( stockCodeList != null ) {
+		if( stockCodeList != null && stockCodeList.length > 0 ) {
 			for(String stockCode : stockCodeList) {
 				this.retrieveStockHoldingList(this.stockSrv.getStockInfo(stockCode));
 			}
@@ -62,6 +62,7 @@ public class GetStockHolding {
 			List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 			for(StockEntity stock : stockList) {
 				this.retrieveStockHoldingList(stock);
+				Thread.sleep(2000);
 			}
 		}
 		return;
@@ -90,12 +91,12 @@ public class GetStockHolding {
 		int mb = 1024*1024;
 		Calendar today = Calendar.getInstance();
 		DateUtils.resetTimestamp(today);
-		System.out.println(String.format("Today: %s", DateUtils.calendarDateToString(today)));
+		//System.out.println(String.format("Today: %s", DateUtils.calendarDateToString(today)));
 		List<StockHoldingEntity> holdingList = new ArrayList<StockHoldingEntity>();
 		int stockNum = Integer.parseInt(stockCode.substring(4));
 		String hkexCode = String.format("%05d", stockNum);
 		String response = HttpUtils.sendGet(SystemUtils.getShareHoldingUrl());
-		Document doc = Jsoup.parse(response.toString());
+		Document doc = Jsoup.parse(response);
 		Element form = doc.getElementById("form1");
 		Elements inputs = form.select("input");
 		Map<String, String> params = new HashMap<String, String>();

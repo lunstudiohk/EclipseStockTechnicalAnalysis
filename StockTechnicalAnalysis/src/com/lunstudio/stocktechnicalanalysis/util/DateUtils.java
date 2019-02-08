@@ -49,6 +49,10 @@ public class DateUtils {
 		return LocalDate.parse(dateFormat.format(date), DATE_FORMAT);
 	}
 	
+	public static long getDayDiff(Date endDate, Date startDate) {
+		return (endDate.getTime()-startDate.getTime())/86400000;
+	}
+	
 	public static Date getRetentionDate(int retentionMonth) {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -1*retentionMonth);

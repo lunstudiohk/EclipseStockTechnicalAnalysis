@@ -33,6 +33,8 @@ public class GetWarrantData {
 	@Autowired
 	private WarrantSrv warrantSrv;
 
+	private static final String HTML_RISK_PARAM = "var risk = ";
+	
 	public static void main(String[] args) {
 		try {
 			String configPath = System.getProperty("spring.config");
@@ -65,7 +67,7 @@ public class GetWarrantData {
 				warrantPriceEntity.setTradeDate(tradeDate);
 				warrantPriceEntity.setTurnover(this.getWarrantPrice(data[18]));
 				warrantPriceEntity.setWarrantCode(data[0]);
-				
+				warrantPriceEntity.setRiskFactor(this.getWarrantRiskFactor(data[0]));
 				warrantPriceEntity.setWarrantIssuer(data[1]);
 				warrantPriceEntity.setWarrantListDate(DateUtils.getHkexDate(data[5]));
 				warrantPriceEntity.setWarrantMaturityDate(DateUtils.getHkexDate(data[6]));
@@ -78,15 +80,33 @@ public class GetWarrantData {
 				}
 				warrantPriceEntity.setWarrantUnderlying(data[2]);
 				if( warrantPriceEntity.getClosePrice() != null ) {
+					try {
+						warrantPriceEntity.setWarrantValue(this.warrantSrv.getWarrantValue(warrantPriceEntity));
+					}catch(Exception e) {
+						//e.printStackTrace();
+					}
 					warrantPriceList.add(warrantPriceEntity);
 				}
+				Thread.sleep(500);
 			}
 		}
 		logger.info("No. of Warrant Price List : " + warrantPriceList.size());
+		
 		this.warrantSrv.saveWarrantPriceList(warrantPriceList);
 		return;
 	}
 
+	private BigDecimal getWarrantRiskFactor(String warrantCode) throws Exception {
+		BigDecimal riskFactor = null;
+		String line = HttpUtils.sendGet(String.format(SystemUtils.getWarrantCalculatorUrl(), warrantCode), HTML_RISK_PARAM);
+		//var risk = '0.348335'*1/100;
+		if( line.indexOf(HTML_RISK_PARAM) != -1 ) {
+			String[] val = line.split("'");
+			riskFactor = new BigDecimal(val[1]);
+		}
+		return riskFactor;
+	}
+	
 	private BigDecimal getWarrantPrice(String val) throws Exception {
 		if (val.trim().equals("N/A") || val.trim().equals("-")) {
 			return null;

@@ -40,16 +40,10 @@ public class SystemUtils {
     
     @Value("${HKEX.WARRANT_FUL_LIST_URL}")
     private String WARRANT_FULLLIST_URL;
-    
-    @Value("${HKEX.WARRANT_DOWNLOAD_PATH}")
-    private String WARRANT_DOWNLOAD_PATH;
-    	
+       	
     @Value("${HKEX.CBBC_FUL_LIST_URL}")
     private String CBBC_FULLLIST_URL;
         
-    @Value("${HKEX.CBBC_DOWNLOAD_PATH}")
-    private String CBBC_DOWNLOAD_PATH;
-    
     @Value("${HKEX.SHARE_HOLDING_URL}")
     private String SHARE_HOLDING_URL;
     
@@ -79,6 +73,18 @@ public class SystemUtils {
     
     @Value("${ALPHAVANTAGE.TIME_SERIES_MONTHLY_URL}")
     private String TIME_SERIES_MONTHLY_URL;
+    
+    @Value("${WARRANT.CALCULATOR_URL}")
+    private String WARRANT_CALCULATOR_URL;
+        
+    @Value("${STOCK.AASTOCK_URL}")
+    private String AASTOCK_PRICE_URL;
+    
+    @Value("${HKEX.HANG_SENG_INDEX_FUTURES}")
+    private String HANG_SENG_INDEX_FUTURES;
+
+    @Value("${HKEX.HANG_SENG_INDEX_OPTIONS}")
+    private String HANG_SENG_INDEX_OPTIONS;
     
     private static SystemUtils instance;
     
@@ -135,17 +141,10 @@ public class SystemUtils {
     		return SystemUtils.getInstance().WARRANT_FULLLIST_URL;
     }
     
-    public static final String getWarrantDownloadPath() {
-    		return SystemUtils.getInstance().WARRANT_DOWNLOAD_PATH;
-    }
     public static final String getCbbcFullListUrl() {
 		return SystemUtils.getInstance().CBBC_FULLLIST_URL;
     }
 
-    public static final String getCbbcDownloadPath() {
-		return SystemUtils.getInstance().CBBC_DOWNLOAD_PATH;
-    }
-    
     public static final String getShareHoldingUrl() {
 		return SystemUtils.getInstance().SHARE_HOLDING_URL;
     }
@@ -184,5 +183,21 @@ public class SystemUtils {
     
     public static final String getTimeSeriesMonthlyUrl() {
     	return SystemUtils.getInstance().TIME_SERIES_MONTHLY_URL;
+    }
+    
+    public static final String getWarrantCalculatorUrl() {
+    	return SystemUtils.getInstance().WARRANT_CALCULATOR_URL;
+    }
+    
+    public static final String getAAStockPriceUrl() {
+    	return SystemUtils.getInstance().AASTOCK_PRICE_URL;
+    }
+    
+    public static final String getHangSengIndexFuturesUrl() {
+    	return SystemUtils.getInstance().HANG_SENG_INDEX_FUTURES;
+    }
+    
+    public static final String getHangSengIndexOptionsUrl() {
+    	return SystemUtils.getInstance().HANG_SENG_INDEX_OPTIONS;
     }
 }

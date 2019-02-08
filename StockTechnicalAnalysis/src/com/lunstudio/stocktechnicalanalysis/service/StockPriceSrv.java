@@ -29,6 +29,7 @@ import eu.verdelhan.ta4j.indicators.trackers.SmoothedRSIIndicator;
 
 @Service
 public class StockPriceSrv {
+	
 	private static final Logger logger = LogManager.getLogger();
 	
 	@Autowired
@@ -42,7 +43,19 @@ public class StockPriceSrv {
 	public StockPriceEntity getDailyStockPrice(String stockCode, Date tradeDate) {
 		return this.stockPriceDao.getStockPrice(stockCode, tradeDate, StockPriceEntity.PRICE_TYPE_DAILY);
 	}
+	
+	public List<StockPriceEntity> getDailyStockPriceList(Date tradeDate) {
+		return this.stockPriceDao.getStockPriceList(tradeDate, StockPriceEntity.PRICE_TYPE_DAILY);
+	}
 
+	public StockPriceEntity getLatestDailyStockPriceEntity(String stockCode) {
+		return this.getLastDailyStockPriceEntityList(stockCode, 1).get(0);
+	}
+	
+	public StockPriceEntity getPreviousDailyStockPriceEntity(String stockCode, Date tradeDate) {
+		return this.stockPriceDao.getPreviousStockPrice(stockCode, tradeDate, StockPriceEntity.PRICE_TYPE_DAILY);
+	}
+	
 	public List<StockPriceEntity> getLastDailyStockPriceEntityList(String stockCode, Integer size) {
 		return this.stockPriceDao.getLastStockPriceList(stockCode, size, StockPriceEntity.PRICE_TYPE_DAILY);
 	}

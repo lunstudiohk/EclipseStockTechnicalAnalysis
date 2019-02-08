@@ -1,6 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.service;
 
-import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lunstudio.stocktechnicalanalysis.dao.CbbcPriceDao;
-import com.lunstudio.stocktechnicalanalysis.dao.WarrantPriceDao;
 import com.lunstudio.stocktechnicalanalysis.entity.CbbcPriceEntity;
-import com.lunstudio.stocktechnicalanalysis.entity.WarrantPriceEntity;
 
 @Service
 public class CbbcSrv {
@@ -26,4 +24,8 @@ public class CbbcSrv {
 		return;
 	}
 
+	public List<CbbcPriceEntity> getCbbcPriceList(Date tradeDate) throws Exception {
+		return this.cbbcPriceDao.getCbbcPriceList(tradeDate);
+	}
+		
 }

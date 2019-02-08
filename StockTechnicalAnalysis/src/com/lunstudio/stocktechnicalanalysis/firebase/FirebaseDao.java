@@ -11,7 +11,16 @@ import com.google.firebase.database.Logger.Level;
 import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
 
 public class FirebaseDao {
-
+	
+	private static final String StockPriceData = "StockPriceData";
+	private static final String WarrantPriceData = "WarrantPriceData";
+	private static final String CbbcPriceData = "CbbcPriceData";
+	private static final String StockData = "StockData";
+	private static final String StockTradeDate = "StockTradeDate";
+	private static final String StockPriceSummary = "StockPriceSummary";
+	private static final String WarrantPriceSummary = "WarrantPriceSummary";
+	private static final String CbbcPriceSummary = "CbbcPriceSummary";
+	/*
 	private static final String TOBUYSTOCKTRADELIST = "ToBuyStockTradeList";
 	private static final String TOSELLSTOCKTRADELIST = "ToSellStockTradeList";
 	private static final String TODAYSTOCKTRADELIST = "TodayStockTradeList";
@@ -24,7 +33,7 @@ public class FirebaseDao {
 	private static final String APPSTATUS = "AppStatus";
 	private static final String APPCONFIG = "AppConfig";
 	private static final String ABOUT = "About";
-	
+	*/
 	private static FirebaseDao instance = new FirebaseDao();
 	
 	private DatabaseReference ref;
@@ -58,51 +67,36 @@ public class FirebaseDao {
 		return this.ref;
 	}
 	
-	public DatabaseReference getStockTradeListRef() {
-		return this.ref.child(STOCKTRADELIST);
+		
+	public DatabaseReference getStockPriceDataRef() {
+		return this.ref.child(StockPriceData);
 	}
 	
-	public DatabaseReference getStockInfoListRef() {
-		return this.ref.child(STOCKINFOLIST);
-	}
-
-	public DatabaseReference getStockPriceListRef() {
-		return this.ref.child(STOCKPRICELIST);
+	public DatabaseReference getWarrantPriceDataRef() {
+		return this.ref.child(WarrantPriceData);
 	}
 	
-	public DatabaseReference getAppStatusRef() {
-		return this.ref.child(APPSTATUS);
+	public DatabaseReference getCbbcPriceDataRef() {
+		return this.ref.child(CbbcPriceData);
 	}
 	
-	public DatabaseReference getAppConfigRef() {
-		return this.ref.child(APPCONFIG);
+	public DatabaseReference getStockDataRef() {
+		return this.ref.child(StockData);
 	}
 	
-	public DatabaseReference getToBuyStockTradeListRef() {
-		return this.ref.child(TOBUYSTOCKTRADELIST);
+	public DatabaseReference getStockTradeDateRef() {
+		return this.ref.child(StockTradeDate);
 	}
 	
-	public DatabaseReference getToSellStockTradeListRef() {
-		return this.ref.child(TOSELLSTOCKTRADELIST);
+	public DatabaseReference getStockPriceSummaryRef() {
+		return this.ref.child(StockPriceSummary);
 	}
 	
-	public DatabaseReference getTodayStockTradeListRef() {
-		return this.ref.child(TODAYSTOCKTRADELIST);
+	public DatabaseReference getWarrantPriceSummaryRef() {
+		return this.ref.child(WarrantPriceSummary);
 	}
 	
-	public DatabaseReference getInProgressStockTradeListRef() {
-		return this.ref.child(INPROGRESSSTOCKTRADELIST);
-	}
-
-	public DatabaseReference getStockTradeStatListRef() {
-		return this.ref.child(TRADESTATLIST);
-	}
-	
-	public DatabaseReference getAboutRef() {
-		return this.ref.child(ABOUT);
-	}
-	
-	public DatabaseReference getChartDataListRef() {
-		return this.ref.child(CHARTDATALIST);
+	public DatabaseReference getCbbcPriceSummaryRef() {
+		return this.ref.child(CbbcPriceSummary);
 	}
 }

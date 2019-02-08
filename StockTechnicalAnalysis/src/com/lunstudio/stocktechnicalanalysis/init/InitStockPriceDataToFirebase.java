@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.firebase.FirebaseDao;
 import com.lunstudio.stocktechnicalanalysis.firebase.StockPriceData;
+import com.lunstudio.stocktechnicalanalysis.service.FirebaseSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 
@@ -31,6 +32,9 @@ public class InitStockPriceDataToFirebase {
 	@Autowired
 	private StockPriceSrv stockPriceSrv;
 
+	@Autowired
+	private FirebaseSrv firebaseSrv;
+	
 	public static void main(String[] args) {
 		try{
 			String configPath = System.getProperty("spring.config");
@@ -68,7 +72,7 @@ public class InitStockPriceDataToFirebase {
 		
 		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList(stockCode, null);
 		
-		Map<String, Object> stockPriceDataeMap = new HashMap<String, Object>();
+		Map<String, Object> stockPriceDataMap = new HashMap<String, Object>();
 		
 		int startIndex = stockPriceList.size() - 2500;
 		if( startIndex < 0 ) {
@@ -79,10 +83,11 @@ public class InitStockPriceDataToFirebase {
 		for(int i=startIndex; i<endIndex; i++) {
 			StockPriceData stockPrice = stockPriceList.get(i);
 			String key = String.format("%s%s", stock.getStockCode(), stockPrice.getT());
-			stockPriceDataeMap.put(key, stockPrice);
+			stockPriceDataMap.put(key, stockPrice);
 		}
-		
-		FirebaseDao.getInstance().getRootRef().child("StockPriceData").updateChildren(stockPriceDataeMap, new DatabaseReference.CompletionListener() {
+		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceDataRef(), stockPriceDataMap);
+		/*
+		FirebaseDao.getInstance().getRootRef().child("StockPriceData").updateChildren(stockPriceDataMap, new DatabaseReference.CompletionListener() {
 		    @Override
 		    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 		    	InitStockPriceDataToFirebase.isUpdated = true;
@@ -96,10 +101,13 @@ public class InitStockPriceDataToFirebase {
 		while( !InitStockPriceDataToFirebase.isUpdated ) {
 			Thread.sleep(1000);
 		}
+		*/
 		return;	
 	}
 	
 	private void clearStockPriceData() throws Exception {
+		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceDataRef(), "");
+		/*
 		InitStockPriceDataToFirebase.isUpdated = false;
 		FirebaseDao.getInstance().getRootRef().child("StockPriceData").setValue("", new DatabaseReference.CompletionListener() {
 		    @Override
@@ -115,5 +123,6 @@ public class InitStockPriceDataToFirebase {
 		while( !InitStockPriceDataToFirebase.isUpdated ) {
 			Thread.sleep(1000);
 		}
+		*/
 	}
 }

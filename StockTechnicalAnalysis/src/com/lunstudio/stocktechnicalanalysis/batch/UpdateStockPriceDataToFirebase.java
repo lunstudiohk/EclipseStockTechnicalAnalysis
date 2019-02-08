@@ -11,20 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.firebase.FirebaseDao;
 import com.lunstudio.stocktechnicalanalysis.firebase.StockPriceData;
+import com.lunstudio.stocktechnicalanalysis.service.FirebaseSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 
 @Component
 public class UpdateStockPriceDataToFirebase {
 	
-	private static boolean isUpdated = false;
-
 	private static final Logger logger = LogManager.getLogger();
 	
 	@Autowired
@@ -32,6 +29,9 @@ public class UpdateStockPriceDataToFirebase {
 	
 	@Autowired
 	private StockPriceSrv stockPriceSrv;
+	
+	@Autowired
+	private FirebaseSrv firebaseSrv;
 	
 	private static int UPDATE_DAYS = 10;
 	
@@ -41,7 +41,7 @@ public class UpdateStockPriceDataToFirebase {
 			FileSystemXmlApplicationContext context = 
 					new FileSystemXmlApplicationContext(configPath);
 			UpdateStockPriceDataToFirebase instance = context.getBean(UpdateStockPriceDataToFirebase.class);
-			instance.start();
+			instance.start(args);
 			context.close();
 		}catch(Exception e) {
 			e.printStackTrace(System.out);
@@ -51,81 +51,65 @@ public class UpdateStockPriceDataToFirebase {
 	}
 
 	
-	private void start() throws Exception {
-		this.dailyUpdate();
+	private void start(String[] args) throws Exception {
+		if( args == null || args.length == 0 ) {
+			this.dailyUpdate(UPDATE_DAYS);
+		} else {
+			this.dailyUpdate(Integer.parseInt(args[0]));
+		}
 		return;
 	}
 
-	private void dailyUpdate() throws Exception {
+	private void dailyUpdate(Integer updateDays) throws Exception {
 		//this.clearStockPriceData();
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
-		for(StockEntity stock : stockList) {
-			this.updateToFirebase(stock);
+		Map<String, Object> stockPriceSummaryMap = new HashMap<String, Object>();
+ 		for(StockEntity stock : stockList) {
+			stockPriceSummaryMap.put(stock.getStockCode(), this.updateStockPriceDataToFirebase(stock, updateDays));
 		}
-		this.updateTradeDate(UPDATE_DAYS);
+ 		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceSummaryRef(), null);
+ 		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceSummaryRef(), stockPriceSummaryMap);
+		this.updateTradeDateToFirebase(updateDays);
 		return;
 	}
-	
-	private void updateTradeDate(Integer updateDays) throws Exception {
+		
+	private void updateTradeDateToFirebase(Integer updateDays) throws Exception {
 		List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList("INDEXHANGSENG:HSI", updateDays);
 		Map<String, Object> stockTradeDateMap = new HashMap<String, Object>();
 		for(StockPriceEntity stockPrice : stockPriceList) {
 			stockTradeDateMap.put(stockPrice.getTradeDate().toString(), stockPrice.getTradeDate().toString());
 		}
-		UpdateStockPriceDataToFirebase.isUpdated = false;
-		FirebaseDao.getInstance().getRootRef().child("StockTradeDate").updateChildren(stockTradeDateMap, new DatabaseReference.CompletionListener() {
-		    @Override
-		    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-		    	UpdateStockPriceDataToFirebase.isUpdated = true;
-		    	if (databaseError != null) {
-		    		logger.info("Trade Date could not be saved " + databaseError.getMessage());
-		        } else {
-		        	logger.info(" Trade Date saved successfully.");
-		        }
-		    }
-		});
-		while( !UpdateStockPriceDataToFirebase.isUpdated ) {
-			Thread.sleep(500);
-		}
+		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockTradeDateRef(), stockTradeDateMap);
 		return;
-	
 	}
 	
-	private void updateToFirebase(StockEntity stock) throws Exception {
-		UpdateStockPriceDataToFirebase.isUpdated = false;
+	/**
+	 * Return the latest stock price data
+	 * @param stock
+	 * @return
+	 * @throws Exception
+	 */
+	private StockPriceData updateStockPriceDataToFirebase(StockEntity stock, Integer updateDays) throws Exception {
 		String stockCode = stock.getStockCode();
 		
 		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList(stockCode, 300);
 		
-		Map<String, Object> stockPriceDataeMap = new HashMap<String, Object>();
+		Map<String, Object> stockPriceDataMap = new HashMap<String, Object>();
 		
-		int startIndex = stockPriceList.size() - UPDATE_DAYS;
+		int startIndex = stockPriceList.size() - updateDays;
 		if( startIndex < 0 ) {
 			startIndex = 0;
 		}
 		int endIndex = stockPriceList.size();
 		logger.info("Start Date: " + stockPriceList.get(startIndex).getT());
+		StockPriceData stockPrice = null;
 		for(int i=startIndex; i<endIndex; i++) {
-			StockPriceData stockPrice = stockPriceList.get(i);
+			stockPrice = stockPriceList.get(i);
 			String key = String.format("%s%s", stock.getStockCode(), stockPrice.getT());
-			stockPriceDataeMap.put(key, stockPrice);
+			stockPriceDataMap.put(key, stockPrice);
 		}
-		
-		FirebaseDao.getInstance().getRootRef().child("StockPriceData").updateChildren(stockPriceDataeMap, new DatabaseReference.CompletionListener() {
-		    @Override
-		    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-		    	UpdateStockPriceDataToFirebase.isUpdated = true;
-		    	if (databaseError != null) {
-		    		logger.info("Other Data could not be saved " + databaseError.getMessage());
-		        } else {
-		        	logger.info(stockCode + " Data saved successfully.");
-		        }
-		    }
-		});
-		while( !UpdateStockPriceDataToFirebase.isUpdated ) {
-			Thread.sleep(1000);
-		}
-		return;	
+		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceDataRef(), stockPriceDataMap);
+		return stockPrice;
 	}
 	
 }

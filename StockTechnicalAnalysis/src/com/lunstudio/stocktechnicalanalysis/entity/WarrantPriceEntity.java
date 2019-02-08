@@ -55,6 +55,10 @@ public class WarrantPriceEntity extends BaseEntity implements Serializable {
 	
 	private BigDecimal warrantRatio;
 
+	private BigDecimal riskFactor;
+	
+	private BigDecimal warrantValue;
+	
 	public String getWarrantCode() {
 		return warrantCode;
 	}
@@ -189,6 +193,22 @@ public class WarrantPriceEntity extends BaseEntity implements Serializable {
 
 	public void setWarrantRatio(BigDecimal warrantRatio) {
 		this.warrantRatio = warrantRatio;
+	}
+
+	public BigDecimal getRiskFactor() {
+		return riskFactor;
+	}
+
+	public void setRiskFactor(BigDecimal riskFactor) {
+		this.riskFactor = riskFactor;
+	}
+
+	public BigDecimal getWarrantValue() {
+		return warrantValue;
+	}
+
+	public void setWarrantValue(BigDecimal warrantValue) {
+		this.warrantValue = warrantValue;
 	}
 
 	@Override

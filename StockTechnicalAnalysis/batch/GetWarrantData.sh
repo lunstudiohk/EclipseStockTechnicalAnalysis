@@ -70,5 +70,5 @@ export CLASSPATH=$CLASSPATH:$LIB/xercesImpl-2.6.1.jar
 export CLASSPATH=$CLASSPATH:$LIB/xmlParserAPIs-2.6.1.jar
 
 java -Dspring.config=file:$RESOURCES/Spring-Config.xml -Duser.timezone=Asia/Hong_Kong -Xmx128m -Dlog4j.configurationFile=$RESOURCES/log4j2.xml com.lunstudio.stocktechnicalanalysis.batch.GetWarrantData
-
+java -Dspring.config=file:$RESOURCES/Spring-Config.xml -Duser.timezone=Asia/Hong_Kong -Xmx128m -Dlog4j.configurationFile=$RESOURCES/log4j2.xml com.lunstudio.stocktechnicalanalysis.batch.UpdateWarrantPriceDataToFirebase
 unset CLASSPATH

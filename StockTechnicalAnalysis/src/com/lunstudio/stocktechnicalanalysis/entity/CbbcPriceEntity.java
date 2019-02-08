@@ -7,6 +7,7 @@ import java.sql.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
@@ -49,6 +50,24 @@ public class CbbcPriceEntity extends BaseEntity implements Serializable {
 	private BigDecimal closePrice;
 	
 	private BigDecimal turnover;
+	
+	@Transient
+	private BigDecimal cbbcAmount;
+	
+	public BigDecimal getCbbcAmount() {
+		if( this.cbbcAmount == null ) {
+			if( this.qustanding == null || this.qustanding == null || this.closePrice == null ) {
+				this.cbbcAmount = BigDecimal.ZERO;
+			} else {
+				this.cbbcAmount = BigDecimal.valueOf(this.issueSize).multiply(this.qustanding).multiply(this.closePrice);
+			}
+		}
+		return cbbcAmount;
+	}
+
+	public void setCbbcAmount(BigDecimal cbbcAmount) {
+		this.cbbcAmount = cbbcAmount;
+	}
 
 	public String getCbbcCode() {
 		return cbbcCode;

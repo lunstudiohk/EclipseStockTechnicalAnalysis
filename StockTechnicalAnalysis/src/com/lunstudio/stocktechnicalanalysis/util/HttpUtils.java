@@ -162,6 +162,23 @@ public class HttpUtils {
 		return response.toString();
 	}
 	
+	public static String sendGet(String url, String line) throws Exception {
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		con.setRequestMethod("GET");
+		con.setRequestProperty("User-Agent", USER_AGENT);
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		while ((inputLine = in.readLine()) != null) {
+			if( inputLine.indexOf(line) != -1) {
+				break;
+			}
+		}
+		in.close();
+		return inputLine;
+	}
+	
+	
 	public String sendHttpsGet(String url) throws Exception {
 		URL obj = new URL(url);
 		System.out.println("Call URL : " + url);
