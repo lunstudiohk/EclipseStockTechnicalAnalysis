@@ -1,5 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.batch;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Date;
@@ -10,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
@@ -29,9 +32,14 @@ import com.lunstudio.stocktechnicalanalysis.service.FirebaseSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 import com.lunstudio.stocktechnicalanalysis.service.WarrantSrv;
+import com.lunstudio.stocktechnicalanalysis.util.FileUtils;
+import com.lunstudio.stocktechnicalanalysis.util.HttpUtils;
+import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
 
 @Component
 public class FunctionTest {
+
+	private static final Logger logger = LogManager.getLogger();
 
 	@Autowired
 	private StockSrv stockSrv;
@@ -71,16 +79,66 @@ public class FunctionTest {
 		//this.stockCbbcAmount(args[0]);
 		//this.generateCandlestickPattern(args);
 		//this.stimulateStockTrade("HKG:0011");
+		//this.getIndexDataFromYahoo();
+		//this.updateStockInfo();
+		//this.getStockPriceListTest();
+		this.clearFirebaseData();
+		return;
+	}
+	
+	public void clearFirebaseData() throws Exception {
+		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getCandlestickDataRef(), "");
+		return;
+	}
+	public void getStockPriceListTest() throws Exception {
+		System.out.println(this.stockPriceSrv.getLatestDailyStockPriceEntity("HKG:1171"));
+		System.out.println(this.stockPriceSrv.getLatestDailyStockPriceEntity("HKG:0700"));
 		return;
 	}
 	
 	
+	public void updateStockInfo() throws Exception {
+		List<String> dataList = FileUtils.readCsv(new File("/Volumes/HD2/Temp/hkats.csv"), "UTF-8");
+		for(String data : dataList) {
+			String[] token = data.split(",");
+			int code = Integer.parseInt(token[2].substring(1));
+			String stockCode = String.format("HKG:%04d", code);
+			StockEntity stock = this.stockSrv.getStockInfo(stockCode);
+			if( stock != null ) {
+				stock.setStockAtsCode(token[0].trim());
+			} else {
+				stock = new StockEntity();
+				stock.setStockCode(stockCode);
+				stock.setStockCname(token[1].trim());
+				stock.setIsHSCE(false);
+				stock.setIsHSI(false);
+				stock.setStockAtsCode(token[0].trim());
+				stock.setStockHkexCode(String.format("%04d.HK", code));
+				stock.setStockYahooCode(String.format("%05d", code));
+			}
+			System.out.println(stock);
+			this.stockSrv.updateStock(stock);			
+		}
+		return;
+	}
+	
+	
+	public void getIndexDataFromYahoo() throws Exception {
+		List<String> html = HttpUtils.downloadCsv("https://hk.finance.yahoo.com/quote/%5EHSI/history?p=%5EHSI", "UTF-8");
+		for(String line : html) {
+			int index = line.indexOf("\"CrumbStore\"");
+			if( index != -1) {
+				System.out.println(line.substring(index));
+			}
+		}
+		return;
+	}
 	
 	public void generateCandlestickPattern(String[] stockCodeList) throws Exception {
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
 			List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(stock.getStockCode(), null);
-			List<CandlestickEntity> candlestickList = this.candleStickSrv.generateCandleStick(stockPriceList);
+			List<CandlestickEntity> candlestickList = this.candleStickSrv.generateBullishCandleStick(stockPriceList);
 			/*
 			for(CandlestickEntity candlestick : candlestickList) {
 				System.out.println(candlestick);

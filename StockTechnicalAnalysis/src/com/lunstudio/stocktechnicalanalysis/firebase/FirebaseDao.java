@@ -20,6 +20,7 @@ public class FirebaseDao {
 	private static final String StockPriceSummary = "StockPriceSummary";
 	private static final String WarrantPriceSummary = "WarrantPriceSummary";
 	private static final String CbbcPriceSummary = "CbbcPriceSummary";
+	private static final String CandleStickData = "CandlestickData";
 	/*
 	private static final String TOBUYSTOCKTRADELIST = "ToBuyStockTradeList";
 	private static final String TOSELLSTOCKTRADELIST = "ToSellStockTradeList";
@@ -67,7 +68,9 @@ public class FirebaseDao {
 		return this.ref;
 	}
 	
-		
+	public DatabaseReference getCandlestickDataRef() {
+		return this.ref.child(CandleStickData);
+	}
 	public DatabaseReference getStockPriceDataRef() {
 		return this.ref.child(StockPriceData);
 	}

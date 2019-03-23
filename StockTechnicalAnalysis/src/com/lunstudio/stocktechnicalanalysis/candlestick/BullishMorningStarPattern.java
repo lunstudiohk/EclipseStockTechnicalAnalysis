@@ -25,10 +25,11 @@ public class BullishMorningStarPattern extends BullishCandlestickPatterns implem
 		
 		if( firstCandlestick.isFilled() && !firstCandlestick.isShortBody() ) {
 			if( secondCandlestick.isGapDown(firstCandlestick) && secondCandlestick.isShortBody() ) {
-				if( thirdCandlestick.isHollow() ) {
-					if( thirdCandlestick.getOpenPrice().compareTo(secondCandlestick.getBottom()) > 0 ) {
-						BigDecimal targetPrice = firstCandlestick.getOpenPrice().add(secondCandlestick.getBottom()).setScale(5).divide(two, RoundingMode.HALF_UP);
-						if( thirdCandlestick.getClosePrice().compareTo(targetPrice) >= 0 ) {
+				if( thirdCandlestick.isHollow() && thirdCandlestick.getOpenPrice().compareTo(secondCandlestick.getBottom()) > 0 ) {
+					if( thirdCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyHalf()) >= 0 ) {
+						if( thirdCandlestick.getDayVolume() == null || firstCandlestick.getDayVolume() == null || secondCandlestick.getDayVolume() == null 
+								|| thirdCandlestick.getDayVolume().compareTo(firstCandlestick.getDayVolume()) > 0
+								|| thirdCandlestick.getDayVolume().compareTo(secondCandlestick.getDayVolume()) > 0 ) {
 							super.init(thirdCandlestick);
 							super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
 							if( secondCandlestick.getDayLow().compareTo(thirdCandlestick.getDayLow()) < 0 ) {

@@ -279,5 +279,32 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		eb.append(this.stockCode, that.stockCode);
 		return eb.isEquals();
 	}
+	
+	public boolean isSame(StockPriceEntity that) {
+		if( this.tradeDate.compareTo(that.tradeDate) != 0 ) {
+			return false;
+		}
+		if( this.stockCode.compareTo(that.stockCode) != 0 ) {
+			return false;
+		}
+		if( this.closePrice.compareTo(that.closePrice) != 0 ) {
+			return false;
+		}
+		if( this.openPrice.compareTo(that.openPrice) != 0 ) {
+			return false;
+		}
+		if( this.dayLow.compareTo(that.dayLow) != 0 ) {
+			return false;
+		}
+		if( this.dayHigh.compareTo(that.dayHigh) != 0 ) {
+			return false;
+		}
+		BigDecimal upperLimit = this.dayVolume.multiply(BigDecimal.valueOf(1.05));
+		BigDecimal lowerLimit = this.dayVolume.multiply(BigDecimal.valueOf(0.95));
+		if( that.dayVolume.compareTo(upperLimit) > 0 || that.dayVolume.compareTo(lowerLimit) < 0 ) {
+			return false;
+		}
+		return true;
+	}
 
 }

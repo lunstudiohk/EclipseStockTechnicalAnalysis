@@ -7,7 +7,7 @@ import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 
 public interface StockDao extends BaseDao{
 
-	public StockEntity getStock(String stockCode);
+	public StockEntity getStock(String stockCode) throws Exception;
 	
 	public List<StockEntity> getStockList();
  

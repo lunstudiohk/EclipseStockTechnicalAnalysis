@@ -73,4 +73,8 @@ java -Dspring.config=file:$RESOURCES/Spring-Config.xml -Duser.timezone=Asia/Hong
 
 java -Dspring.config=file:$RESOURCES/Spring-Config.xml -Duser.timezone=Asia/Hong_Kong -Xmx128m -Dlog4j.configurationFile=$RESOURCES/log4j2.xml com.lunstudio.stocktechnicalanalysis.batch.UpdateStockPriceDataToFirebase
 
+java -Dspring.config=file:$RESOURCES/Spring-Config.xml -Duser.timezone=Asia/Hong_Kong -Xmx128m -Dlog4j.configurationFile=$RESOURCES/log4j2.xml com.lunstudio.stocktechnicalanalysis.init.InitCandlestick
+
+java -Dspring.config=file:$RESOURCES/Spring-Config.xml -Duser.timezone=Asia/Hong_Kong -Xmx128m -Dlog4j.configurationFile=$RESOURCES/log4j2.xml com.lunstudio.stocktechnicalanalysis.batch.UpdateCandlestickDataToFirebase
+
 unset CLASSPATH

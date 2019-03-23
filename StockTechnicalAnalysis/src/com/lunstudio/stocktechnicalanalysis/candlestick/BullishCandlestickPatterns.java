@@ -97,8 +97,8 @@ public class BullishCandlestickPatterns {
 		case 12: return "底部棄嬰";
 		case 13: return "豎狀三明治";
 		case 14: return "三個白色武士";
+		default: return "";
 		}
-		return "";
 	}
 	
 	public CandlestickPattern getBullishCandlestickPattern(BullishPatterns pattern) {
@@ -134,9 +134,8 @@ public class BullishCandlestickPatterns {
 		case BullishThreeWhiteSoldiers:
 			return new BullishThreeWhiteSoldiersPattern(this.stockPriceList);
 		default:
-			break;
+			return null;
 		}
-		return null;
 	}
 	
 	public Integer getBullishCandlestickPattern() {

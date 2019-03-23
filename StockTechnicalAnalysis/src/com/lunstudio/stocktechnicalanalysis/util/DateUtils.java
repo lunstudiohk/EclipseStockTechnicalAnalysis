@@ -15,10 +15,13 @@ public class DateUtils {
 
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private final static SimpleDateFormat shortDateFormat = new SimpleDateFormat("yyMMdd");
 	private final static SimpleDateFormat googleDateTimeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"); // 6/10/2016 15:59:59
+	private final static SimpleDateFormat googleTradeDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	private final static SimpleDateFormat googleHistoricalDateFormat = new SimpleDateFormat("MMM dd, yyyy");
 	private final static SimpleDateFormat hkexDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 	private final static SimpleDateFormat csvDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	
 	//private static final SimpleDateFormat googleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private static Calendar firstCal = Calendar.getInstance();
@@ -76,6 +79,10 @@ public class DateUtils {
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 		return new Timestamp(cal.getTimeInMillis());
+	}
+	
+	public static String getShortDateString(Date date) {
+		return shortDateFormat.format(date);
 	}
 	
 	public static String getGoogleHistoricalDate(Date date) {
@@ -139,7 +146,11 @@ public class DateUtils {
 		try{
 			date = new Date(googleDateTimeFormat.parse(inputDate).getTime());
 		}catch(Exception e) {
-			
+			try {
+				date = new Date(googleTradeDateFormat.parse(inputDate).getTime());
+			} catch(Exception ee) {
+				
+			}
 		}
 		return date;
 	}

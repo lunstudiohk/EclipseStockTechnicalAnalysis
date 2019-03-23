@@ -22,10 +22,15 @@ public class BullishHaramiPattern extends BullishCandlestickPatterns implements 
 		if( firstCandlestick.isFilled() ) {
 			if( !firstCandlestick.isShortBody() ) {
 				if( secondCandlestick.isHollow() ) {
-					if( firstCandlestick.getTop().compareTo(secondCandlestick.getTop()) > 0 ) {
-						if( firstCandlestick.getBottom().compareTo(secondCandlestick.getBottom()) < 0 ) {
+					if( firstCandlestick.getOpenPrice().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
+						if( firstCandlestick.getClosePrice().compareTo(secondCandlestick.getOpenPrice()) < 0 ) {
 							super.init(secondCandlestick);
-							super.candlestickEntity.setConfirmPrice(secondCandlestick.getTop());
+							if( firstCandlestick.getBodyHalf().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
+								super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyHalf());
+							} else {
+								super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());	
+							}
+							
 							super.candlestickEntity.setStoplossPrice(firstCandlestick.getDayLow());
 							return true;
 						}

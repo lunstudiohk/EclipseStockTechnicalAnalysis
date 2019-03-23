@@ -17,23 +17,26 @@ public class BullishEngulfingPattern extends BullishCandlestickPatterns implemen
 	@Override
 	public boolean isValid(Date tradeDate) throws Exception {
 		int index = super.tradeDateMap.get(tradeDate);
-		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
-		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
-		if( firstCandlestick.isFilled() ) {
-			if( secondCandlestick.isHollow() ) {
-				if( firstCandlestick.getTop().compareTo(secondCandlestick.getTop()) < 0 ) {
-					if( firstCandlestick.getBottom().compareTo(secondCandlestick.getBottom()) > 0 ) {
-						if( !secondCandlestick.isShortBody() ) {
-							super.init(secondCandlestick);
-							super.candlestickEntity.setConfirmPrice(secondCandlestick.getTop());
-							super.candlestickEntity.setStoplossPrice(secondCandlestick.getBottom());
-							return true;
+		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-2));
+		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
+		CandleStickVo thirdCandlestick = new CandleStickVo(super.stockPriceList.get(index));
+		
+		if( firstCandlestick.getDayVolume() == null || secondCandlestick.getDayVolume() == null || firstCandlestick.getDayVolume().compareTo(secondCandlestick.getDayVolume()) > 0 ) {
+			if( secondCandlestick.isFilled() ) {
+				if( thirdCandlestick.isHollow() ) {
+					if( secondCandlestick.getOpenPrice().compareTo(thirdCandlestick.getClosePrice()) < 0 ) {
+						if( secondCandlestick.getClosePrice().compareTo(thirdCandlestick.getOpenPrice()) > 0 ) {
+							if( !thirdCandlestick.isShortBody() ) {
+								super.init(thirdCandlestick);
+								super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
+								super.candlestickEntity.setStoplossPrice(thirdCandlestick.getOpenPrice());
+								return true;
+							}
 						}
 					}
 				}
 			}
 		}
-		
 		return false;
 	}
 

@@ -24,8 +24,8 @@ public class BullishBeltHoldPattern extends BullishCandlestickPatterns implement
 				if( secondCandlestick.isShortLowerShadow() ) {
 					if( secondCandlestick.isLongBody() ) {
 						super.init(secondCandlestick);
-						super.candlestickEntity.setConfirmPrice(secondCandlestick.getTop());
-						super.candlestickEntity.setStoplossPrice(secondCandlestick.getBottom());
+						super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
+						super.candlestickEntity.setStoplossPrice(secondCandlestick.getOpenPrice());
 						return true;
 					}
 				}

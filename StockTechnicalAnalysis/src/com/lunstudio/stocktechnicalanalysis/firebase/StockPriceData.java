@@ -1,12 +1,10 @@
 package com.lunstudio.stocktechnicalanalysis.firebase;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 
 public class StockPriceData extends FirebaseData{
-	
 	
 	private String s = null;	//Stock Code
 	private String t = null;	//Trade Date

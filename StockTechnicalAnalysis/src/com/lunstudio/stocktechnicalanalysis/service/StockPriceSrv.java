@@ -49,7 +49,11 @@ public class StockPriceSrv {
 	}
 
 	public StockPriceEntity getLatestDailyStockPriceEntity(String stockCode) {
-		return this.getLastDailyStockPriceEntityList(stockCode, 1).get(0);
+		try {
+			return this.getLastDailyStockPriceEntityList(stockCode, 1).get(0);
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	
 	public StockPriceEntity getPreviousDailyStockPriceEntity(String stockCode, Date tradeDate) {

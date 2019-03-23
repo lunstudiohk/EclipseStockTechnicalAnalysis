@@ -29,6 +29,7 @@ public class CandleStickVo extends StockPriceEntity {
 		this.setClosePrice(stockPrice.getClosePrice());
 		this.setDayHigh(stockPrice.getDayHigh());
 		this.setDayLow(stockPrice.getDayLow());
+		this.setDayVolume(stockPrice.getDayVolume());
 		return;
 	}
 	
@@ -68,6 +69,10 @@ public class CandleStickVo extends StockPriceEntity {
 	
 	public BigDecimal getBodyHalf() {
 		return (this.getOpenPrice().add(this.getClosePrice())).setScale(5).divide(two, RoundingMode.HALF_UP);
+	}
+	
+	public BigDecimal getLowerShadowHalf() {
+		return (this.getBottom().add(this.getDayLow())).setScale(5).divide(two, RoundingMode.HALF_UP);
 	}
 	
 	public BigDecimal getBodyPercentage() {
@@ -142,6 +147,20 @@ public class CandleStickVo extends StockPriceEntity {
 	
 	public boolean isGapUp(CandleStickVo prevDate) {
 		return this.getOpenPrice().compareTo(prevDate.getDayHigh()) > 0;
+	}
+	
+	public boolean isOpenInsideBody(CandleStickVo anotherCandlestick) {
+		if( this.getOpenPrice().compareTo(anotherCandlestick.getTop()) < 0 && this.getOpenPrice().compareTo(anotherCandlestick.getBottom()) > 0 ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isCloseInsideBody(CandleStickVo anotherCandlestick) {
+		if( this.getClosePrice().compareTo(anotherCandlestick.getTop()) < 0 && this.getClosePrice().compareTo(anotherCandlestick.getBottom()) > 0 ) {
+			return true;
+		}
+		return false;
 	}
 	
 	public static boolean isSamePrice(BigDecimal price, BigDecimal targetPrice) {

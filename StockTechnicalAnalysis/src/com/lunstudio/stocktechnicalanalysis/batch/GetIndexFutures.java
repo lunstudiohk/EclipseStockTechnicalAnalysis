@@ -40,7 +40,7 @@ public class GetIndexFutures {
 	
 	private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyMMdd");
 
-	private final static Integer RETRIEVE_SIZE = 250;
+	private final static Integer RETRIEVE_SIZE = 5;
 	
 	@Autowired
 	private FuturesSrv futuresSrv;

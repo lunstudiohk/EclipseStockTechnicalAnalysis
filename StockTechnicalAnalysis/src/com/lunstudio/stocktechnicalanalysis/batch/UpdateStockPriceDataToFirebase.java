@@ -92,7 +92,8 @@ public class UpdateStockPriceDataToFirebase {
 	private StockPriceData updateStockPriceDataToFirebase(StockEntity stock, Integer updateDays) throws Exception {
 		String stockCode = stock.getStockCode();
 		
-		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList(stockCode, 300);
+		//List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList(stockCode, 300);	//300 because of 250 SMA
+		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList(stockCode, 1000);	//TMP
 		
 		Map<String, Object> stockPriceDataMap = new HashMap<String, Object>();
 		
@@ -101,7 +102,7 @@ public class UpdateStockPriceDataToFirebase {
 			startIndex = 0;
 		}
 		int endIndex = stockPriceList.size();
-		logger.info("Start Date: " + stockPriceList.get(startIndex).getT());
+		logger.info(String.format("%s - Start Date: %s", stock.getStockCode(), stockPriceList.get(startIndex).getT()));
 		StockPriceData stockPrice = null;
 		for(int i=startIndex; i<endIndex; i++) {
 			stockPrice = stockPriceList.get(i);

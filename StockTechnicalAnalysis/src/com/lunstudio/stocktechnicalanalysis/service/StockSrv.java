@@ -28,8 +28,17 @@ public class StockSrv {
 	@Autowired
 	private StockDao stockDao;
 	
+	public void updateStock(StockEntity stock) {
+		this.stockDao.save(stock);
+		return;
+	}
+	
 	public StockEntity getStockInfo(String stockCode) {
-		return this.stockDao.getStock(stockCode);
+		try {
+			return this.stockDao.getStock(stockCode);
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	
 	public List<StockEntity> getStockInfoList() {

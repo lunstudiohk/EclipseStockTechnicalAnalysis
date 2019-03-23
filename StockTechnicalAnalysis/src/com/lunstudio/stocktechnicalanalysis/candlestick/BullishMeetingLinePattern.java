@@ -25,7 +25,7 @@ public class BullishMeetingLinePattern extends BullishCandlestickPatterns implem
 					if( !secondCandlestick.isShortBody() ) {
 						if( CandleStickVo.isSamePrice(secondCandlestick.getClosePrice(), firstCandlestick.getClosePrice()) ) {
 							super.init(secondCandlestick);
-							super.candlestickEntity.setConfirmPrice(secondCandlestick.getTop());
+							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
 							super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());
 							return true;	
 						}

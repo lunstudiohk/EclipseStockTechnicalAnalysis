@@ -21,7 +21,7 @@ public class StockDaoImpl extends BaseDaoImpl implements StockDao {
 
 
 	@Override
-	public StockEntity getStock(String stockCode) {
+	public StockEntity getStock(String stockCode) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 	    CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<StockEntity> query = builder.createQuery(StockEntity.class);

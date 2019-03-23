@@ -86,6 +86,15 @@ public class SystemUtils {
     @Value("${HKEX.HANG_SENG_INDEX_OPTIONS}")
     private String HANG_SENG_INDEX_OPTIONS;
     
+    @Value("${HKEX.STOCK_OPTIONS}")
+    private String STOCK_OPTIONS;
+    
+    @Value("${WTD.LATEST_STOCK_PRICE_URL}")
+    private String LATEST_STOCK_PRICE_URL;
+    
+    @Value("${WTD.HISTORICAL_STOCK_PRICE_URL}")
+    private String HISTORICAL_STOCK_PRICE_URL;
+    
     private static SystemUtils instance;
     
     public static SystemUtils getInstance() {
@@ -199,5 +208,17 @@ public class SystemUtils {
     
     public static final String getHangSengIndexOptionsUrl() {
     	return SystemUtils.getInstance().HANG_SENG_INDEX_OPTIONS;
+    }
+    
+    public static final String getStockOptionsUrl() {
+    	return SystemUtils.getInstance().STOCK_OPTIONS;
+    }
+    
+    public static final String getLatestStockPriceUrl() {
+    	return SystemUtils.getInstance().LATEST_STOCK_PRICE_URL;
+    }
+    
+    public static final String getHistoricalStockPriceUrl() {
+    	return SystemUtils.getInstance().HISTORICAL_STOCK_PRICE_URL;
     }
 }

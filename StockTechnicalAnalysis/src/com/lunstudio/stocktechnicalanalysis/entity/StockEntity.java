@@ -33,6 +33,8 @@ public class StockEntity extends BaseEntity implements Serializable {
 
 	private String stockYahooCode;
 
+	private String stockAtsCode;
+	
 	public String getStockCode() {
 		return stockCode;
 	}
@@ -87,6 +89,15 @@ public class StockEntity extends BaseEntity implements Serializable {
 
 	public void setStockYahooCode(String stockYahooCode) {
 		this.stockYahooCode = stockYahooCode;
+	}
+
+	
+	public String getStockAtsCode() {
+		return stockAtsCode;
+	}
+
+	public void setStockAtsCode(String stockAtsCode) {
+		this.stockAtsCode = stockAtsCode;
 	}
 
 	@Override
