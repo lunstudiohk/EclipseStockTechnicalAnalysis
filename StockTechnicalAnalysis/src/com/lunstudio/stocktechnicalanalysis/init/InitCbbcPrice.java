@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.lunstudio.stocktechnicalanalysis.entity.CbbcPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.service.CbbcSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 
@@ -44,12 +46,20 @@ public class InitCbbcPrice {
 
 	private void start(String[] args) throws Exception {
 		List<String> dataList = this.getCbbcDataList(args[0]);
-		List<String> stockCodeList = this.stockSrv.getStockHkexCodeList();
+		Map<String, StockEntity> hkexCodeMap = this.stockSrv.getStockInfoHkexMap();
+
 		List<CbbcPriceEntity> cbbcPriceList = new ArrayList<CbbcPriceEntity>();
 		for (String line : dataList) {
 			String[] data = this.getData(line);
 			if (this.isNumeric(data[0])) {
-				if (stockCodeList.contains(data[17]) ) {
+				StockEntity stock = hkexCodeMap.get(data[17]);
+				if (stock != null) {
+					//Filter date
+					/*
+					if( !"2019-04-18".equals(data[2]) && !"2019-04-23".equals(data[2]) ) {
+						continue;
+					}
+					*/
 					CbbcPriceEntity cbbcPriceEntity = new CbbcPriceEntity();
 					cbbcPriceEntity.setCbbcCode(data[0]);
 					cbbcPriceEntity.setCbbcIssuer(data[16].trim());
@@ -59,17 +69,15 @@ public class InitCbbcPrice {
 					cbbcPriceEntity.setCbbcStrikeLevel(new BigDecimal(data[26]));
 					cbbcPriceEntity.setCbbcCallLevel(new BigDecimal(data[27]));
 					cbbcPriceEntity.setCbbcType(data[18].trim());
-					cbbcPriceEntity.setCbbcUnderlying(data[17]);
+					cbbcPriceEntity.setCbbcUnderlying(stock.getStockCode());
 					cbbcPriceEntity.setClosePrice(this.getCbbcPrice(data[13]));
 					cbbcPriceEntity.setDayHigh(this.getCbbcPrice(data[11]));
 					cbbcPriceEntity.setDayLow(this.getCbbcPrice(data[12]));
 					cbbcPriceEntity.setIssueSize(Long.parseLong(data[9]));
 					cbbcPriceEntity.setQustanding(this.getCbbcPrice(data[8]));
 					cbbcPriceEntity.setTradeDate(Date.valueOf(data[2]));
-					//cbbcPriceEntity.setTurnover(this.getCbbcPrice(data[15]));
-					if( cbbcPriceEntity.getClosePrice() != null ) {
-						cbbcPriceList.add(cbbcPriceEntity);
-					}
+					cbbcPriceEntity.setTurnover(this.getCbbcPrice(data[15]).divide(BigDecimal.valueOf(1000)));
+					cbbcPriceList.add(cbbcPriceEntity);
 				}
 			}
 		}

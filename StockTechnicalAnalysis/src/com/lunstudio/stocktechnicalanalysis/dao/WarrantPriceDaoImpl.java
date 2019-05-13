@@ -1,5 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.dao;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,6 +54,22 @@ public class WarrantPriceDaoImpl extends BaseDaoImpl implements WarrantPriceDao 
         Root<WarrantPriceEntity> warrantPriceRoot = query.from(WarrantPriceEntity.class);
         query.select(warrantPriceRoot);
         query.where(builder.and(builder.equal(warrantPriceRoot.get("tradeDate"), tradeDate)));
+		List<WarrantPriceEntity> warrantPriceEntityList = session.createQuery(query).getResultList();
+		return warrantPriceEntityList;
+	}
+
+	@Override
+	public List<WarrantPriceEntity> getWarrantPriceList(String warrantUnderlying, Date tradeDate) {
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<WarrantPriceEntity> query = builder.createQuery(WarrantPriceEntity.class);
+        Root<WarrantPriceEntity> warrantPriceRoot = query.from(WarrantPriceEntity.class);
+        query.select(warrantPriceRoot);
+        
+        query.where(
+        		builder.greaterThanOrEqualTo(warrantPriceRoot.get("tradeDate"), tradeDate),
+        		builder.equal(warrantPriceRoot.get("warrantUnderlying"), warrantUnderlying)
+        );
 		List<WarrantPriceEntity> warrantPriceEntityList = session.createQuery(query).getResultList();
 		return warrantPriceEntityList;
 	}

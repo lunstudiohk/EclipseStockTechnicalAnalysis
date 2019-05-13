@@ -95,6 +95,9 @@ public class SystemUtils {
     @Value("${WTD.HISTORICAL_STOCK_PRICE_URL}")
     private String HISTORICAL_STOCK_PRICE_URL;
     
+    @Value("${GOOGLE.LATEST_VHSI_URL}")
+    private String LATEST_VHSI_URL;
+    
     private static SystemUtils instance;
     
     public static SystemUtils getInstance() {
@@ -220,5 +223,9 @@ public class SystemUtils {
     
     public static final String getHistoricalStockPriceUrl() {
     	return SystemUtils.getInstance().HISTORICAL_STOCK_PRICE_URL;
+    }
+    
+    public static final String getLatestVHSIUrl() {
+    	return SystemUtils.getInstance().LATEST_VHSI_URL;
     }
 }

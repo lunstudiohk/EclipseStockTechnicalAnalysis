@@ -52,6 +52,12 @@ public class InitWarrantPrice {
 			
 			if (this.isNumeric(data[0])) {
 				if (stockCodeList.contains(data[19]) ) {
+					//Filter date
+					/*
+					if( !"2019-04-08".equals(data[2]) ) {
+						continue;
+					}
+					*/
 					WarrantPriceEntity warrantPriceEntity = new WarrantPriceEntity();
 					warrantPriceEntity.setWarrantCode(data[0]);
 					warrantPriceEntity.setWarrantIssuer(data[18]);
@@ -73,7 +79,7 @@ public class InitWarrantPrice {
 					warrantPriceEntity.setIssueSize(Long.parseLong(data[9]));
 					warrantPriceEntity.setQustanding(this.getWarrantPrice(data[8]));
 					warrantPriceEntity.setTradeDate(Date.valueOf(data[2]));
-					warrantPriceEntity.setTurnover(this.getTurnover(data[17]));
+					warrantPriceEntity.setTurnover(this.getTurnover(data[17]).divide(BigDecimal.valueOf(1000)));
 					if( warrantPriceEntity.getClosePrice() != null ) {
 						warrantPriceList.add(warrantPriceEntity);
 					}

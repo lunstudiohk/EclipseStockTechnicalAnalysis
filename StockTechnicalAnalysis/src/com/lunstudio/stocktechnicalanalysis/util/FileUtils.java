@@ -23,7 +23,7 @@ public class FileUtils {
 		return;
 	}
 	
-	public static List<String> readCsv(File inFilePath, String encoding) throws Exception {
+	public static List<String> readToLine(File inFilePath, String encoding) throws Exception {
 		InputStream input = new FileInputStream(inFilePath);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(input, encoding));
@@ -35,6 +35,18 @@ public class FileUtils {
 		}
 		in.close();
 		return lineList;
+	}
+	
+	public static String readFile(File inFilePath, String encoding) throws Exception {
+		InputStream input = new FileInputStream(inFilePath);
+		BufferedReader in = new BufferedReader(new InputStreamReader(input, encoding));
+		StringBuffer buf = new StringBuffer();
+		String inputLine;
+		while ((inputLine = in.readLine()) != null) {
+			buf.append(inputLine);
+		}
+		in.close();
+		return buf.toString();
 	}
 
 }

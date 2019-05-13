@@ -13,11 +13,14 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 @Table(name = "tb_stock")
 public class StockEntity extends BaseEntity implements Serializable {
 
+	public final static String HSI = "INDEXHANGSENG:HSI";
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private static final String COLON = ":";
+	
 	@Id
 	private String stockCode;
 
@@ -34,6 +37,10 @@ public class StockEntity extends BaseEntity implements Serializable {
 	private String stockYahooCode;
 
 	private String stockAtsCode;
+	
+	public String getStockShortCode() {
+		return this.stockCode.split(COLON)[1];
+	}
 	
 	public String getStockCode() {
 		return stockCode;

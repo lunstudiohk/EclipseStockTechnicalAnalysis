@@ -55,4 +55,21 @@ public class CandlestickDaoImpl extends BaseDaoImpl implements CandlestickDao {
 		return candlestickEntityList;
 	}
 
+	@Override
+	public List<CandlestickEntity> getCandlestickListFromDate(String stockCode, Date tradeDate) throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<CandlestickEntity> query = builder.createQuery(CandlestickEntity.class);
+        Root<CandlestickEntity> candlestickRoot = query.from(CandlestickEntity.class);
+        query.select(candlestickRoot);
+        query.where(
+        	builder.equal(candlestickRoot.get("stockCode"), stockCode),
+        	builder.greaterThanOrEqualTo(candlestickRoot.get("tradeDate"), tradeDate)
+        );
+        
+	    query.orderBy(builder.asc(candlestickRoot.get("tradeDate")));
+		List<CandlestickEntity> candlestickEntityList = session.createQuery(query).getResultList();
+		return candlestickEntityList;
+	}
+
 }

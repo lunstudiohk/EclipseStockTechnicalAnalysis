@@ -30,6 +30,25 @@ public class DateUtils {
 	public static String calendarDateToString(Calendar date) {
 		return dateFormat.format(date.getTime());
 	}
+	
+	public static boolean isMonthBeginTradeDate(Date currentDate, Date previousDate) {
+		firstCal.setTime(currentDate);
+		secondCal.setTime(previousDate);
+		if( firstCal.get(Calendar.MONTH) == secondCal.get(Calendar.MONTH) ) {
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean isWeekBeginTradeDate(Date currentDate, Date previousDate) {
+		firstCal.setTime(currentDate);
+		secondCal.setTime(previousDate);
+		if( firstCal.get(Calendar.WEEK_OF_YEAR) == secondCal.get(Calendar.WEEK_OF_YEAR) ) {
+			return false;
+		}
+		return true;
+	}
+	
 	public static boolean isSameWeek(Date firstDate, Date secondDate) {
 		firstCal.setTime(firstDate);
 		secondCal.setTime(secondDate);
@@ -37,6 +56,14 @@ public class DateUtils {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean isSameDate(Date date1, Date date2) {
+		if( date1 == null || date2 == null ) {
+			return false;
+		} else {
+			return dateFormat.format(date1).equals(dateFormat.format(date2));
+		}
 	}
 	
 	public static LocalDate getLocalDate(Date date) {

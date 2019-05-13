@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -14,9 +16,11 @@ import org.springframework.stereotype.Service;
 
 import com.lunstudio.stocktechnicalanalysis.dao.StockPriceDao;
 import com.lunstudio.stocktechnicalanalysis.dao.WarrantPriceDao;
+import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.WarrantPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
+import com.lunstudio.stocktechnicalanalysis.valueobject.WarrantPriceVo;
 
 @Service
 public class WarrantSrv {
@@ -47,7 +51,44 @@ public class WarrantSrv {
 		return this.warrantPriceDao.getWarrantPriceList(tradeDate);
 	}
 	
-	
+	public Map<Date, WarrantPriceVo> getWarrantAmountDateMap(String stockCode, Date startDate, Map<Date, StockPriceEntity> stockPriceDateMap) throws Exception {
+		Map<Date, WarrantPriceVo> warrantAmountDateMap = new HashMap<Date, WarrantPriceVo>();
+		StockEntity stock = this.stockSrv.getStockInfo(stockCode);
+		List<WarrantPriceEntity> warrnatPriceList = this.warrantPriceDao.getWarrantPriceList(stock.getStockHkexCode(), startDate);
+		for(WarrantPriceEntity warrantPrice : warrnatPriceList) {
+			StockPriceEntity stockPrice = stockPriceDateMap.get(warrantPrice.getTradeDate());
+			WarrantPriceVo warrantAmountVo = warrantAmountDateMap.get(warrantPrice.getTradeDate());
+			if( warrantAmountVo == null ) {
+				warrantAmountVo = new WarrantPriceVo(stockCode, warrantPrice.getTradeDate());
+				warrantAmountDateMap.put(warrantPrice.getTradeDate(), warrantAmountVo);
+			}
+			double cost = warrantPrice.getClosePrice().doubleValue() * warrantPrice.getIssueSize().doubleValue();
+			double amount = (warrantPrice.getClosePrice().doubleValue() * warrantPrice.getIssueSize().doubleValue() * warrantPrice.getQustanding().doubleValue()/100)/1000;
+			if( WarrantPriceEntity.WARRANT_TYPE_CALL.equals(warrantPrice.getWarrantType()) ) {
+				warrantAmountVo.setWarrantCallAmount(warrantAmountVo.getWarrantCallAmount().add(BigDecimal.valueOf(amount)));
+				warrantAmountVo.setWarrantCallCost(warrantAmountVo.getWarrantCallCost().add(BigDecimal.valueOf(cost)));
+				
+				warrantAmountVo.setWarrantAllCallAmount(warrantAmountVo.getWarrantAllCallAmount().add(BigDecimal.valueOf(amount)));
+				warrantAmountVo.setWarrantAllCallTurnover(warrantAmountVo.getWarrantAllCallTurnover().add(warrantPrice.getTurnover()));
+				if( warrantPrice.getWarrantStrikePrice().compareTo(stockPrice.getClosePrice()) > 0 ) {
+					warrantAmountVo.setWarrantOtmCallAmount(warrantAmountVo.getWarrantOtmCallAmount().add(BigDecimal.valueOf(amount)));
+					warrantAmountVo.setWarrantOtmCallTurnover(warrantAmountVo.getWarrantOtmCallTurnover().add(warrantPrice.getTurnover()));
+				}
+			} else {
+				warrantAmountVo.setWarrantPutAmount(warrantAmountVo.getWarrantPutAmount().add(BigDecimal.valueOf(amount)));
+				warrantAmountVo.setWarrantPutCost(warrantAmountVo.getWarrantPutCost().add(BigDecimal.valueOf(cost)));
+				
+				warrantAmountVo.setWarrantAllPutAmount(warrantAmountVo.getWarrantAllPutAmount().add(BigDecimal.valueOf(amount)));
+				warrantAmountVo.setWarrantAllPutTurnover(warrantAmountVo.getWarrantAllPutTurnover().add(warrantPrice.getTurnover()));
+				if( warrantPrice.getWarrantStrikePrice().compareTo(stockPrice.getClosePrice()) < 0 ) {
+					warrantAmountVo.setWarrantOtmPutAmount(warrantAmountVo.getWarrantOtmPutAmount().add(BigDecimal.valueOf(amount)));
+					warrantAmountVo.setWarrantOtmPutTurnover(warrantAmountVo.getWarrantOtmPutTurnover().add(warrantPrice.getTurnover()));
+				}
+			}
+		}
+		return warrantAmountDateMap;
+	}
+		
 	public BigDecimal getWarrantValue(WarrantPriceEntity warrantPrice) throws Exception {
 		BigDecimal price = null;
 		String stockCode = this.stockSrv.getStockCode(warrantPrice.getWarrantUnderlying());

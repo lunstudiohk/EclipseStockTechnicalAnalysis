@@ -1,0 +1,7 @@
+HKEX Warrant monthly data download
+Products > Securities > Derivative Warrants > Download Historical Data > DOWNLOAD HISTORICAL DATA BY MONTH FOR ALL WARRANTS
+https://www.hkex.com.hk/eng/dwrc/download/dnCSV.asp
+
+HKEX Cbbc monthly data download
+Products > Securities > Callable Bull / Bear Contracts > Download Historical Data > DOWNLOAD HISTORICAL DATA BY MONTH FOR ALL CBBC
+https://www.hkex.com.hk/eng/cbbc/download/dnCSV.asp#

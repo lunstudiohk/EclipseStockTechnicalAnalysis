@@ -84,6 +84,9 @@ public class GetStockPrice {
 						stockPriceList.add(stockPrice1);	
 					} else {
 						StringBuffer buf = new StringBuffer();
+						if( stockPrice1.getTradeDate().compareTo(stockPrice2.getTradeDate()) != 0 ) {
+							buf.append(String.format("Date:%s(%s), ", stockPrice1.getTradeDate(), stockPrice2.getTradeDate()));
+						}
 						if( stockPrice1.getOpenPrice().compareTo(stockPrice2.getOpenPrice()) != 0 ) {
 							buf.append(String.format("Open:%s(%s), ", stockPrice1.getOpenPrice(), stockPrice2.getOpenPrice()));
 						}
@@ -100,7 +103,11 @@ public class GetStockPrice {
 							buf.append(String.format("Volume:%s(%s)", stockPrice1.getDayVolume(), stockPrice2.getDayVolume()));
 						}
 						this.systemMessageSrv.saveSystemWarningMessage(String.format("%s - %s", stock.getStockCode(), buf.toString()));
-						stockPriceList.add(stockPrice2);
+						if( stockPrice1.getTradeDate().compareTo(stockPrice2.getTradeDate()) >= 0 ) {
+							stockPriceList.add(stockPrice1);
+						} else if( stockPrice1.getTradeDate().compareTo(stockPrice2.getTradeDate()) < 0 ) {
+							stockPriceList.add(stockPrice2);
+						}
 					}
 				} else if( stockPrice1 != null && stockPrice2 == null ) {
 					stockPriceList.add(stockPrice1);
@@ -136,7 +143,7 @@ public class GetStockPrice {
 			stockPrice.setDayLow(new BigDecimal((String)jsonEntry.get("day_low")));
 			stockPrice.setDayVolume(new BigDecimal((String)jsonEntry.get("volume")));
 		} catch(Exception e) {
-			logger.error("Failed to process " + stock.getStockCode() + " : " + e.getMessage());
+			logger.error("Failed to process " + stock.getStockCode() + " in Wtd : " + e.getMessage());
 			return null;
 		}
 		return stockPrice;
@@ -162,7 +169,7 @@ public class GetStockPrice {
 			stockPrice.setClosePrice(new BigDecimal((String)stockPriceData.get("4. close")));
 			stockPrice.setDayVolume(new BigDecimal((String)stockPriceData.get("5. volume")));
 		} catch(Exception e) {
-			logger.error("Failed to process " + stock.getStockCode() + " : " + e.getMessage());
+			logger.error("Failed to process " + stock.getStockCode() + " in Av : " + e.getMessage());
 			return null;
 		}
 		return stockPrice;

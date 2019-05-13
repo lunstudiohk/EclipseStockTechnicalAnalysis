@@ -17,6 +17,9 @@ public class CbbcPriceEntity extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	public static final String CBBC_TYPE_BEAR = "Bear";
+	public static final String CBBC_TYPE_BULL = "Bull";
+	
 	@Id
 	private String cbbcCode;
 	

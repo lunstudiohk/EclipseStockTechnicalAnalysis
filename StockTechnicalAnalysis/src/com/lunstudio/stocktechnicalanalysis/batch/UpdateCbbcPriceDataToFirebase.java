@@ -95,11 +95,11 @@ public class UpdateCbbcPriceDataToFirebase {
 		//Date previousTradeDate = this.stockPriceSrv.getPreviousDailyStockPriceEntity("INDEXHANGSENG:HSI", tradeDate).getTradeDate();
 
 		List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getDailyStockPriceList(tradeDate);
-		Map<String, StockEntity> stockCodeMap = this.stockSrv.getStockInfoMap();
+		//Map<String, StockEntity> stockCodeMap = this.stockSrv.getStockInfoMap();
 		Map<String, StockPriceEntity> stockPriceMap = new HashMap<String, StockPriceEntity>();
-		Map<String, List<CbbcPriceEntity>> cbbcPriceListMap = new HashMap<String, List<CbbcPriceEntity>>();
+		//Map<String, List<CbbcPriceEntity>> cbbcPriceListMap = new HashMap<String, List<CbbcPriceEntity>>();
 		for(StockPriceEntity stockPrice : stockPriceList) {
-			stockPriceMap.put(stockCodeMap.get(stockPrice.getStockCode()).getStockHkexCode(), stockPrice);
+			stockPriceMap.put(stockPrice.getStockCode(), stockPrice);
 		}
 		Map<String, Object> cbbcDataMap = new HashMap<String, Object>();
 		for(CbbcPriceEntity cbbcPrice : cbbcPriceList) {

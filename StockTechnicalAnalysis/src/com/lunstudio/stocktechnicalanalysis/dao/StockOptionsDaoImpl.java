@@ -13,24 +13,24 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lunstudio.stocktechnicalanalysis.entity.IndexFuturesEntity;
-import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockOptionsEntity;
 
-@Repository ("indexFuturesDao")
+@Repository ("stockOptionsDao")
 @Transactional(propagation = Propagation.REQUIRES_NEW)
-public class IndexFuturesDaoImpl extends BaseDaoImpl implements IndexFuturesDao {
+public class StockOptionsDaoImpl extends BaseDaoImpl implements StockOptionsDao {
 
 	@Override
-	public List<IndexFuturesEntity> getFutureList(Date startDate) throws Exception {
+	public List<StockOptionsEntity> getOptionList(String stockCode, Date startDate) throws Exception {
 		Session session = this.sessionFactory.getCurrentSession();
 	    CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<IndexFuturesEntity> query = builder.createQuery(IndexFuturesEntity.class);
-        Root<IndexFuturesEntity> futureRoot = query.from(IndexFuturesEntity.class);
-        query.select(futureRoot);
+        CriteriaQuery<StockOptionsEntity> query = builder.createQuery(StockOptionsEntity.class);
+        Root<StockOptionsEntity> optionPriceRoot = query.from(StockOptionsEntity.class);
+        query.select(optionPriceRoot);
         
         Predicate primaryKey = builder.and(
-        		builder.greaterThanOrEqualTo(futureRoot.get("tradeDate"), startDate),
-        		builder.lessThan(futureRoot.get("month"), 2)
+        		builder.equal(optionPriceRoot.get("stockCode"), stockCode),
+        		builder.greaterThan(optionPriceRoot.get("volume"), 0),
+        		builder.lessThanOrEqualTo(optionPriceRoot.get("month"), 1)
         	);
         query.where(primaryKey);
         return session.createQuery(query).list(); 

@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lunstudio.stocktechnicalanalysis.dao.IndexOptionsDao;
-import com.lunstudio.stocktechnicalanalysis.entity.IndexOptionsEntity;
+import com.lunstudio.stocktechnicalanalysis.dao.StockOptionsDao;
+import com.lunstudio.stocktechnicalanalysis.entity.StockOptionsEntity;
 
 @Service
 public class OptionsSrv {
@@ -16,12 +16,11 @@ public class OptionsSrv {
 	private static final Logger logger = LogManager.getLogger();
 
 	@Autowired
-	private IndexOptionsDao indexOptionsDao;
+	private StockOptionsDao stockOptionsDao;
 	
-	public void saveIndexOptions(List<IndexOptionsEntity> optionsList) {
-		this.indexOptionsDao.save(optionsList, optionsList.size());
+	public void saveStockOptions(List<StockOptionsEntity> optionsList) {
+		this.stockOptionsDao.save(optionsList, optionsList.size());
 		return;
 	}
-
 
 }

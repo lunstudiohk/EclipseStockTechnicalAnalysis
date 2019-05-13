@@ -1,5 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lunstudio.stocktechnicalanalysis.entity.CbbcPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.WarrantPriceEntity;
 
 @Repository ("cbbcPriceDao")
 @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -26,6 +29,22 @@ public class CbbcPriceDaoImpl extends BaseDaoImpl implements CbbcPriceDao {
         Root<CbbcPriceEntity> cbbcPriceRoot = query.from(CbbcPriceEntity.class);
         query.select(cbbcPriceRoot);
         query.where(builder.and(builder.equal(cbbcPriceRoot.get("tradeDate"), tradeDate)));
+		List<CbbcPriceEntity> cbbcPriceEntityList = session.createQuery(query).getResultList();
+		return cbbcPriceEntityList;
+	}
+
+	@Override
+	public List<CbbcPriceEntity> getCbbcPriceList(String cbbcUnderlying, Date tradeDate) {
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<CbbcPriceEntity> query = builder.createQuery(CbbcPriceEntity.class);
+        Root<CbbcPriceEntity> cbbcPriceRoot = query.from(CbbcPriceEntity.class);
+        query.select(cbbcPriceRoot);
+        
+        query.where(
+        		builder.greaterThanOrEqualTo(cbbcPriceRoot.get("tradeDate"), tradeDate),
+        		builder.equal(cbbcPriceRoot.get("cbbcUnderlying"), cbbcUnderlying)
+        );
 		List<CbbcPriceEntity> cbbcPriceEntityList = session.createQuery(query).getResultList();
 		return cbbcPriceEntityList;
 	}

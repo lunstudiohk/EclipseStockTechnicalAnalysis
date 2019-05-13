@@ -26,7 +26,7 @@ import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
 /**
  * Get latest stock price from google csv
  * @author alankam
- *
+ * @deprecated
  */
 @Component
 public class GetStockPriceDaily {

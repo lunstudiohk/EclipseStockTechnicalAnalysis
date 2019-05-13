@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Date;
 import java.text.DateFormat;
@@ -21,7 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.lunstudio.stocktechnicalanalysis.entity.IndexOptionsEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockOptionsEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.service.OptionsSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
@@ -61,8 +63,8 @@ public class GetIndexOptions {
 	}
 	
 	private void start() throws Exception {
-		List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList("INDEXHANGSENG:HSI", RETRIEVE_SIZE);
-		List<IndexOptionsEntity> optionsList = new ArrayList<IndexOptionsEntity>();	
+		List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(StockEntity.HSI, RETRIEVE_SIZE);
+		List<StockOptionsEntity> optionsList = new ArrayList<StockOptionsEntity>();	
 		Calendar currentDate = Calendar.getInstance();
 		for(StockPriceEntity stockPrice : stockPriceList) {
 			Date date = stockPrice.getTradeDate();
@@ -73,7 +75,7 @@ public class GetIndexOptions {
 				try {
 					Date tradeDate = this.getBusinessDay(lines.get(24));
 					logger.info(String.format("Processing trade date: %s", tradeDate));
-					optionsList.addAll(this.getOptionsData("HSI", lines, tradeDate));
+					optionsList.addAll(this.getOptionsData(StockEntity.HSI, lines, tradeDate));
 				}catch(Exception e) {
 					logger.error(String.format("Invalid Trade Date: %s", date));
 				}
@@ -83,7 +85,7 @@ public class GetIndexOptions {
 		//Save Options List
 		logger.info(String.format("Number of options record: %s", optionsList.size()));
 		if( optionsList.size() > 0 ) {
-			this.optionsSrv.saveIndexOptions(optionsList);
+			this.optionsSrv.saveStockOptions(optionsList);
 		}
 		return;
 	}
@@ -128,8 +130,8 @@ public class GetIndexOptions {
 		return new java.sql.Date(date.getTime());
 	}
 	
-	private List<IndexOptionsEntity> getOptionsData(String indexCode, List<String> lines, Date tradeDate) throws Exception {
-		List<IndexOptionsEntity> optionsList = new ArrayList<IndexOptionsEntity>();
+	private List<StockOptionsEntity> getOptionsData(String indexCode, List<String> lines, Date tradeDate) throws Exception {
+		List<StockOptionsEntity> optionsList = new ArrayList<StockOptionsEntity>();
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(tradeDate);
 		SimpleDateFormat formatter = new SimpleDateFormat("MMM-yy");
@@ -141,46 +143,45 @@ public class GetIndexOptions {
 				if( line.startsWith(targetMonth) ) {
 					String[] data = line.split(SEPARATOR);
 					if( Integer.parseInt(data[18]) > 0 ) {
-						IndexOptionsEntity options = new IndexOptionsEntity();
-						options.setIndexCode(indexCode);
+						StockOptionsEntity options = new StockOptionsEntity();
+						options.setStockCode(indexCode);
 						options.setTradeDate(tradeDate);
 						options.setMonth(i);
-						options.setStrikePrice(Integer.parseInt(data[1]));
+						options.setStrikePrice(new BigDecimal(data[1]));
 						options.setOptionType(data[2]);
 						
 						if( !DASH.equals(data[3]) ) {
-							options.setNightOpen(Integer.parseInt(data[3]));
+							options.setNightOpen(new BigDecimal(data[3]));
 						}
 						if( !DASH.equals(data[4]) ) {
-							options.setNightHigh(Integer.parseInt(data[4]));
+							options.setNightHigh(new BigDecimal(data[4]));
 						}
 						if( !DASH.equals(data[5]) ) {
-							options.setNightLow(Integer.parseInt(data[5]));
+							options.setNightLow(new BigDecimal(data[5]));
 						}
 						if( !DASH.equals(data[6]) ) {
-							options.setNightClose(Integer.parseInt(data[6]));
+							options.setNightClose(new BigDecimal(data[6]));
 						}
 						if( !DASH.equals(data[7]) ) {
 							options.setNightVolume(Integer.parseInt(data[7]));
 						}
-						
 						if( !DASH.equals(data[8]) ) {
-							options.setDayOpen(Integer.parseInt(data[8]));
+							options.setDayOpen(new BigDecimal(data[8]));
 						}
 						if( !DASH.equals(data[9]) ) {
-							options.setDayHigh(Integer.parseInt(data[9]));
+							options.setDayHigh(new BigDecimal(data[9]));
 						}
 						if( !DASH.equals(data[10]) ) {
-							options.setDayLow(Integer.parseInt(data[10]));
+							options.setDayLow(new BigDecimal(data[10]));
 						}
 						if( !DASH.equals(data[11]) ) {
-							options.setDayClose(Integer.parseInt(data[11]));
+							options.setDayClose(new BigDecimal(data[11]));
 						}
 						if( !DASH.equals(data[12]) ) {
-							options.setDayChange(Integer.parseInt(data[12]));
+							options.setDayChange(new BigDecimal(data[12]));
 						}
 						if( !DASH.equals(data[13]) ) {
-							options.setIv(Integer.parseInt(data[13]));
+							options.setIv(new BigDecimal(data[13]));
 						}
 						if( !DASH.equals(data[14]) ) {
 							options.setDayVolume(Integer.parseInt(data[14]));

@@ -2,7 +2,9 @@ package com.lunstudio.stocktechnicalanalysis.service;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +50,20 @@ public class CandleStickSrv {
 		return candlestickList;
 	}
 	
+	public Map<Date, List<CandlestickEntity>> getCandlestickDateMapFromDate(String stockCode, Date tradeDate) throws Exception {
+		Map<Date, List<CandlestickEntity>> dateMap = new HashMap<Date, List<CandlestickEntity>>();
+		List<CandlestickEntity> dataList = this.candlestickDao.getCandlestickListFromDate(stockCode, tradeDate);
+		List<CandlestickEntity> tmpList = null;
+		for(CandlestickEntity candlestick : dataList) {
+			tmpList = dateMap.get(candlestick.getTradeDate());
+			if( tmpList == null ) {
+				tmpList = new ArrayList<CandlestickEntity>();
+				dateMap.put(candlestick.getTradeDate(), tmpList);
+			}
+			tmpList.add(candlestick);
+		}
+		return dateMap;
+	}
 	public List<CandlestickEntity> getCandlestickListFromDate(Date tradeDate) throws Exception {
 		return this.candlestickDao.getCandlestickListFromDate(tradeDate);
 	}

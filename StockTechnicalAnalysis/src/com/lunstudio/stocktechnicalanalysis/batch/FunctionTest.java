@@ -4,15 +4,21 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
@@ -26,6 +32,7 @@ import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.WarrantPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.firebase.FirebaseDao;
+import com.lunstudio.stocktechnicalanalysis.firebase.StockPriceData;
 import com.lunstudio.stocktechnicalanalysis.service.CandleStickSrv;
 import com.lunstudio.stocktechnicalanalysis.service.CbbcSrv;
 import com.lunstudio.stocktechnicalanalysis.service.FirebaseSrv;
@@ -82,9 +89,58 @@ public class FunctionTest {
 		//this.getIndexDataFromYahoo();
 		//this.updateStockInfo();
 		//this.getStockPriceListTest();
-		this.clearFirebaseData();
+		//this.clearFirebaseData();
+		//this.generateAmChartData();
+		//this.generateEcharttData();
+		this.processIntradayData();
+		this.processAvIntradayData();
 		return;
 	}
+	
+	private void generateEcharttData() throws Exception {
+		StringBuffer buf = new StringBuffer();
+		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList("HKG:0700", 500);
+		for(StockPriceData stockPrice : stockPriceList) {
+			buf.append(String.format("['%s',%s,%s,%s,%s,%s,%s, %s,%s,%s, %s,%s,%s, %s,%s, %s,%s,%s,%s,%s]",
+					stockPrice.getT(), stockPrice.getO(), stockPrice.getH(), stockPrice.getL(), stockPrice.getC(), stockPrice.getD(),stockPrice.getV(),
+					stockPrice.getSs(), stockPrice.getMs(), stockPrice.getLs(),
+					stockPrice.getDm(), stockPrice.getDms(), String.format("%.2f", stockPrice.getDm() - stockPrice.getDms()),
+					stockPrice.getSr(), stockPrice.getLr(),
+					this.getDisplayString(stockPrice.getIv()), this.getDisplayString(stockPrice.getOpc()), 
+					this.getDisplayString(stockPrice.getOpp()), this.getDisplayString(stockPrice.getOpoic()), 
+					this.getDisplayString(stockPrice.getOpoip())
+					)).append(",").append("\n");
+		}
+		System.out.println(buf.toString());
+		return;
+	}
+	
+	private String getDisplayString(Object obj) {
+		if( obj == null ) {
+			return "";
+		}
+		return obj.toString();
+	}
+	
+	private void generateAmChartData() throws Exception {
+		StringBuffer buf = new StringBuffer();
+		List<StockPriceData> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceDataList("HKG:0700", 500);
+		for(StockPriceData stockPrice : stockPriceList) {
+			buf.append(String.format("{\"date\":\"%s\",\"o\":\"%s\",\"h\":\"%s\",\"l\":\"%s\",\"c\":\"%s\",\"v\":\"%s\","
+					+ "\"s1\":\"%s\",\"s2\":\"%s\",\"s3\":\"%s\","
+					+ "\"r1\":\"%s\",\"r2\":\"%s\","
+					+ "\"m1\":\"%s\",\"m2\":\"%s\",\"m3\":\"%s\""
+					+ "}",
+					stockPrice.getT(), stockPrice.getO(), stockPrice.getH(), stockPrice.getL(), stockPrice.getC(), stockPrice.getV(), 
+					stockPrice.getSs(), stockPrice.getMs(), stockPrice.getLs(),
+					stockPrice.getSr(), stockPrice.getLr(),
+					stockPrice.getDm(), stockPrice.getDms(), String.format("%.2f", stockPrice.getDm() - stockPrice.getDms()) 
+					)).append(",").append("\n");
+		}
+		System.out.println(buf.toString());
+		return;
+	}
+	
 	
 	public void clearFirebaseData() throws Exception {
 		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getCandlestickDataRef(), "");
@@ -98,7 +154,7 @@ public class FunctionTest {
 	
 	
 	public void updateStockInfo() throws Exception {
-		List<String> dataList = FileUtils.readCsv(new File("/Volumes/HD2/Temp/hkats.csv"), "UTF-8");
+		List<String> dataList = FileUtils.readToLine(new File("/Volumes/HD2/Temp/hkats.csv"), "UTF-8");
 		for(String data : dataList) {
 			String[] token = data.split(",");
 			int code = Integer.parseInt(token[2].substring(1));
@@ -256,15 +312,83 @@ public class FunctionTest {
 	}
 	
 	
+	private void processIntradayData() throws Exception {
+		Map<Date, Map<Double, Long>> datePriceStat = new HashMap<Date, Map<Double, Long>>();
+		String jsonData = FileUtils.readFile(new File("/Volumes/HD2/Temp/intraday0700.json"), "UTF-8");
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonRoot = (JSONObject) jsonParser.parse(jsonData);
+		JSONObject jsonObject = (JSONObject)jsonRoot.get("intraday");
+		for(Object tradeTimestamp : jsonObject.keySet() ) {
+			Date tradeDate = Date.valueOf(tradeTimestamp.toString().substring(0, 10));
+			JSONObject child = (JSONObject) jsonObject.get(tradeTimestamp);
+			Map<Double, Long> priceStat = datePriceStat.get(tradeDate);
+			if( priceStat == null ) {
+				priceStat = new HashMap<Double, Long>();
+				datePriceStat.put(tradeDate, priceStat);
+			}
+			Double closePrice = Double.valueOf(child.get("close").toString());
+			Long volume = Long.valueOf(child.get("volume").toString());
+			Long culVolume = priceStat.get(closePrice);
+			if( culVolume == null ) {
+				priceStat.put(closePrice, volume);
+			} else {
+				priceStat.put(closePrice, culVolume + volume);
+			}
+		}
+		this.printIntradayPrice(datePriceStat);
+		return;
+	}
 	
+	private void processAvIntradayData() throws Exception {
+		Long hour12 = Long.valueOf(60 * 1000 * 60 * 12);
+		Map<Date, Map<Double, Long>> datePriceStat = new HashMap<Date, Map<Double, Long>>();
+		String jsonData = FileUtils.readFile(new File("/Volumes/HD2/Temp/intraday0700av.json"), "UTF-8");
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonRoot = (JSONObject) jsonParser.parse(jsonData);
+		JSONObject jsonObject = (JSONObject)jsonRoot.get("Time Series (1min)");
+		for(Object tradeTimestampUs : jsonObject.keySet() ) {
+			Timestamp timestamp = Timestamp.valueOf(tradeTimestampUs.toString());
+			Timestamp tradeTimestamp = new Timestamp(timestamp.getTime() + hour12);
+			Date tradeDate = Date.valueOf(tradeTimestamp.toString().substring(0, 10));
+			JSONObject child = (JSONObject) jsonObject.get(tradeTimestampUs);
+			Map<Double, Long> priceStat = datePriceStat.get(tradeDate);
+			if( priceStat == null ) {
+				priceStat = new HashMap<Double, Long>();
+				datePriceStat.put(tradeDate, priceStat);
+			}
+			Double closePrice = Double.valueOf(child.get("4. close").toString());
+			Long volume = Long.valueOf(child.get("5. volume").toString());
+			Long culVolume = priceStat.get(closePrice);
+			if( culVolume == null ) {
+				priceStat.put(closePrice, volume);
+			} else {
+				priceStat.put(closePrice, culVolume + volume);
+			}
+		}
+		this.printIntradayPrice(datePriceStat);
+		return;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	private void printIntradayPrice(Map<Date, Map<Double, Long>> datePriceStat) {
+		System.out.println("===============================================================================================");
+		for(Date tradeDate: datePriceStat.keySet()) {
+			System.out.println(tradeDate);
+			Double maxVolPrice = null;
+			Long maxVolume = Long.valueOf(0);
+			Long totalVolume = Long.valueOf(0);
+			Double totalAmount = Double.valueOf(0);
+			for(Double price: datePriceStat.get(tradeDate).keySet()) {
+				if( datePriceStat.get(tradeDate).get(price) > maxVolume ) {
+					maxVolume = datePriceStat.get(tradeDate).get(price);
+					maxVolPrice = price;
+				}
+				totalVolume += datePriceStat.get(tradeDate).get(price);
+				totalAmount += price * datePriceStat.get(tradeDate).get(price);
+			}
+			System.out.println(String.format("Total Amount: %.0f, Total Volume: %s, Max. Volume Price: %.2f [%s (%.2f%%)]", 
+					totalAmount, totalVolume.toString(), maxVolPrice, maxVolume.toString(), ((double)maxVolume/totalVolume)*100.00));
+		}
+		return;
+	}
 	
 }

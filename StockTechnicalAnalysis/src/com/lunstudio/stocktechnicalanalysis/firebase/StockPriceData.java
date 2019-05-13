@@ -7,7 +7,7 @@ import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 public class StockPriceData extends FirebaseData{
 	
 	private String s = null;	//Stock Code
-	private String t = null;	//Trade Date
+	private String t = null;	//Trade Date	
 	private Double c = null;	//Close Price
 	private Double o = null;	//Open Price
 	private Double h = null;	//Day High
@@ -40,6 +40,12 @@ public class StockPriceData extends FirebaseData{
 	private String msc = null;	//Medium Sma Cross
 	private Double ls = null;	//Long Sma
 	private String lsc = null;	//Long Sma Cross
+	
+	private Double iv = null;	//ImplVol
+	private Long opc = null;	//Option Call Count
+	private Long opp = null;	//Option Put Count
+	private Long opoic = null;	//Option open interest call count
+	private Long opoip = null;	//Option open interest put count
 
 	public StockPriceData(StockPriceEntity stockPrice) {
 		this.s = stockPrice.getStockCode();
@@ -65,6 +71,46 @@ public class StockPriceData extends FirebaseData{
 		this.ms = stockPrice.getDailyMediumSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.ls = stockPrice.getDailyLongSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		return;
+	}
+
+	public Long getOpc() {
+		return opc;
+	}
+
+	public void setOpc(Long opc) {
+		this.opc = opc;
+	}
+
+	public Long getOpp() {
+		return opp;
+	}
+
+	public void setOpp(Long opp) {
+		this.opp = opp;
+	}
+
+	public Long getOpoic() {
+		return opoic;
+	}
+
+	public void setOpoic(Long opoic) {
+		this.opoic = opoic;
+	}
+
+	public Long getOpoip() {
+		return opoip;
+	}
+
+	public void setOpoip(Long opoip) {
+		this.opoip = opoip;
+	}
+
+	public Double getIv() {
+		return iv;
+	}
+
+	public void setIv(Double iv) {
+		this.iv = iv;
 	}
 
 	public Double getOc() {
@@ -281,7 +327,6 @@ public class StockPriceData extends FirebaseData{
 
 	public void setD20(Double d20) {
 		this.d20 = d20;
-	}
-	
+	}	
 	
 }

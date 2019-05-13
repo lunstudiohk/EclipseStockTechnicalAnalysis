@@ -46,6 +46,8 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 	private BigDecimal dayLow;
 	private BigDecimal dayVolume;
 
+	//private BigDecimal implVol;
+
 	@Transient
 	private BigDecimal dailyMacd;
 	

@@ -1,0 +1,12 @@
+package com.lunstudio.stocktechnicalanalysis.dao;
+
+import java.sql.Date;
+import java.util.List;
+
+import com.lunstudio.stocktechnicalanalysis.entity.StockOptionsEntity;
+
+public interface StockOptionsDao extends BaseDao {
+
+	public List<StockOptionsEntity> getOptionList(String stockCode, Date startDate) throws Exception;
+
+}

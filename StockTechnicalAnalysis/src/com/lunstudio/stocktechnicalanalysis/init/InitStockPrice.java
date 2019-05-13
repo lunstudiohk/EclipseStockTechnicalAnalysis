@@ -51,6 +51,11 @@ public class InitStockPrice {
 	private void start(String[] args) throws Exception {
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
+			if( "INDEXHANGSENG:HSI".equals(stock.getStockCode()) ) {
+				this.getStockDailyHistorialPrice(stock);
+			} else {
+				continue;
+			}
 			StockPriceEntity stockPrice = this.stockPriceSrv.getLatestDailyStockPriceEntity(stock.getStockCode());
 			if( stockPrice == null ) {
 				try {
@@ -70,8 +75,8 @@ public class InitStockPrice {
 	//AlphaVantage
 	private void getStockDailyHistorialPrice(StockEntity stock) throws Exception {
 		logger.info(String.format("Get Stock Daily Price: %s-%s", stock.getStockCode(), stock.getStockCname()));
-		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "full"));	//compact
-		//String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "compact"));
+		//String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "full"));	//compact
+		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "compact"));
 		List<StockPriceEntity> stockPriceList = new ArrayList<StockPriceEntity>();
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData);

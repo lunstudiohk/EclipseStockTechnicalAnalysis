@@ -54,6 +54,15 @@ public class StockSrv {
 		return stockMap;
 	}
 	
+	public Map<String, StockEntity> getStockInfoHkexMap() {
+		Map<String, StockEntity> stockMap = new HashMap<String, StockEntity>();
+		List<StockEntity> stockList = this.getStockInfoList();
+		for(StockEntity stock : stockList) {
+			stockMap.put(stock.getStockHkexCode(), stock);
+		}
+		return stockMap;
+	}
+	
 	public List<String> getStockHkexCodeList() throws Exception {
 		List<String> stockCodeList = new ArrayList<String>();
 		List<StockEntity> stockList = this.stockDao.getStockList();

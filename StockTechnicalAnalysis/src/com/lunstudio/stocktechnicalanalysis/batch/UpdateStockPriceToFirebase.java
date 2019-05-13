@@ -20,7 +20,7 @@ import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 
 @Component
-public class UpdateStockPriceDataToFirebase {
+public class UpdateStockPriceToFirebase {
 	
 	private static final Logger logger = LogManager.getLogger();
 	
@@ -33,14 +33,14 @@ public class UpdateStockPriceDataToFirebase {
 	@Autowired
 	private FirebaseSrv firebaseSrv;
 	
-	private static int UPDATE_DAYS = 10;
+	private static int UPDATE_DAYS = 5;
 	
 	public static void main(String[] args) {
 		try{
 			String configPath = System.getProperty("spring.config");
 			FileSystemXmlApplicationContext context = 
 					new FileSystemXmlApplicationContext(configPath);
-			UpdateStockPriceDataToFirebase instance = context.getBean(UpdateStockPriceDataToFirebase.class);
+			UpdateStockPriceToFirebase instance = context.getBean(UpdateStockPriceToFirebase.class);
 			instance.start(args);
 			context.close();
 		}catch(Exception e) {
