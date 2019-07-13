@@ -46,8 +46,6 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 	private BigDecimal dayLow;
 	private BigDecimal dayVolume;
 
-	//private BigDecimal implVol;
-
 	@Transient
 	private BigDecimal dailyMacd;
 	
@@ -86,10 +84,35 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		return;
 	}
 	
+	public StockPriceEntity(StockPriceEntity that) {
+		super();
+		this.stockCode = that.stockCode;
+		this.tradeDate = that.tradeDate;
+		this.openPrice = that.openPrice.add(BigDecimal.ZERO);
+		this.closePrice = that.closePrice.add(BigDecimal.ZERO);
+		this.dayHigh = that.dayHigh.add(BigDecimal.ZERO);
+		this.dayLow = that.dayLow.add(BigDecimal.ZERO);
+		this.dayVolume = that.dayVolume.add(BigDecimal.ZERO);
+		return;
+	}
+	
 	public StockPriceEntity(String stockCode, String tradeDate, String type, JSONObject json) {
 		super();
 		this.setStockCode(stockCode);
 		this.setTradeDate(Date.valueOf(tradeDate));
+		this.setPriceType(type);
+		this.setOpenPrice(new BigDecimal((String)json.get("1. open")));
+		this.setDayHigh(new BigDecimal((String)json.get("2. high")));
+		this.setDayLow(new BigDecimal((String)json.get("3. low")));
+		this.setClosePrice(new BigDecimal((String)json.get("4. close")));
+		this.setDayVolume(new BigDecimal((String)json.get("5. volume")));
+		return;
+	}
+	
+	public StockPriceEntity(String stockCode, Date tradeDate, String type, JSONObject json) {
+		super();
+		this.setStockCode(stockCode);
+		this.setTradeDate(tradeDate);
 		this.setPriceType(type);
 		this.setOpenPrice(new BigDecimal((String)json.get("1. open")));
 		this.setDayHigh(new BigDecimal((String)json.get("2. high")));
@@ -249,6 +272,20 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 
 	public void setDayVolume(BigDecimal dayVolume) {
 		this.dayVolume = dayVolume;
+	}
+
+	public boolean isHollow() {
+		if( this.getClosePrice().compareTo(this.getOpenPrice()) > 0 ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isFilled() {
+		if( this.getOpenPrice().compareTo(this.getClosePrice()) > 0 ) {
+			return true;
+		}
+		return false;
 	}
 
 	public Tick toTick() {

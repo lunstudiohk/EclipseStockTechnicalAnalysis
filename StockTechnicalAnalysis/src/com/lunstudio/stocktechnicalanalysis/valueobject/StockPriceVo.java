@@ -23,12 +23,22 @@ public class StockPriceVo extends BaseEntity {
 	private BigDecimal dayHigh;
 	private BigDecimal dayLow;
 	private BigDecimal dayVolume;
-	private BigDecimal dayAvg;
-	private BigDecimal dayMost;
 	private BigDecimal dayDiff;
 	private BigDecimal dailyMacd;
+	private BigDecimal dailyMacdSlope;
 	private BigDecimal dailyMacdSignal;
+	private BigDecimal dailyMacdSignalSlope;
 	private BigDecimal dailyMacdHistogram;
+	private BigDecimal dailyMacdHistogramSma;
+	private BigDecimal dailyMacdHistogramChange;
+	private BigDecimal dailyMacdHistogramSlope;
+	private BigDecimal weeklyMacd;
+	private BigDecimal weeklyMacdSignal;
+	private BigDecimal weeklyMacdSlope;
+	private BigDecimal weeklyMacdSignalSlope;
+	private BigDecimal weeklyMacdHistogram;
+	private BigDecimal weeklyMacdHistogramSma;
+	private BigDecimal weeklyMacdHistogramChange;
 	private BigDecimal dailyShortRsi;
 	private BigDecimal dailyLongRsi;
 	private BigDecimal dailyShortSma;	
@@ -37,13 +47,8 @@ public class StockPriceVo extends BaseEntity {
 	
 	private BigDecimal warrantCallAmount = BigDecimal.ZERO;
 	private BigDecimal warrantPutAmount = BigDecimal.ZERO;
-	private BigDecimal warrantCallCost = BigDecimal.ZERO;
-	private BigDecimal warrantPutCost = BigDecimal.ZERO;
-
-	public BigDecimal cbbcBullAmount = BigDecimal.ZERO;
-	public BigDecimal cbbcBearAmount = BigDecimal.ZERO;
-	public BigDecimal cbbcBullCost = BigDecimal.ZERO;
-	public BigDecimal cbbcBearCost = BigDecimal.ZERO;
+	private BigDecimal warrantCallTurnover = BigDecimal.ZERO;
+	private BigDecimal warrantPutTurnover = BigDecimal.ZERO;
 	
 	private BigDecimal implVol;
 	private BigDecimal monthlyVolUpperTarget1sd;
@@ -63,27 +68,19 @@ public class StockPriceVo extends BaseEntity {
 	private Integer futureNextMonthOI;
 	private Integer futureThisMonthVol;
 	private Integer futureNextMonthVol;
-	
-	private BigDecimal warrantAllCallTurnover = BigDecimal.ZERO;
-	private BigDecimal warrantAllPutTurnover = BigDecimal.ZERO;
-	private BigDecimal warrantOtmCallTurnover = BigDecimal.ZERO;
-	private BigDecimal warrantOtmPutTurnover = BigDecimal.ZERO;
-	private BigDecimal warrantAllCallAmount = BigDecimal.ZERO;
-	private BigDecimal warrantAllPutAmount = BigDecimal.ZERO;
-	private BigDecimal warrantOtmCallAmount = BigDecimal.ZERO;
-	private BigDecimal warrantOtmPutAmount = BigDecimal.ZERO;
-	
-	private BigDecimal cbbcAllBullAmount = BigDecimal.ZERO;
-	private BigDecimal cbbcAllBearAmount = BigDecimal.ZERO;
-	private BigDecimal cbbcAllBullTurnover = BigDecimal.ZERO;
-	private BigDecimal cbbcAllBearTurnover = BigDecimal.ZERO;
-	private BigDecimal cbbcNearBullAmount = BigDecimal.ZERO;
-	private BigDecimal cbbcNearBearAmount = BigDecimal.ZERO;
-	private BigDecimal cbbcNearBullTurnover = BigDecimal.ZERO;
-	private BigDecimal cbbcNearBearTurnover = BigDecimal.ZERO;
+		
+	private BigDecimal cbbcBullAmount = BigDecimal.ZERO;
+	private BigDecimal cbbcBearAmount = BigDecimal.ZERO;
+	private BigDecimal cbbcBullTurnover = BigDecimal.ZERO;
+	private BigDecimal cbbcBearTurnover = BigDecimal.ZERO;
 	
 	private BigDecimal pviValue;
 	private BigDecimal nviValue;
+	
+	private Long optionCallOpenInterest = Long.valueOf(0);
+	private Long optionPutOpenInterest = Long.valueOf(0);
+	private Long optionCallVolume = Long.valueOf(0);
+	private Long optionPutVolume = Long.valueOf(0);
 	
 	public StockPriceVo() {
 		super();
@@ -131,66 +128,57 @@ public class StockPriceVo extends BaseEntity {
 	
 	public List<Object> getDataList() {
 		List<Object> dataList = new ArrayList<Object>();
-		dataList.add(""/*this.tradeDate.toString()*/); 
 		dataList.add(this.openPrice.doubleValue()); 
 		dataList.add(this.dayHigh.doubleValue());
 		dataList.add(this.dayLow.doubleValue()); 
 		dataList.add(this.closePrice.doubleValue());
-		dataList.add(this.dayDiff.doubleValue()); 
+		dataList.add(this.dayDiff!=null?this.dayDiff.doubleValue():0);		//5 
+		
 		dataList.add(this.dayVolume.doubleValue());
-		dataList.add(this.dailyShortSma.doubleValue()); 
-		dataList.add(this.dailyMediumSma.doubleValue()); 
-		dataList.add(this.dailyLongSma.doubleValue());
-		dataList.add(this.dailyMacd.doubleValue()); 
+		dataList.add(this.dailyShortSma!=null?this.dailyShortSma.doubleValue():0); 
+		dataList.add(this.dailyMediumSma!=null?this.dailyMediumSma.doubleValue():0); 
+		dataList.add(this.dailyLongSma!=null?this.dailyLongSma.doubleValue():0);
+		dataList.add(this.dailyMacd.doubleValue()); 	//10
+		
 		dataList.add(this.dailyMacdSignal.doubleValue()); 
 		dataList.add(this.dailyMacdHistogram.doubleValue());
 		dataList.add(this.dailyShortRsi.doubleValue()); 
 		dataList.add(this.dailyLongRsi.doubleValue());
-		dataList.add(this.implVol!=null?this.implVol.doubleValue():0);
-		dataList.add(this.warrantCallAmount.longValue()/10000);
-		dataList.add(this.warrantPutAmount.longValue()/10000);
-		dataList.add(this.cbbcBullAmount.longValue()/10000);
-		dataList.add(this.cbbcBearAmount.longValue()/10000);
+		dataList.add(this.implVol!=null?this.implVol.doubleValue():0);	//15
+
 		dataList.add(this.monthlyVolUpperTarget1sd!=null?this.monthlyVolUpperTarget1sd.doubleValue():0);
 		dataList.add(this.monthlyVolLowerTarget1sd!=null?this.monthlyVolLowerTarget1sd.doubleValue():0);
 		dataList.add(this.monthlyVolUpperTarget2sd!=null?this.monthlyVolUpperTarget2sd.doubleValue():0);
 		dataList.add(this.monthlyVolLowerTarget2sd!=null?this.monthlyVolLowerTarget2sd.doubleValue():0);
-		dataList.add(this.weeklyVolUpperTarget1sd!=null?this.weeklyVolUpperTarget1sd.doubleValue():0);
+		dataList.add(this.weeklyVolUpperTarget1sd!=null?this.weeklyVolUpperTarget1sd.doubleValue():0);		//20
+		
 		dataList.add(this.weeklyVolLowerTarget1sd!=null?this.weeklyVolLowerTarget1sd.doubleValue():0);
 		dataList.add(this.buyPrice!=null?this.buyPrice.doubleValue():"");
 		dataList.add(this.sellPrice!=null?this.sellPrice.doubleValue():"");
 		dataList.add(this.futureThisMonthPrice!=null?this.futureThisMonthPrice:0);
-		dataList.add(this.futureThisMonthOI!=null?this.futureThisMonthOI:0);
+		dataList.add(this.futureThisMonthOI!=null?this.futureThisMonthOI:0);		//25
+		
 		dataList.add(this.futureThisMonthVol!=null?this.futureThisMonthVol:0);
 		dataList.add(this.futureNextMonthPrice!=null?this.futureNextMonthPrice:0);
 		dataList.add(this.futureNextMonthOI!=null?this.futureNextMonthOI:0);
 		dataList.add(this.futureNextMonthVol!=null?this.futureNextMonthVol:0);
-		dataList.add(this.warrantCallCost.longValue()/10000);
-		dataList.add(this.warrantPutCost.longValue()/10000);
-		dataList.add(this.cbbcBullCost.longValue()/10000);
-		dataList.add(this.cbbcBearCost.longValue()/10000);
-		dataList.add(this.pviValue!=null?this.pviValue.doubleValue():0);
+		dataList.add(this.pviValue!=null?this.pviValue.doubleValue():0);		//30
+		
 		dataList.add(this.nviValue!=null?this.nviValue.doubleValue():0);
+		dataList.add(this.warrantCallAmount.doubleValue());
+		dataList.add(this.warrantPutAmount.doubleValue());
+		dataList.add(this.warrantCallTurnover.doubleValue());
+		dataList.add(this.warrantPutTurnover.doubleValue());			//35
 
-		dataList.add(this.warrantAllCallAmount.longValue());
-		dataList.add(this.warrantAllPutAmount.longValue());
-		dataList.add(this.warrantOtmCallAmount.longValue());
-		dataList.add(this.warrantOtmPutAmount.longValue());
-
-		dataList.add(this.warrantAllCallTurnover.longValue());
-		dataList.add(this.warrantAllPutTurnover.longValue());
-		dataList.add(this.warrantOtmCallTurnover.longValue());
-		dataList.add(this.warrantOtmPutTurnover.longValue());
+		dataList.add(this.cbbcBullAmount.doubleValue());
+		dataList.add(this.cbbcBearAmount.doubleValue());
+		dataList.add(this.cbbcBullTurnover.doubleValue());
+		dataList.add(this.cbbcBearTurnover.doubleValue());
 		
-		dataList.add(this.cbbcAllBullAmount.longValue());
-		dataList.add(this.cbbcAllBearAmount.longValue());
-		dataList.add(this.cbbcAllBullTurnover.longValue());
-		dataList.add(this.cbbcAllBearTurnover.longValue());
-		dataList.add(this.cbbcNearBullAmount.longValue());
-		dataList.add(this.cbbcNearBearAmount.longValue());
-		dataList.add(this.cbbcNearBullTurnover.longValue());
-		dataList.add(this.cbbcNearBearTurnover.longValue());
-		
+		dataList.add(this.optionCallOpenInterest);			//40
+		dataList.add(this.optionPutOpenInterest);
+		dataList.add(this.optionCallVolume);
+		dataList.add(this.optionPutVolume);
 		return dataList;
 	}
 	
@@ -208,6 +196,14 @@ public class StockPriceVo extends BaseEntity {
 		return dataList;
 	}
 	
+	public BigDecimal getDailyMacdHistogramSlope() {
+		return dailyMacdHistogramSlope;
+	}
+
+	public void setDailyMacdHistogramSlope(BigDecimal dailyMacdHistogramSlope) {
+		this.dailyMacdHistogramSlope = dailyMacdHistogramSlope;
+	}
+
 	public Date getTradeDate() {
 		return tradeDate;
 	}
@@ -488,38 +484,6 @@ public class StockPriceVo extends BaseEntity {
 		this.futureNextMonthVol = futureNextMonthVol;
 	}
 
-	public BigDecimal getWarrantCallCost() {
-		return warrantCallCost;
-	}
-
-	public void setWarrantCallCost(BigDecimal warrantCallCost) {
-		this.warrantCallCost = warrantCallCost;
-	}
-
-	public BigDecimal getWarrantPutCost() {
-		return warrantPutCost;
-	}
-
-	public void setWarrantPutCost(BigDecimal warrantPutCost) {
-		this.warrantPutCost = warrantPutCost;
-	}
-
-	public BigDecimal getCbbcBullCost() {
-		return cbbcBullCost;
-	}
-
-	public void setCbbcBullCost(BigDecimal cbbcBullCost) {
-		this.cbbcBullCost = cbbcBullCost;
-	}
-
-	public BigDecimal getCbbcBearCost() {
-		return cbbcBearCost;
-	}
-
-	public void setCbbcBearCost(BigDecimal cbbcBearCost) {
-		this.cbbcBearCost = cbbcBearCost;
-	}
-
 	public BigDecimal getPviValue() {
 		return pviValue;
 	}
@@ -536,133 +500,166 @@ public class StockPriceVo extends BaseEntity {
 		this.nviValue = nviValue;
 	}
 
-	public BigDecimal getWarrantAllCallTurnover() {
-		return warrantAllCallTurnover;
+	public BigDecimal getWarrantCallTurnover() {
+		return warrantCallTurnover;
 	}
 
-	public void setWarrantAllCallTurnover(BigDecimal warrantAllCallTurnover) {
-		this.warrantAllCallTurnover = warrantAllCallTurnover;
+	public void setWarrantCallTurnover(BigDecimal warrantCallTurnover) {
+		this.warrantCallTurnover = warrantCallTurnover;
 	}
 
-	public BigDecimal getWarrantAllPutTurnover() {
-		return warrantAllPutTurnover;
+	public BigDecimal getWarrantPutTurnover() {
+		return warrantPutTurnover;
 	}
 
-	public void setWarrantAllPutTurnover(BigDecimal warrantAllPutTurnover) {
-		this.warrantAllPutTurnover = warrantAllPutTurnover;
+	public void setWarrantPutTurnover(BigDecimal warrantPutTurnover) {
+		this.warrantPutTurnover = warrantPutTurnover;
 	}
 
-	public BigDecimal getWarrantOtmCallTurnover() {
-		return warrantOtmCallTurnover;
+	public BigDecimal getCbbcBullTurnover() {
+		return cbbcBullTurnover;
 	}
 
-	public void setWarrantOtmCallTurnover(BigDecimal warrantOtmCallTurnover) {
-		this.warrantOtmCallTurnover = warrantOtmCallTurnover;
+	public void setCbbcBullTurnover(BigDecimal cbbcBullTurnover) {
+		this.cbbcBullTurnover = cbbcBullTurnover;
 	}
 
-	public BigDecimal getWarrantOtmPutTurnover() {
-		return warrantOtmPutTurnover;
+	public BigDecimal getCbbcBearTurnover() {
+		return cbbcBearTurnover;
 	}
 
-	public void setWarrantOtmPutTurnover(BigDecimal warrantOtmPutTurnover) {
-		this.warrantOtmPutTurnover = warrantOtmPutTurnover;
+	public void setCbbcBearTurnover(BigDecimal cbbcBearTurnover) {
+		this.cbbcBearTurnover = cbbcBearTurnover;
 	}
 
-	public BigDecimal getWarrantAllCallAmount() {
-		return warrantAllCallAmount;
+	public Long getOptionCallOpenInterest() {
+		return optionCallOpenInterest;
 	}
 
-	public void setWarrantAllCallAmount(BigDecimal warrantAllCallAmount) {
-		this.warrantAllCallAmount = warrantAllCallAmount;
+	public void setOptionCallOpenInterest(Long optionCallOpenInterest) {
+		this.optionCallOpenInterest = optionCallOpenInterest;
 	}
 
-	public BigDecimal getWarrantAllPutAmount() {
-		return warrantAllPutAmount;
+	public Long getOptionPutOpenInterest() {
+		return optionPutOpenInterest;
 	}
 
-	public void setWarrantAllPutAmount(BigDecimal warrantAllPutAmount) {
-		this.warrantAllPutAmount = warrantAllPutAmount;
+	public void setOptionPutOpenInterest(Long optionPutOpenInterest) {
+		this.optionPutOpenInterest = optionPutOpenInterest;
 	}
 
-	public BigDecimal getWarrantOtmCallAmount() {
-		return warrantOtmCallAmount;
+	public Long getOptionCallVolume() {
+		return optionCallVolume;
 	}
 
-	public void setWarrantOtmCallAmount(BigDecimal warrantOtmCallAmount) {
-		this.warrantOtmCallAmount = warrantOtmCallAmount;
+	public void setOptionCallVolume(Long optionCallVolume) {
+		this.optionCallVolume = optionCallVolume;
 	}
 
-	public BigDecimal getWarrantOtmPutAmount() {
-		return warrantOtmPutAmount;
+	public Long getOptionPutVolume() {
+		return optionPutVolume;
 	}
 
-	public void setWarrantOtmPutAmount(BigDecimal warrantOtmPutAmount) {
-		this.warrantOtmPutAmount = warrantOtmPutAmount;
+	public void setOptionPutVolume(Long optionPutVolume) {
+		this.optionPutVolume = optionPutVolume;
 	}
 
-	public BigDecimal getCbbcAllBullAmount() {
-		return cbbcAllBullAmount;
+	public BigDecimal getWeeklyMacd() {
+		return weeklyMacd;
 	}
 
-	public void setCbbcAllBullAmount(BigDecimal cbbcAllBullAmount) {
-		this.cbbcAllBullAmount = cbbcAllBullAmount;
+	public void setWeeklyMacd(BigDecimal weeklyMacd) {
+		this.weeklyMacd = weeklyMacd;
 	}
 
-	public BigDecimal getCbbcAllBearAmount() {
-		return cbbcAllBearAmount;
+	public BigDecimal getWeeklyMacdSignal() {
+		return weeklyMacdSignal;
 	}
 
-	public void setCbbcAllBearAmount(BigDecimal cbbcAllBearAmount) {
-		this.cbbcAllBearAmount = cbbcAllBearAmount;
+	public void setWeeklyMacdSignal(BigDecimal weeklyMacdSignal) {
+		this.weeklyMacdSignal = weeklyMacdSignal;
 	}
 
-	public BigDecimal getCbbcAllBullTurnover() {
-		return cbbcAllBullTurnover;
+	public BigDecimal getWeeklyMacdHistogram() {
+		return weeklyMacdHistogram;
 	}
 
-	public void setCbbcAllBullTurnover(BigDecimal cbbcAllBullTurnover) {
-		this.cbbcAllBullTurnover = cbbcAllBullTurnover;
+	public void setWeeklyMacdHistogram(BigDecimal weeklyMacdHistogram) {
+		this.weeklyMacdHistogram = weeklyMacdHistogram;
 	}
 
-	public BigDecimal getCbbcAllBearTurnover() {
-		return cbbcAllBearTurnover;
+	public BigDecimal getDailyMacdSlope() {
+		return dailyMacdSlope;
 	}
 
-	public void setCbbcAllBearTurnover(BigDecimal cbbcAllBearTurnover) {
-		this.cbbcAllBearTurnover = cbbcAllBearTurnover;
+	public void setDailyMacdSlope(BigDecimal dailyMacdSlope) {
+		this.dailyMacdSlope = dailyMacdSlope;
 	}
 
-	public BigDecimal getCbbcNearBullAmount() {
-		return cbbcNearBullAmount;
+	public BigDecimal getDailyMacdSignalSlope() {
+		return dailyMacdSignalSlope;
 	}
 
-	public void setCbbcNearBullAmount(BigDecimal cbbcNearBullAmount) {
-		this.cbbcNearBullAmount = cbbcNearBullAmount;
+	public void setDailyMacdSignalSlope(BigDecimal dailyMacdSignalSlope) {
+		this.dailyMacdSignalSlope = dailyMacdSignalSlope;
 	}
 
-	public BigDecimal getCbbcNearBearAmount() {
-		return cbbcNearBearAmount;
+	public BigDecimal getWeeklyMacdSlope() {
+		return weeklyMacdSlope;
 	}
 
-	public void setCbbcNearBearAmount(BigDecimal cbbcNearBearAmount) {
-		this.cbbcNearBearAmount = cbbcNearBearAmount;
+	public void setWeeklyMacdSlope(BigDecimal weeklyMacdSlope) {
+		this.weeklyMacdSlope = weeklyMacdSlope;
 	}
 
-	public BigDecimal getCbbcNearBullTurnover() {
-		return cbbcNearBullTurnover;
+	public BigDecimal getWeeklyMacdSignalSlope() {
+		return weeklyMacdSignalSlope;
 	}
 
-	public void setCbbcNearBullTurnover(BigDecimal cbbcNearBullTurnover) {
-		this.cbbcNearBullTurnover = cbbcNearBullTurnover;
+	public void setWeeklyMacdSignalSlope(BigDecimal weeklyMacdSignalSlope) {
+		this.weeklyMacdSignalSlope = weeklyMacdSignalSlope;
+	}
+	
+	public BigDecimal getDailyMacdHistogramChange() {
+		return dailyMacdHistogramChange;
 	}
 
-	public BigDecimal getCbbcNearBearTurnover() {
-		return cbbcNearBearTurnover;
+	public void setDailyMacdHistogramChange(BigDecimal dailyMacdHistogramChange) {
+		this.dailyMacdHistogramChange = dailyMacdHistogramChange;
 	}
 
-	public void setCbbcNearBearTurnover(BigDecimal cbbcNearBearTurnover) {
-		this.cbbcNearBearTurnover = cbbcNearBearTurnover;
+	public BigDecimal getWeeklyMacdHistogramChange() {
+		return weeklyMacdHistogramChange;
 	}
 
-		
+	public void setWeeklyMacdHistogramChange(BigDecimal weeklyMacdHistogramChange) {
+		this.weeklyMacdHistogramChange = weeklyMacdHistogramChange;
+	}
+
+	public BigDecimal getWeeklyMacdHistogramSma() {
+		return weeklyMacdHistogramSma;
+	}
+
+	public void setWeeklyMacdHistogramSma(BigDecimal weeklyMacdHistogramSma) {
+		this.weeklyMacdHistogramSma = weeklyMacdHistogramSma;
+	}
+
+	public BigDecimal getDailyMacdHistogramSma() {
+		return dailyMacdHistogramSma;
+	}
+
+	public void setDailyMacdHistogramSma(BigDecimal dailyMacdHistogramSma) {
+		this.dailyMacdHistogramSma = dailyMacdHistogramSma;
+	}
+
+	public String toStringCsv() {
+		return String.format("%s,%s,%s,   %s,%s,%s,%s,%s,%s,%s,   %s,%s,%s,%s,%s,%s", 
+				this.tradeDate, this.stockCode, this.closePrice,
+				this.dailyMacd, this.dailyMacdSlope, this.dailyMacdSignal, this.dailyMacdSignalSlope, this.dailyMacdHistogram, this.dailyMacdHistogramChange, this.dailyMacdHistogramSlope,
+				this.weeklyMacd, this.weeklyMacdSlope, this.weeklyMacdSignal, this.weeklyMacdSignalSlope, this.weeklyMacdHistogram, this.weeklyMacdHistogramChange
+				);
+	}
+	
+
+	
 }

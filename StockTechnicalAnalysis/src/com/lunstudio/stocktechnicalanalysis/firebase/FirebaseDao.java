@@ -14,6 +14,7 @@ public class FirebaseDao {
 	
 	private static final String StockPriceData = "StockPriceData";
 	private static final String StockPrice = "StockPrice";
+	private static final String StockPriceWeekly = "StockPriceWeekly";
 	private static final String WarrantPriceData = "WarrantPriceData";
 	private static final String CbbcPriceData = "CbbcPriceData";
 	private static final String StockData = "StockData";
@@ -79,6 +80,10 @@ public class FirebaseDao {
 	
 	public DatabaseReference getStockPriceRef() {
 		return this.ref.child(StockPrice);
+	}
+	
+	public DatabaseReference getStockPriceWeeklyRef() {
+		return this.ref.child(StockPriceWeekly);
 	}
 	
 	public DatabaseReference getWarrantPriceDataRef() {

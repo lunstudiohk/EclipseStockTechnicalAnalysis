@@ -61,7 +61,7 @@ public class UpdateCandlestickDataToFirebase {
 		*/
 		List<StockPriceEntity> tradeDateList = this.stockPriceSrv.getLastDailyStockPriceEntityList("INDEXHANGSENG:HSI", size);
 		Date startDate = tradeDateList.get(0).getTradeDate();
-		List<CandlestickEntity> candlestickList = this.candleStickSrv.getCandlestickListFromDate(startDate);
+		List<CandlestickEntity> candlestickList = this.candleStickSrv.getCandlestickListFromDate(startDate, CandlestickEntity.DAILY);
 		Map<String, Object> candlestickDataMap = new HashMap<String, Object>();
 		for(CandlestickEntity candlestick : candlestickList) {
 			String key = String.format("%s%s%s", candlestick.getStockCode().split(":")[1], DateUtils.getShortDateString(candlestick.getTradeDate()), candlestick.getCandlestickType());

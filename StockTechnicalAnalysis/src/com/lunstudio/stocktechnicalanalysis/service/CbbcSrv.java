@@ -16,7 +16,7 @@ import com.lunstudio.stocktechnicalanalysis.dao.CbbcPriceDao;
 import com.lunstudio.stocktechnicalanalysis.entity.CbbcPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
-import com.lunstudio.stocktechnicalanalysis.valueobject.CbbcPriceVo;
+import com.lunstudio.stocktechnicalanalysis.valueobject.CbbcAmountVo;
 
 @Service
 public class CbbcSrv {
@@ -35,8 +35,13 @@ public class CbbcSrv {
 		return this.cbbcPriceDao.getCbbcPriceList(tradeDate);
 	}
 	
-	public Map<Date, CbbcPriceVo> getCbbcAmountDateMap(String stockCode, Date startDate, Map<Date, StockPriceEntity> stockPriceDateMap) throws Exception {
-		Map<Date, CbbcPriceVo> cbbcAmountDateMap = new HashMap<Date, CbbcPriceVo>();
+	public Map<Date, CbbcAmountVo> getCbbcAmountDateMap(String stockCode, Date startDate) throws Exception {
+		Map<Date, CbbcAmountVo> cbbcAmountDateMap = new HashMap<Date, CbbcAmountVo>();
+		List<CbbcAmountVo> cbbcList = this.cbbcPriceDao.getCbbcAmountList(stockCode, startDate);
+		for(CbbcAmountVo amountVo: cbbcList) {
+			cbbcAmountDateMap.put(amountVo.getTradeDate(), amountVo);
+		}
+		/*
 		List<CbbcPriceEntity> cbbcPriceList = this.cbbcPriceDao.getCbbcPriceList(stockCode, startDate);
 		for(CbbcPriceEntity cbbcPrice : cbbcPriceList) {
 			if( cbbcPrice.getQustanding() == null ) {
@@ -45,9 +50,9 @@ public class CbbcSrv {
 			StockPriceEntity stockPrice = stockPriceDateMap.get(cbbcPrice.getTradeDate());
 			BigDecimal upperLimit = stockPrice.getClosePrice().multiply(BigDecimal.valueOf(1.05));
 			BigDecimal lowerLimit = stockPrice.getClosePrice().multiply(BigDecimal.valueOf(0.95));
-			CbbcPriceVo cbbcAmountVo = cbbcAmountDateMap.get(cbbcPrice.getTradeDate());
+			CbbcAmountVo cbbcAmountVo = cbbcAmountDateMap.get(cbbcPrice.getTradeDate());
 			if( cbbcAmountVo == null ) {
-				cbbcAmountVo = new CbbcPriceVo(stockCode, cbbcPrice.getTradeDate());
+				cbbcAmountVo = new CbbcAmountVo(stockCode, cbbcPrice.getTradeDate());
 				cbbcAmountDateMap.put(cbbcPrice.getTradeDate(), cbbcAmountVo);
 			}
 			if( cbbcPrice.getClosePrice() != null ) {
@@ -76,6 +81,7 @@ public class CbbcSrv {
 				}
 			}
 		}
+		*/
 		return cbbcAmountDateMap;
 	}
 	

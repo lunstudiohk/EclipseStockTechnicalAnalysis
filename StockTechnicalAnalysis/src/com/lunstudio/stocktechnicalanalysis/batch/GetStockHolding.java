@@ -85,6 +85,8 @@ public class GetStockHolding {
 		
 		return;
 	}
+//https://www.hkexnews.hk/sdw/search/searchsdw_c.aspx
+//http://www.hkexnews.hk/sdw/search/searchsdw_c.aspx
 
 	private List<StockHoldingEntity> getShareHolding(String stockCode, Calendar startDate) throws Exception {
 		Runtime runtime = Runtime.getRuntime();

@@ -1,5 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.init;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class InitStockPriceToFirebase {
 	@Autowired
 	private FirebaseSrv firebaseSrv;
 	
-	private static final Integer INIT_SIZE = 500;
+	private static final Integer INIT_SIZE = 2500;
 	
 	public static void main(String[] args) {
 		try{
@@ -60,7 +61,15 @@ public class InitStockPriceToFirebase {
 				this.updateToFirebase(stock);
 			} else if( stockCode == null || stockCode.length == 0 ) {
 				//Filter for test
-				if( !stock.getStockCode().equals("HKG:0700") && !stock.getStockCode().equals("INDEXHANGSENG:HSI") ) continue;
+				if( !stock.getStockCode().equals("HKG:0700")
+						&& !stock.getStockCode().equals("HKG:2318")
+						&& !stock.getStockCode().equals("HKG:0939")
+						&& !stock.getStockCode().equals("HKG:0005")
+						//&& !stock.getStockCode().equals("HKG:0016")
+						//&& !stock.getStockCode().equals("HKG:0388")
+						&& !stock.getStockCode().equals("INDEXHANGSENG:HSI")) { 
+					continue;
+				}
 				this.updateToFirebase(stock);
 			}
 		}
@@ -71,7 +80,7 @@ public class InitStockPriceToFirebase {
 		logger.info("Initial Stock Price: " + stock.getStockCode());
 		String stockCode = stock.getStockCode();
 		
-		List<StockPriceVo> stockPriceVoList = this.stockPriceSrv.getFirbaseStockPriceVoList(stockCode, 760);
+		List<StockPriceVo> stockPriceVoList = this.stockPriceSrv.getFirbaseStockPriceVoList(stockCode, null);
 		
 		Map<String, Object> stockPriceMap = new HashMap<String, Object>();
 		
@@ -80,6 +89,7 @@ public class InitStockPriceToFirebase {
 			startIndex = 0;
 		}
 		int endIndex = stockPriceVoList.size();
+		Date startDate = stockPriceVoList.get(startIndex).getTradeDate();
 		logger.info("Start Date: " + stockPriceVoList.get(startIndex).getTradeDate());
 		for(int i=startIndex; i<endIndex; i++) {
 			StockPriceVo stockPriceVo = stockPriceVoList.get(i);
@@ -93,11 +103,30 @@ public class InitStockPriceToFirebase {
 			//this.logger.info(stockPriceVo.getDataList());
 		}
 		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceRef(), stockPriceMap);
+		
+		stockPriceVoList = this.stockPriceSrv.getFirbaseStockPriceWeeklyVoList(stockCode, null);
+		stockPriceMap = new HashMap<String, Object>();
+		
+		for(int i=0; i<stockPriceVoList.size(); i++) {
+			StockPriceVo stockPriceVo = stockPriceVoList.get(i);
+			if( stockPriceVo.getTradeDate().compareTo(startDate) < 0 ) {
+				continue;
+			}
+			StockPrice stockPrice = new StockPrice();
+			stockPrice.setS(stockPriceVo.getStockCode());
+			stockPrice.setT(stockPriceVo.getTradeDate().toString());
+			stockPrice.setData(stockPriceVo.getDataList());
+			String key = String.format("%s%s", stock.getStockShortCode(), DateUtils.getShortDateString(stockPriceVo.getTradeDate()));
+			stockPriceMap.put(key, stockPrice);
+		}
+		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceWeeklyRef(), stockPriceMap);
+		
 		return;	
 	}
 	
 	private void clearStockPrice() throws Exception {
 		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceRef(), "");
+		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceWeeklyRef(), "");
 		return;
 	}
 }

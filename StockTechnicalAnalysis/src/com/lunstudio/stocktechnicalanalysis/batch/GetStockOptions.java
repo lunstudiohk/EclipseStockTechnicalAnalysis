@@ -118,7 +118,7 @@ public class GetStockOptions {
 			if( optionsList.size() > 0 ) {
 				this.optionsSrv.saveStockOptions(optionsList);
 			}	
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		}
 		return;
 	}

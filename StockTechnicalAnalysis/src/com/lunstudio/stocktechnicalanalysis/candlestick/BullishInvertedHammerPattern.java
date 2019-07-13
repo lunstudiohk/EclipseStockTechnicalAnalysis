@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
-import com.lunstudio.stocktechnicalanalysis.entity.CandleStickVo;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.valueobject.CandleStickVo;
 
 public class BullishInvertedHammerPattern extends BullishCandlestickPatterns implements CandlestickPattern {
 

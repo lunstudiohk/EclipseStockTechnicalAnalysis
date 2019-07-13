@@ -2,6 +2,7 @@ package com.lunstudio.stocktechnicalanalysis.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 import eu.verdelhan.ta4j.Trade;
 import eu.verdelhan.ta4j.TradingRecord;
@@ -12,16 +13,20 @@ public class MathUtils {
 	private static final BigDecimal MINUSHUNDRED = BigDecimal.valueOf(-100);
 	
 	public static BigDecimal getPriceDiff(BigDecimal initialPrice, BigDecimal finalPrice, int dp) {
-		if( initialPrice != null && finalPrice != null && initialPrice.compareTo(BigDecimal.ZERO) > 0 ) {
-			return ((finalPrice.subtract(initialPrice)).divide(initialPrice, dp, RoundingMode.HALF_UP)).multiply(HUNDRED);
+		if( initialPrice != null && finalPrice != null && initialPrice.compareTo(BigDecimal.ZERO) != 0 ) {
+			return (((finalPrice.subtract(initialPrice)).divide(initialPrice, 8, RoundingMode.HALF_UP)).multiply(HUNDRED)).setScale(dp, RoundingMode.HALF_UP);
 		} else if( initialPrice == null && finalPrice != null ) {
-			return BigDecimal.valueOf(100.00);
+			return BigDecimal.valueOf(100).setScale(dp, RoundingMode.HALF_UP);
 		} else if( initialPrice != null && finalPrice == null ) {
-			return BigDecimal.valueOf(-100.00);
+			return BigDecimal.valueOf(-100).setScale(dp, RoundingMode.HALF_UP);
 		} else {
 			return null;
 		}
 	}
+	
+
+	
+	
 	
 	/*
 	public static double getRoundedValue(BigDecimal val) {

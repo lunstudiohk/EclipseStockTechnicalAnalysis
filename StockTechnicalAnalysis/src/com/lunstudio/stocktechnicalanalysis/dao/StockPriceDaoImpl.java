@@ -71,6 +71,27 @@ public class StockPriceDaoImpl extends BaseDaoImpl implements StockPriceDao {
 	}
 	
 	@Override
+	public List<StockPriceEntity> getStockPriceListAfter(String stockCode, Date startDate, String priceType) {
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StockPriceEntity> query = builder.createQuery(StockPriceEntity.class);
+        Root<StockPriceEntity> stockPriceRoot = query.from(StockPriceEntity.class);
+        query.select(stockPriceRoot);
+        if( startDate != null ) {
+	        query.where(builder.and(
+	        		builder.equal(stockPriceRoot.get("stockCode"), stockCode),
+	        		builder.greaterThan(stockPriceRoot.get("tradeDate"), startDate),
+	        		builder.equal(stockPriceRoot.get("priceType"), priceType)));
+        } else {
+        	query.where(builder.and(
+            		builder.equal(stockPriceRoot.get("stockCode"), stockCode),
+            		builder.equal(stockPriceRoot.get("priceType"), priceType)));
+        }
+	    query.orderBy(builder.asc(stockPriceRoot.get("tradeDate")));
+		return session.createQuery(query).getResultList();
+	}
+	
+	@Override
 	public List<StockPriceEntity> getStockPriceEntityListInDate(String stockCode, Date startDate, Date endDate, String priceType) {
 		Session session = this.sessionFactory.getCurrentSession();
 	    CriteriaBuilder builder = session.getCriteriaBuilder();

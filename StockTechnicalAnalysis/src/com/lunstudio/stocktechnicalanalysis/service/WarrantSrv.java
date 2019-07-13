@@ -20,7 +20,7 @@ import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.WarrantPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
-import com.lunstudio.stocktechnicalanalysis.valueobject.WarrantPriceVo;
+import com.lunstudio.stocktechnicalanalysis.valueobject.WarrantAmountVo;
 
 @Service
 public class WarrantSrv {
@@ -51,15 +51,26 @@ public class WarrantSrv {
 		return this.warrantPriceDao.getWarrantPriceList(tradeDate);
 	}
 	
-	public Map<Date, WarrantPriceVo> getWarrantAmountDateMap(String stockCode, Date startDate, Map<Date, StockPriceEntity> stockPriceDateMap) throws Exception {
-		Map<Date, WarrantPriceVo> warrantAmountDateMap = new HashMap<Date, WarrantPriceVo>();
+	public Map<Date, WarrantAmountVo> getWarrantAmountDateMap(String stockCode, Date startDate) throws Exception {
+		Map<Date, WarrantAmountVo> warrantAmountDateMap = new HashMap<Date, WarrantAmountVo>();
+		StockEntity stock = this.stockSrv.getStockInfo(stockCode);
+		List<WarrantAmountVo> warrnatAmountList = this.warrantPriceDao.getWarrantAmountList(stock.getStockHkexCode(), startDate);
+		for(WarrantAmountVo amountVo: warrnatAmountList) {
+			warrantAmountDateMap.put(amountVo.getTradeDate(), amountVo);
+		}
+		return warrantAmountDateMap;
+	}
+	
+	/*
+	public Map<Date, WarrantAmountVo> getWarrantAmountDateMap(String stockCode, Date startDate, Map<Date, StockPriceEntity> stockPriceDateMap) throws Exception {
+		Map<Date, WarrantAmountVo> warrantAmountDateMap = new HashMap<Date, WarrantAmountVo>();
 		StockEntity stock = this.stockSrv.getStockInfo(stockCode);
 		List<WarrantPriceEntity> warrnatPriceList = this.warrantPriceDao.getWarrantPriceList(stock.getStockHkexCode(), startDate);
 		for(WarrantPriceEntity warrantPrice : warrnatPriceList) {
 			StockPriceEntity stockPrice = stockPriceDateMap.get(warrantPrice.getTradeDate());
-			WarrantPriceVo warrantAmountVo = warrantAmountDateMap.get(warrantPrice.getTradeDate());
+			WarrantAmountVo warrantAmountVo = warrantAmountDateMap.get(warrantPrice.getTradeDate());
 			if( warrantAmountVo == null ) {
-				warrantAmountVo = new WarrantPriceVo(stockCode, warrantPrice.getTradeDate());
+				warrantAmountVo = new WarrantAmountVo(stockCode, warrantPrice.getTradeDate());
 				warrantAmountDateMap.put(warrantPrice.getTradeDate(), warrantAmountVo);
 			}
 			double cost = warrantPrice.getClosePrice().doubleValue() * warrantPrice.getIssueSize().doubleValue();
@@ -88,7 +99,8 @@ public class WarrantSrv {
 		}
 		return warrantAmountDateMap;
 	}
-		
+	*/
+	
 	public BigDecimal getWarrantValue(WarrantPriceEntity warrantPrice) throws Exception {
 		BigDecimal price = null;
 		String stockCode = this.stockSrv.getStockCode(warrantPrice.getWarrantUnderlying());

@@ -3,6 +3,7 @@ package com.lunstudio.stocktechnicalanalysis.init;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +50,24 @@ public class InitStockPrice {
 	}
 
 	private void start(String[] args) throws Exception {
+		if( args == null ) {
+			this.initDailyStockPrice();
+		} else if( args[0].equals("W") ) {
+			this.initWeeklyStockPrice();
+		}
+		return;
+	}
+	
+	private void initDailyStockPrice() throws Exception {
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
+			/*
 			if( "INDEXHANGSENG:HSI".equals(stock.getStockCode()) ) {
 				this.getStockDailyHistorialPrice(stock);
 			} else {
 				continue;
 			}
+			*/
 			StockPriceEntity stockPrice = this.stockPriceSrv.getLatestDailyStockPriceEntity(stock.getStockCode());
 			if( stockPrice == null ) {
 				try {
@@ -72,11 +84,28 @@ public class InitStockPrice {
 		return;
 	}
 	
+	private void initWeeklyStockPrice() throws Exception {
+		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
+		for(StockEntity stock : stockList) {
+			try {
+				long startTime = System.currentTimeMillis();
+				this.getStockWeeklyHistorialPrice(stock);
+				while(System.currentTimeMillis()-startTime < 20000 ) {
+					Thread.sleep(1000);
+				}
+			}catch(Exception e) {
+				logger.error(e.getMessage());
+			}
+		}
+		return;
+	}
+	
+	
 	//AlphaVantage
 	private void getStockDailyHistorialPrice(StockEntity stock) throws Exception {
 		logger.info(String.format("Get Stock Daily Price: %s-%s", stock.getStockCode(), stock.getStockCname()));
-		//String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "full"));	//compact
-		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "compact"));
+		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "full"));	//compact
+		//String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "compact"));
 		List<StockPriceEntity> stockPriceList = new ArrayList<StockPriceEntity>();
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData);
@@ -84,39 +113,23 @@ public class InitStockPrice {
 		for(Object key : daily.keySet() ) {
 			StockPriceEntity stockPrice = new StockPriceEntity(stock.getStockCode(), (String) key, StockPriceEntity.PRICE_TYPE_DAILY, (JSONObject) daily.get(key));
 			if( stockPrice.getTradeDate().compareTo(StockPriceInitDate) >= 0 ) {
-				if( stockPrice.getStockCode().startsWith("HKG:") ) {
-					if( stockPrice.getDayVolume() != null && stockPrice.getDayVolume().compareTo(BigDecimal.ZERO) > 0 ) {
-						stockPriceList.add(stockPrice);
-					}
-				} else {
-					stockPriceList.add(stockPrice);
-				}
+				stockPriceList.add(stockPrice);
 			}
 		}
 		this.stockPriceSrv.saveStockPrice(stockPriceList);
 		return;
 	}
 	
-	
-	/*
-	private void getStockDailyHistorialPrice(StockEntity stock) throws Exception {
-		logger.info(String.format("Get Stock Daily Price: %s-%s", stock.getStockCode(), stock.getStockCname()));
-		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getHistoricalStockPriceUrl(), stock.getStockYahooCode()));	//compact
+	private void getStockWeeklyHistorialPrice(StockEntity stock) throws Exception {
+		logger.info(String.format("Get Stock Weekly Price: %s-%s", stock.getStockCode(), stock.getStockCname()));
+		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesWeeklyUrl(), stock.getStockYahooCode(), "full"));	//compact
 		List<StockPriceEntity> stockPriceList = new ArrayList<StockPriceEntity>();
 		JSONParser jsonParser = new JSONParser();
 		JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData);
-		JSONObject daily = (JSONObject)jsonObject.get("history");
-		for(Object key : daily.keySet() ) {
-			JSONObject jsonEntry = (JSONObject) daily.get(key);
-			StockPriceEntity stockPrice = new StockPriceEntity();
-			stockPrice.setStockCode(stock.getStockCode());
-			stockPrice.setPriceType(StockPriceEntity.PRICE_TYPE_DAILY);
-			stockPrice.setTradeDate(Date.valueOf(((String)key).substring(0, 10)));
-			stockPrice.setClosePrice(new BigDecimal((String)jsonEntry.get("close")));
-			stockPrice.setOpenPrice(new BigDecimal((String)jsonEntry.get("open")));
-			stockPrice.setDayHigh(new BigDecimal((String)jsonEntry.get("high")));
-			stockPrice.setDayLow(new BigDecimal((String)jsonEntry.get("low")));
-			stockPrice.setDayVolume(new BigDecimal((String)jsonEntry.get("volume")));
+		JSONObject weekly = (JSONObject)jsonObject.get("Weekly Time Series");
+		for(Object key : weekly.keySet() ) {
+			Date tradeDate = Date.valueOf(key.toString());
+			StockPriceEntity stockPrice = new StockPriceEntity(stock.getStockCode(), tradeDate, StockPriceEntity.PRICE_TYPE_WEEKLY, (JSONObject) weekly.get(key));
 			if( stockPrice.getTradeDate().compareTo(StockPriceInitDate) >= 0 ) {
 				if( stockPrice.getStockCode().startsWith("HKG:") ) {
 					if( stockPrice.getDayVolume() != null && stockPrice.getDayVolume().compareTo(BigDecimal.ZERO) > 0 ) {
@@ -130,6 +143,4 @@ public class InitStockPrice {
 		this.stockPriceSrv.saveStockPrice(stockPriceList);
 		return;
 	}
-	*/
-	
 }

@@ -43,7 +43,7 @@ public class GetIndexVolume {
 			FileSystemXmlApplicationContext context = 
 					new FileSystemXmlApplicationContext(configPath);
 			GetIndexVolume instance = context.getBean(GetIndexVolume.class);
-			instance.start();
+			instance.start(Integer.parseInt(args[0]));
 			context.close();
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -51,9 +51,9 @@ public class GetIndexVolume {
 		}
 	}
 
-	private void start() throws Exception {
+	private void start(int size) throws Exception {
 		logger.info("Update Index Volume Start");
-		List<StockPriceEntity> stockPriceEntityList = this.getIndexVolume(50);
+		List<StockPriceEntity> stockPriceEntityList = this.getIndexVolume(size);
 		this.stockPriceSrv.saveStockPrice(stockPriceEntityList);
 		logger.info("Update Index Volume End");
 		return;
@@ -81,9 +81,16 @@ public class GetIndexVolume {
 			JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData);
 			JSONObject stockPriceJson = (JSONObject)jsonObject.get("Time Series (Daily)");
 			for(StockPriceEntity stockPrice : stockPriceList) {
-				String tradeDate = stockPrice.getTradeDate().toString();
-				JSONObject stockPriceData = (JSONObject) stockPriceJson.get(tradeDate);
-				stockPrice.setDayVolume(new BigDecimal((String)stockPriceData.get("5. volume")));
+				try {
+					String tradeDate = stockPrice.getTradeDate().toString();
+					JSONObject stockPriceData = (JSONObject) stockPriceJson.get(tradeDate);
+					stockPrice.setDayVolume(new BigDecimal((String)stockPriceData.get("5. volume")));
+					if( stockPrice.getDayVolume() == null || stockPrice.getDayVolume().compareTo(BigDecimal.ZERO) == 0 ) {
+						logger.error(String.format("%s without volume on %s", stock.getStockCode(), stockPrice.getTradeDate()));
+					}
+				}catch(Exception e) {
+					logger.error(String.format("Failed to process %s on %s : %s", stock.getStockCode(), stockPrice.getTradeDate(), e.getMessage()));
+				}
 			}
 		} catch(Exception e) {
 			logger.error("Failed to process " + stock.getStockCode() + " : " + e.getMessage());

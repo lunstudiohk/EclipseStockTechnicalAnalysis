@@ -1,4 +1,4 @@
-package com.lunstudio.stocktechnicalanalysis.batch;
+package com.lunstudio.stocktechnicalanalysis.temp;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -71,7 +71,7 @@ public class GenerateCandlestickStat {
 				this.stockPriceSrv.generateDailyMovingAverageTechnicalIndicator(stock.getStockCode(), stockPriceList, 20, 50, 250);
 				this.stockPriceSrv.generateDailyRsiTechnicalIndicator(stock.getStockCode(), stockPriceList, 5, 14);
 	
-				List<CandlestickEntity> candlestickList = this.candleStickSrv.getCandlestickList(stock.getStockCode());
+				List<CandlestickEntity> candlestickList = this.candleStickSrv.getCandlestickList(stock.getStockCode(), CandlestickEntity.DAILY);
 				for(int i=0; i<BullishPatterns.values().length; i++) {			
 					Map<Date, CandlestickEntity> candlestickMap = this.getBullishCandlestickMap(candlestickList, i);
 					tradeList.addAll(this.stimulateStockTrade(stockPriceList, candlestickMap, BigDecimal.valueOf(0.1), 10, technical));

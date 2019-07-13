@@ -1,4 +1,4 @@
-package com.lunstudio.stocktechnicalanalysis.batch;
+package com.lunstudio.stocktechnicalanalysis.temp;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -36,12 +36,14 @@ import com.lunstudio.stocktechnicalanalysis.firebase.StockPriceData;
 import com.lunstudio.stocktechnicalanalysis.service.CandleStickSrv;
 import com.lunstudio.stocktechnicalanalysis.service.CbbcSrv;
 import com.lunstudio.stocktechnicalanalysis.service.FirebaseSrv;
+import com.lunstudio.stocktechnicalanalysis.service.OptionsSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 import com.lunstudio.stocktechnicalanalysis.service.WarrantSrv;
 import com.lunstudio.stocktechnicalanalysis.util.FileUtils;
 import com.lunstudio.stocktechnicalanalysis.util.HttpUtils;
 import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
+import com.lunstudio.stocktechnicalanalysis.valueobject.OptionAmountVo;
 
 @Component
 public class FunctionTest {
@@ -66,6 +68,9 @@ public class FunctionTest {
 	@Autowired
 	private FirebaseSrv firebaseSrv;
 
+	@Autowired
+	private OptionsSrv optionSrv;
+	
 	public static void main(String[] args) {
 		try {
 			String configPath = System.getProperty("spring.config");
@@ -92,8 +97,10 @@ public class FunctionTest {
 		//this.clearFirebaseData();
 		//this.generateAmChartData();
 		//this.generateEcharttData();
-		this.processIntradayData();
-		this.processAvIntradayData();
+		//this.processIntradayData();
+		//this.processAvIntradayData();
+		this.optionSrv.getOptionAmountDateMap("HKG:0700", Date.valueOf("2019-01-01"), null);
+		
 		return;
 	}
 	

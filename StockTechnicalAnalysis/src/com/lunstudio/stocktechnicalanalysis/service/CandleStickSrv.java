@@ -25,8 +25,8 @@ public class CandleStickSrv {
 	@Autowired
 	private CandlestickDao candlestickDao;
 	
-	public void deleteCandleStick(String stockCode, Date tradeDate) throws Exception {
-		this.candlestickDao.deleteCandlestick(stockCode, tradeDate);
+	public void deleteCandleStick(String stockCode, Date tradeDate, String priceType) throws Exception {
+		this.candlestickDao.deleteCandlestick(stockCode, tradeDate, priceType);
 		return;
 	}
 	
@@ -50,9 +50,9 @@ public class CandleStickSrv {
 		return candlestickList;
 	}
 	
-	public Map<Date, List<CandlestickEntity>> getCandlestickDateMapFromDate(String stockCode, Date tradeDate) throws Exception {
+	public Map<Date, List<CandlestickEntity>> getCandlestickDateMapFromDate(String stockCode, Date tradeDate, String priceType) throws Exception {
 		Map<Date, List<CandlestickEntity>> dateMap = new HashMap<Date, List<CandlestickEntity>>();
-		List<CandlestickEntity> dataList = this.candlestickDao.getCandlestickListFromDate(stockCode, tradeDate);
+		List<CandlestickEntity> dataList = this.candlestickDao.getCandlestickListFromDate(stockCode, tradeDate, priceType);
 		List<CandlestickEntity> tmpList = null;
 		for(CandlestickEntity candlestick : dataList) {
 			tmpList = dateMap.get(candlestick.getTradeDate());
@@ -64,17 +64,27 @@ public class CandleStickSrv {
 		}
 		return dateMap;
 	}
-	public List<CandlestickEntity> getCandlestickListFromDate(Date tradeDate) throws Exception {
-		return this.candlestickDao.getCandlestickListFromDate(tradeDate);
+	
+	public List<CandlestickEntity> getCandlestickListFromDate(Date tradeDate, String priceType) throws Exception {
+		return this.candlestickDao.getCandlestickListFromDate(tradeDate, priceType);
 	}
 	
-	public List<CandlestickEntity> getCandlestickList(String stockCode) throws Exception {
-		return this.candlestickDao.getCandlestickList(stockCode);
+	public List<CandlestickEntity> getCandlestickList(String stockCode, String priceType) throws Exception {
+		return this.candlestickDao.getCandlestickList(stockCode, priceType);
 	}
 	
 	public void saveCandlestickList(List<CandlestickEntity> candlestickList) throws Exception {
 		this.candlestickDao.save(candlestickList, candlestickList.size());
 		return;
+	}
+	
+	public Map<Date, CandlestickEntity> getCandlestickDateMap(String stockCode, String priceType, String type, Integer candlestickType) throws Exception {
+		Map<Date, CandlestickEntity> dateMap = new HashMap<Date, CandlestickEntity>();
+		List<CandlestickEntity> lists = this.candlestickDao.getCandlestickList(stockCode, priceType, type, candlestickType);
+		for(CandlestickEntity entity : lists) {
+			dateMap.put(entity.getTradeDate(), entity);
+		}
+		return dateMap;
 	}
 	
 }

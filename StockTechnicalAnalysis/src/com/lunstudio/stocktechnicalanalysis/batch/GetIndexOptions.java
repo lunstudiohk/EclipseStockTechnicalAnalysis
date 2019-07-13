@@ -69,7 +69,7 @@ public class GetIndexOptions {
 		for(StockPriceEntity stockPrice : stockPriceList) {
 			Date date = stockPrice.getTradeDate();
 			currentDate.setTime(date);
-			//logger.info(String.format("Get Data on trade date: %s", date));
+			logger.info(String.format("Get Data on trade date: %s", date));
 			List<String> lines = this.getIndexOptionsFile(currentDate);
 			if( lines != null ) {
 				try {
@@ -80,13 +80,15 @@ public class GetIndexOptions {
 					logger.error(String.format("Invalid Trade Date: %s", date));
 				}
 			}
-			Thread.sleep(1000);
+			//Save Options List
+			logger.info(String.format("Number of options record: %s", optionsList.size()));
+			if( optionsList.size() > 0 ) {
+				this.optionsSrv.saveStockOptions(optionsList);
+			}
+			Thread.sleep(10000);
 		}
-		//Save Options List
-		logger.info(String.format("Number of options record: %s", optionsList.size()));
-		if( optionsList.size() > 0 ) {
-			this.optionsSrv.saveStockOptions(optionsList);
-		}
+		
+		
 		return;
 	}
 	

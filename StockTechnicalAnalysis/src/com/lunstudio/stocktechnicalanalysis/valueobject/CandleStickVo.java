@@ -1,7 +1,9 @@
-package com.lunstudio.stocktechnicalanalysis.entity;
+package com.lunstudio.stocktechnicalanalysis.valueobject;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 
 public class CandleStickVo extends StockPriceEntity {
 

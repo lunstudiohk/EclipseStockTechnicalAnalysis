@@ -25,8 +25,6 @@ DBNAME='StockTechnicalAnalysis'
 if [ ! -d $BACKUP_PATH ]; then
   mkdir -p $BACKUP_PATH
 fi
-
-
  
 date=$(date -I)
 echo "Backing up database [$DBNAME] with compression"

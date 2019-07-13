@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.lunstudio.stocktechnicalanalysis.entity.CandleStickVo;
 import com.lunstudio.stocktechnicalanalysis.entity.CandlestickEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.valueobject.CandleStickVo;
 
 public class BearishCandlestickPatterns {
 
@@ -45,7 +45,6 @@ public class BearishCandlestickPatterns {
 	protected List<StockPriceEntity> stockPriceList = null;
 	protected CandlestickEntity candlestickEntity = null;
 	protected Map<Date, Integer> tradeDateMap = null;
-	
 	protected BearishPatterns pattern;
 	
 	public BearishCandlestickPatterns(List<StockPriceEntity> stockPriceList) {

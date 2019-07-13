@@ -14,6 +14,8 @@ public interface StockPriceDao extends BaseDao{
 
 	public List<StockPriceEntity> getLastStockPriceList(String stockCode, Integer period, String priceType);
 	
+	public List<StockPriceEntity> getStockPriceListAfter(String stockCode, Date startDate, String priceType);
+	
 	public List<StockPriceEntity> getStockPriceEntityListInDate(String stockCode, Date startDate, Date endDate, String priceType);
 
 	public List<StockPriceEntity> getStockPriceList(Date tradeDate, String priceType);

@@ -16,7 +16,8 @@ public class CandlestickEntity extends BaseEntity implements Serializable {
 
 	public static final String Buy = "B";
 	public static final String Sell = "S";
-	
+	public static final String DAILY = "D";
+	public static final String WEEKLY = "W";
 	/**
 	 * 
 	 */
@@ -30,6 +31,9 @@ public class CandlestickEntity extends BaseEntity implements Serializable {
 
 	@Id
 	private Integer candlestickType;
+	
+	@Id
+	private String priceType;
 	
 	@Id
 	private String type;	//B:Buy, S:Sell
@@ -86,6 +90,14 @@ public class CandlestickEntity extends BaseEntity implements Serializable {
 		this.stoplossPrice = stoplossPrice;
 	}
 	
+	public String getPriceType() {
+		return priceType;
+	}
+
+	public void setPriceType(String priceType) {
+		this.priceType = priceType;
+	}
+
 	@Override
     public boolean equals(Object obj) {
 		if( this == obj ) {
@@ -100,6 +112,8 @@ public class CandlestickEntity extends BaseEntity implements Serializable {
 		eb.append(this.tradeDate, that.tradeDate);
 		eb.append(this.stockCode, that.stockCode);
 		eb.append(this.candlestickType, that.candlestickType);
+		eb.append(this.type, that.type);
+		eb.append(this.priceType, that.priceType);
 		return eb.isEquals();
 	}
 

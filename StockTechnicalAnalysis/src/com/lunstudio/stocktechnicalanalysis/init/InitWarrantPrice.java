@@ -79,7 +79,7 @@ public class InitWarrantPrice {
 					warrantPriceEntity.setIssueSize(Long.parseLong(data[9]));
 					warrantPriceEntity.setQustanding(this.getWarrantPrice(data[8]));
 					warrantPriceEntity.setTradeDate(Date.valueOf(data[2]));
-					warrantPriceEntity.setTurnover(this.getTurnover(data[17]).divide(BigDecimal.valueOf(1000)));
+					warrantPriceEntity.setTurnover(this.getTurnover(data[17]));
 					if( warrantPriceEntity.getClosePrice() != null ) {
 						warrantPriceList.add(warrantPriceEntity);
 					}
