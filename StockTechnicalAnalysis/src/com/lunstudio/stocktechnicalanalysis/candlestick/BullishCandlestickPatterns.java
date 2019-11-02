@@ -18,7 +18,7 @@ public class BullishCandlestickPatterns {
 	protected static BigDecimal onePercentage = BigDecimal.valueOf(0.01);
 	protected static BigDecimal twoPercentage = BigDecimal.valueOf(0.02);
 	
-	public enum BullishPatterns {
+	public static enum BullishPatterns {
 		BullishHammer			//鎚頭
 		,BullishBeltHold		//多頭執帶
 		,BullishEngulfing		//破腳穿頭
@@ -55,7 +55,7 @@ public class BullishCandlestickPatterns {
 		this.candlestickEntity.setStockCode(candlestick.getStockCode());
 		this.candlestickEntity.setTradeDate(candlestick.getTradeDate());
 		this.candlestickEntity.setType(CandlestickEntity.Buy);
-		this.candlestickEntity.setCandlestickType(this.getBullishCandlestickPattern());
+		this.candlestickEntity.setCandlestickType(this.getBullishCandlestickPatternIndex());
 		return;
 	}
 		
@@ -137,7 +137,7 @@ public class BullishCandlestickPatterns {
 		}
 	}
 	
-	public Integer getBullishCandlestickPattern() {
+	public Integer getBullishCandlestickPatternIndex() {
 		for(int i=0; i<BullishPatterns.values().length; i++) {
 			if( this.pattern == BullishPatterns.values()[i]) {
 				return i;
@@ -146,4 +146,12 @@ public class BullishCandlestickPatterns {
 		return -1;
 	}
 	
+	public static Integer getBullishCandlestickPatternIndex(BullishPatterns pattern) {
+		for(int i=0; i<BullishPatterns.values().length; i++) {
+			if( pattern == BullishPatterns.values()[i]) {
+				return i;
+			}
+		}
+		return -1;
+	}
 }

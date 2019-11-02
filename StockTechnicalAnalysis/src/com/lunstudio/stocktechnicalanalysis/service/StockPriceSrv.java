@@ -140,6 +140,15 @@ public class StockPriceSrv {
 		return stockPriceDateMap;
 	}
 	
+	public Map<Date, BigDecimal> getStockClosePriceDateMap(List<StockPriceEntity> stockPriceList) {
+		Map<Date, BigDecimal> stockPriceDateMap = new HashMap<Date, BigDecimal>();
+		for(StockPriceEntity stockPrice : stockPriceList) {
+			stockPriceDateMap.put(stockPrice.getTradeDate(), stockPrice.getClosePrice());
+		}
+		return stockPriceDateMap;
+	}
+	
+	
 	public List<StockPriceVo> getFirbaseStockPriceWeeklyVoList(String stockCode, Integer size) throws Exception {
 		List<StockPriceVo> stockPriceVoList = new ArrayList<StockPriceVo>();
 		List<StockPriceEntity> stockPriceList = this.getLastWeeklyStockPriceEntityList(stockCode, size);
@@ -647,87 +656,95 @@ public class StockPriceSrv {
 	
 	public List<StockPriceVo> getStockPriceVoList(StockEntity stock, List<StockPriceEntity> dailyStockPriceList, List<StockPriceEntity> weeklyStockPriceList) throws Exception {
         List<StockPriceVo> stockDataList = new ArrayList<StockPriceVo>();
-//        List<StockPriceEntity> dailyStockPriceList = this.getLastDailyStockPriceEntityList(stock.getStockCode(), null);
 		TimeSeries dailySeries = this.getStockTimeSeries(stock.getStockCode(), dailyStockPriceList);
 		ClosePriceIndicator dailyClosePrice = new ClosePriceIndicator(dailySeries);
+		
 		SmoothedRSIIndicator rsiIndicator = new SmoothedRSIIndicator(dailyClosePrice, 14);
-		MACDPercentageIndicator dailyMacd = new MACDPercentageIndicator(dailyClosePrice, 12, 26);
+		SmoothedRSIIndicator shortRsiIndicator = new SmoothedRSIIndicator(dailyClosePrice, 5);
+		
+		//MACDPercentageIndicator dailyMacd = new MACDPercentageIndicator(dailyClosePrice, 12, 26);
+		MACDIndicator dailyMacd = new MACDIndicator(dailyClosePrice, 12, 26);
         EMAIndicator dailyMacdSignal = new EMAIndicator(dailyMacd, 9);
         FixedIndicator<Decimal> dailyMacdHistogram = new FixedIndicator<Decimal>();
         for(int i=0; i<dailyMacd.getTimeSeries().getTickCount(); i++) {
         	dailyMacdHistogram.addValue(dailyMacd.getValue(i).minus(dailyMacdSignal.getValue(i)));
         }
-        SMAIndicator dailyMacdSma = new SMAIndicator(dailyMacdHistogram, 13);
         
-//		List<StockPriceEntity> weeklyStockPriceList = this.getLastWeeklyStockPriceEntityList(stock.getStockCode(), null);
+        //SMA
+        SMAIndicator dailyShortSma = new SMAIndicator(dailyClosePrice, 10);
+        SMAIndicator dailyMediumSma = new SMAIndicator(dailyClosePrice, 20);
+        SMAIndicator dailyLongSma = new SMAIndicator(dailyClosePrice, 50);
+        
 		TimeSeries weeklySeries = this.getStockTimeSeries(stock.getStockCode(), weeklyStockPriceList);
 		ClosePriceIndicator weeklyClosePrice = new ClosePriceIndicator(weeklySeries);
-		MACDPercentageIndicator weeklyMacd = new MACDPercentageIndicator(weeklyClosePrice, 12, 26);
+		//MACDPercentageIndicator weeklyMacd = new MACDPercentageIndicator(weeklyClosePrice, 12, 26);
+		
+		SmoothedRSIIndicator weeklyRsi = new SmoothedRSIIndicator(weeklyClosePrice, 14);
+		MACDIndicator weeklyMacd = new MACDIndicator(weeklyClosePrice, 12, 26);
         EMAIndicator weeklyMacdSignal = new EMAIndicator(weeklyMacd, 9);
         FixedIndicator<Decimal> weeklyMacdHistogram = new FixedIndicator<Decimal>();
         for(int i=0; i<weeklyMacd.getTimeSeries().getTickCount(); i++) {
         	weeklyMacdHistogram.addValue(weeklyMacd.getValue(i).minus(weeklyMacdSignal.getValue(i)));
         }
-        SMAIndicator weeklyMacdSma = new SMAIndicator(weeklyMacdHistogram, 5);
+        
 		StockPriceVo stockPriceVo = null, prevDailyStockPriceVo = null, prevWeeklyStockPriceVo = null;
+		int currentDailyMacdTrend = 0, previousDailyMacdTrend = 0;
+		int currentWeeklyMacdTrend = 0, previousWeeklyMacdTrend = 0;
 		int j=3;
 		for(int i=5; i<dailyStockPriceList.size(); i++) {
-			
+			//System.out.println(i + " : " + dailyMacd.getValue(i) + " : " + dailyMacdSignal.getValue(i) + " : " + dailyMacdHistogram.getValue(i));
 			stockPriceVo = new StockPriceVo(dailyStockPriceList.get(i));
-			stockPriceVo.setDailyMacd(new BigDecimal(dailyMacd.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-			//stockPriceVo.setDailyMacdSlope(new BigDecimal(dailyMacdSlope.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	stockPriceVo.setDailyMacdSignal(new BigDecimal(dailyMacdSignal.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	//stockPriceVo.setDailyMacdSignalSlope(new BigDecimal(dailyMacdSignalSlope.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	stockPriceVo.setDailyMacdHistogram(new BigDecimal(dailyMacdHistogram.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	stockPriceVo.setDailyMacdHistogramSma(new BigDecimal(dailyMacdSma.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	stockPriceVo.setDailyLongRsi(new BigDecimal(rsiIndicator.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	//stockPriceVo.setDailyMacdHistogram(new BigDecimal(dailyMacdHistogram.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	//stockPriceVo.setDailyMacdHistogramSlope(new BigDecimal(dailyMacdHistogramSlope.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
-        	
+			//MACD
+			stockPriceVo.setDailyMacd(new BigDecimal(dailyMacd.getValue(i).toDouble()).setScale(5, RoundingMode.HALF_UP));
+        	stockPriceVo.setDailyMacdSignal(new BigDecimal(dailyMacdSignal.getValue(i).toDouble()).setScale(5, RoundingMode.HALF_UP));
+        	stockPriceVo.setDailyMacdHistogram(new BigDecimal(dailyMacdHistogram.getValue(i).toDouble()).setScale(5, RoundingMode.HALF_UP));
+        	if( stockPriceVo.getDailyMacdHistogram().compareTo(BigDecimal.ZERO) > 0 ) {
+        		currentDailyMacdTrend = 1;
+        	} else if( stockPriceVo.getDailyMacdHistogram().compareTo(BigDecimal.ZERO) < 0 ) {
+        		currentDailyMacdTrend = -1;
+        	} else if( stockPriceVo.getDailyMacdHistogram().compareTo(BigDecimal.ZERO) == 0 ) {
+        		currentDailyMacdTrend = previousDailyMacdTrend;
+        	}
         	if( stockDataList.size() > 2 ) {
-        		/*
-	        	if( stockPriceVo.getDailyMacdHistogram().compareTo(stockDataList.get(stockDataList.size()-1).getDailyMacdHistogram()) > 0
-	        			&& stockDataList.get(stockDataList.size()-2).getDailyMacdHistogram().compareTo(stockDataList.get(stockDataList.size()-1).getDailyMacdHistogram()) > 0 ) {
-	        		stockPriceVo.setDailyMacdHistogramChange(stockPriceVo.getDailyMacdHistogram().subtract(stockDataList.get(stockDataList.size()-1).getDailyMacdHistogram()));
-	        	} else if( stockPriceVo.getDailyMacdHistogram().compareTo(stockDataList.get(stockDataList.size()-1).getDailyMacdHistogram()) < 0
-	        			&& stockDataList.get(stockDataList.size()-2).getDailyMacdHistogram().compareTo(stockDataList.get(stockDataList.size()-1).getDailyMacdHistogram()) < 0 ) {
-	        		stockPriceVo.setDailyMacdHistogramChange(stockPriceVo.getDailyMacdHistogram().subtract(stockDataList.get(stockDataList.size()-1).getDailyMacdHistogram()));
-	        	}
-	        	*/
-        		if( stockPriceVo.getDailyMacdHistogram().compareTo(BigDecimal.ZERO) >= 0 && prevDailyStockPriceVo.getDailyMacdHistogram().compareTo(BigDecimal.ZERO) < 0 ) {
-        			stockPriceVo.setDailyMacdHistogramChange(stockPriceVo.getDailyMacdHistogram().subtract(prevDailyStockPriceVo.getDailyMacdHistogram()));
-        		} else if( stockPriceVo.getDailyMacdHistogram().compareTo(BigDecimal.ZERO) <= 0 && prevDailyStockPriceVo.getDailyMacdHistogram().compareTo(BigDecimal.ZERO) > 0 ) {
-        			stockPriceVo.setDailyMacdHistogramChange(stockPriceVo.getDailyMacdHistogram().subtract(prevDailyStockPriceVo.getDailyMacdHistogram()));
+        		if( currentDailyMacdTrend != previousDailyMacdTrend ) {
+        			stockPriceVo.setDailyMacdHistogramChange(stockPriceVo.getDailyMacdHistogram().subtract(prevDailyStockPriceVo.getDailyMacdHistogram()));	
         		}
         	}
+        	//RSI
+        	stockPriceVo.setDailyLongRsi(new BigDecimal(rsiIndicator.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
+        	stockPriceVo.setDailyShortRsi(new BigDecimal(shortRsiIndicator.getValue(i).toDouble()).setScale(3, RoundingMode.HALF_UP));
+        	
+        	//SMA
+        	stockPriceVo.setDailyShortSma(new BigDecimal(dailyShortSma.getValue(i).toDouble()).setScale(5, RoundingMode.HALF_UP));
+        	stockPriceVo.setDailyMediumSma(new BigDecimal(dailyMediumSma.getValue(i).toDouble()).setScale(5, RoundingMode.HALF_UP));
+        	stockPriceVo.setDailyLongSma(new BigDecimal(dailyLongSma.getValue(i).toDouble()).setScale(5, RoundingMode.HALF_UP));
         	//Weekly Technical Indicator
         	if( j<weeklyStockPriceList.size() ) {
 	        	if( dailyStockPriceList.get(i).getTradeDate().compareTo(weeklyStockPriceList.get(j).getTradeDate()) == 0 ) {
+        			//System.out.println(j + " : " + weeklyMacd.getValue(j) + " : " + weeklyMacdSignal.getValue(j) + " : " + weeklyMacdHistogram.getValue(j));
+	        		stockPriceVo.setWeeklyRsi(new BigDecimal(weeklyRsi.getValue(j).toDouble()).setScale(3, RoundingMode.HALF_UP));
 	        		stockPriceVo.setWeeklyMacd(new BigDecimal(weeklyMacd.getValue(j).toDouble()).setScale(3, RoundingMode.HALF_UP));
-	    			//stockPriceVo.setWeeklyMacdSlope(new BigDecimal(weeklyMacdSlope.getValue(j).toDouble()).setScale(3, RoundingMode.HALF_UP));
 	            	stockPriceVo.setWeeklyMacdSignal(new BigDecimal(weeklyMacdSignal.getValue(j).toDouble()).setScale(3, RoundingMode.HALF_UP));
-	            	//stockPriceVo.setWeeklyMacdSignalSlope(new BigDecimal(weeklyMacdSignalSlope.getValue(j).toDouble()).setScale(3, RoundingMode.HALF_UP));
 	            	stockPriceVo.setWeeklyMacdHistogram(new BigDecimal(weeklyMacdHistogram.getValue(j).toDouble()).setScale(3, RoundingMode.HALF_UP));
-	            	stockPriceVo.setWeeklyMacdHistogramSma(new BigDecimal(weeklyMacdSma.getValue(j).toDouble()).setScale(3, RoundingMode.HALF_UP));
-	            	if( stockPriceVo.getWeeklyMacdHistogram().compareTo(BigDecimal.ZERO) > 0 && prevWeeklyStockPriceVo.getWeeklyMacdHistogram().compareTo(BigDecimal.ZERO) < 0 ) {
-	            		stockPriceVo.setWeeklyMacdHistogramChange(stockPriceVo.getWeeklyMacdHistogram().subtract(prevWeeklyStockPriceVo.getWeeklyMacdHistogram()));
-	            	} else if( stockPriceVo.getWeeklyMacdHistogram().compareTo(BigDecimal.ZERO) < 0 && prevWeeklyStockPriceVo.getWeeklyMacdHistogram().compareTo(BigDecimal.ZERO) > 0 ) {
-	            		stockPriceVo.setWeeklyMacdHistogramChange(stockPriceVo.getWeeklyMacdHistogram().subtract(prevWeeklyStockPriceVo.getWeeklyMacdHistogram()));
+	            	if( stockPriceVo.getWeeklyMacdHistogram().compareTo(BigDecimal.ZERO) > 0 ) {
+	            		currentWeeklyMacdTrend = 1;
+	            	} else if( stockPriceVo.getWeeklyMacdHistogram().compareTo(BigDecimal.ZERO) < 0 ) {
+	            		currentWeeklyMacdTrend = -1;
+	            	} else if( stockPriceVo.getWeeklyMacdHistogram().compareTo(BigDecimal.ZERO) == 0 ) {
+	            		currentWeeklyMacdTrend = previousWeeklyMacdTrend;
 	            	}
+	            	if( weeklyStockPriceList.size() > 2 ) {
+	            		if( currentWeeklyMacdTrend != previousWeeklyMacdTrend ) {
+	            			stockPriceVo.setWeeklyMacdHistogramChange(stockPriceVo.getWeeklyMacdHistogram().subtract(prevWeeklyStockPriceVo.getWeeklyMacdHistogram()));	
+	            		}
+	            	}
+	            	previousWeeklyMacdTrend = currentWeeklyMacdTrend;
 	            	prevWeeklyStockPriceVo = stockPriceVo;
 	            	j++;
-	        	} else {
-	        		
-	        		if( prevDailyStockPriceVo != null ) {
-		        		//stockPriceVo.setWeeklyMacd(prevDailyStockPriceVo.getWeeklyMacd());
-		            	//stockPriceVo.setWeeklyMacdSignal(prevDailyStockPriceVo.getWeeklyMacdSignal());
-		            	//stockPriceVo.setWeeklyMacdHistogram(prevDailyStockPriceVo.getWeeklyMacdHistogram());
-		            	//stockPriceVo.setWeeklyMacdHistogramChange(prevDailyStockPriceVo.getWeeklyMacdHistogramChange());
-	        		}
-	        		
 	        	}
         	}
         	prevDailyStockPriceVo = stockPriceVo;
+        	previousDailyMacdTrend = currentDailyMacdTrend;
 			stockDataList.add(stockPriceVo);
 		}
         

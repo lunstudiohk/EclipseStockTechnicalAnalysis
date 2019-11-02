@@ -73,6 +73,10 @@ public class CandleStickSrv {
 		return this.candlestickDao.getCandlestickList(stockCode, priceType);
 	}
 	
+	public List<CandlestickEntity> getCandlestickListByType(String stockCode, String type) throws Exception {
+		return this.candlestickDao.getCandlestickListByType(stockCode, type);
+	}
+	
 	public void saveCandlestickList(List<CandlestickEntity> candlestickList) throws Exception {
 		this.candlestickDao.save(candlestickList, candlestickList.size());
 		return;

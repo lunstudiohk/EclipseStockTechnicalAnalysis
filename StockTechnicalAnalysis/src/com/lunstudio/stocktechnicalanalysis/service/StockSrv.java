@@ -20,10 +20,10 @@ public class StockSrv {
 
 	private static final Logger logger = LogManager.getLogger();
 	
-	private static final String HSI = "HSI";
-	private static final String INDEXHANGSENGHSI = "INDEXHANGSENG:HSI";
-	private static final String HSCEI = "HSCEI";
-	private static final String INDEXHANGSENGHSCEI = "INDEXHANGSENG:HSCEI";
+	public static final String HSI = "HSI";
+	public static final String INDEXHANGSENGHSI = "INDEXHANGSENG:HSI";
+	public static final String HSCEI = "HSCEI";
+	public static final String INDEXHANGSENGHSCEI = "INDEXHANGSENG:HSCEI";
 	
 	@Autowired
 	private StockDao stockDao;

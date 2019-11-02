@@ -24,6 +24,13 @@ public class MathUtils {
 		}
 	}
 	
+	public static BigDecimal getPriceDiffOnly(BigDecimal initialPrice, BigDecimal finalPrice, int dp) {
+		if( initialPrice != null && finalPrice != null && initialPrice.compareTo(BigDecimal.ZERO) != 0 ) {
+			return (((finalPrice.subtract(initialPrice)).divide(initialPrice, 8, RoundingMode.HALF_UP)).multiply(HUNDRED)).setScale(dp, RoundingMode.HALF_UP);
+		} else {
+			return null;
+		}
+	}
 
 	
 	

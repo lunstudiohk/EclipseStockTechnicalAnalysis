@@ -9,6 +9,8 @@ public interface CandlestickDao extends BaseDao {
 
 	public List<CandlestickEntity> getCandlestickList(String stockCode, String priceType) throws Exception;
 	
+	public List<CandlestickEntity> getCandlestickListByType(String stockCode, String type) throws Exception;
+	
 	public List<CandlestickEntity> getCandlestickList(String stockCode, String priceType, String type, Integer candlestickType) throws Exception;
 	
 	public void deleteCandlestick(String stockCode, Date tradeDate, String priceType) throws Exception;

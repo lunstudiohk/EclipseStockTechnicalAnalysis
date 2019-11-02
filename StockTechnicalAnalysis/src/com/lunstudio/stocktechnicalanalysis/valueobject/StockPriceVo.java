@@ -32,6 +32,7 @@ public class StockPriceVo extends BaseEntity {
 	private BigDecimal dailyMacdHistogramSma;
 	private BigDecimal dailyMacdHistogramChange;
 	private BigDecimal dailyMacdHistogramSlope;
+	private BigDecimal weeklyRsi;
 	private BigDecimal weeklyMacd;
 	private BigDecimal weeklyMacdSignal;
 	private BigDecimal weeklyMacdSlope;
@@ -650,6 +651,14 @@ public class StockPriceVo extends BaseEntity {
 
 	public void setDailyMacdHistogramSma(BigDecimal dailyMacdHistogramSma) {
 		this.dailyMacdHistogramSma = dailyMacdHistogramSma;
+	}
+
+	public BigDecimal getWeeklyRsi() {
+		return weeklyRsi;
+	}
+
+	public void setWeeklyRsi(BigDecimal weeklyRsi) {
+		this.weeklyRsi = weeklyRsi;
 	}
 
 	public String toStringCsv() {
