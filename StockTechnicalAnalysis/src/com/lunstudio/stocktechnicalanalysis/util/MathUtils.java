@@ -32,7 +32,13 @@ public class MathUtils {
 		}
 	}
 
-	
+	public static BigDecimal getFinalPrice(BigDecimal initialPrice, BigDecimal change, int dp) {
+		try {
+		return initialPrice.multiply(BigDecimal.ONE.add(change.divide(BigDecimal.valueOf(100), 5, RoundingMode.HALF_UP))).setScale(dp, RoundingMode.HALF_UP);
+		}catch(Exception e) {
+			return null;
+		}
+	}
 	
 	
 	/*

@@ -14,18 +14,21 @@ import org.springframework.stereotype.Component;
 
 import com.lunstudio.stocktechnicalanalysis.candlestick.BullishCandlestickPatterns;
 import com.lunstudio.stocktechnicalanalysis.entity.CandlestickEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockSignalEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.service.CandleStickSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
+import com.lunstudio.stocktechnicalanalysis.service.StockSignalDateSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
+import com.lunstudio.stocktechnicalanalysis.service.StockSignalSrv;
 import com.lunstudio.stocktechnicalanalysis.signal.BearishSignal;
 import com.lunstudio.stocktechnicalanalysis.signal.BullishSignal;
 import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 import com.lunstudio.stocktechnicalanalysis.valueobject.StockResultVo;
 
 @Component
-public class GenerateSignalStat {
+public class GenerateStockSignal {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -38,6 +41,12 @@ public class GenerateSignalStat {
 	@Autowired
 	private CandleStickSrv candlestickSrv;
 
+	@Autowired
+	private StockSignalSrv stockSignalSrv;
+	
+	@Autowired
+	private StockSignalDateSrv stockSignalDateSrv;
+	
 	private static final int HISTORICAL_SIZE = 2500;
 	
 	public static void main(String[] args) {
@@ -45,8 +54,8 @@ public class GenerateSignalStat {
 			String configPath = System.getProperty("spring.config");
 			FileSystemXmlApplicationContext context = 
 					new FileSystemXmlApplicationContext(configPath);
-			GenerateSignalStat instance = context.getBean(GenerateSignalStat.class);
-			instance.start();
+			GenerateStockSignal instance = context.getBean(GenerateStockSignal.class);
+			instance.start(args);
 			context.close();
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -54,37 +63,54 @@ public class GenerateSignalStat {
 		}
 	}
 
-	private void start() throws Exception {
+	private void start(String[] args) throws Exception {
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		Map<Date,BigDecimal> refPriceDateMap = this.getRefPriceDateMap();
 		
 		for(StockEntity stock : stockList) {
-			if( !stock.getStockCode().equals("HKG:0700") 
-				//	&& !stock.getStockCode().equals("HKG:0005") 
-				//	&& !stock.getStockCode().equals("HKG:0939") 
-				//	&& !stock.getStockCode().equals("HKG:2318") 
-				//	&& !stock.getStockCode().equals("HKG:0700") 
-				//	&& !stock.getStockCode().equals("INDEXHANGSENG:HSI") 
+			/*
+			if( !stock.getStockCode().equals("HKG:3888") 
+					&& !stock.getStockCode().equals("INDEXHANGSENG:HSI") 
 				) {
-				//continue;
+				continue;
 			}
-			//logger.info(String.format("Processing: %s", stock.getStockCode()));
-			this.generateSignalStat(refPriceDateMap, stock);
-			//this.generateSellSignalStat(stock);
+			*/
+			this.generateSignalStat(refPriceDateMap, stock, Integer.parseInt(args[0]));
 		}
+        this.stockSignalSrv.updateIncompletedStockSignal();
 		return;
 	}
 	
-	private void generateSignalStat(Map<Date,BigDecimal> refPriceDateMap, StockEntity stock) throws Exception {
+	private void generateSignalStat(Map<Date,BigDecimal> refPriceDateMap, StockEntity stock, Integer size) throws Exception {
 		List<StockPriceEntity> dailyStockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(stock.getStockCode(), HISTORICAL_SIZE);
 		//List<StockPriceEntity> weeklyStockPriceList = this.stockPriceSrv.getLastWeeklyStockPriceEntityList(stock.getStockCode(), null);
         List<StockPriceVo> stockPriceVoList = this.stockPriceSrv.getStockPriceVoList(stock, dailyStockPriceList, new ArrayList<StockPriceEntity>() /*weeklyStockPriceList*/);
-        List<CandlestickEntity> candlestickList = this.candlestickSrv.getCandlestickListByType(stock.getStockCode(), CandlestickEntity.Buy);
-        BullishSignal.generateBullishSignal(stock, refPriceDateMap, stockPriceVoList, candlestickList, StockPriceEntity.PRICE_TYPE_DAILY);
-        candlestickList = this.candlestickSrv.getCandlestickListByType(stock.getStockCode(), CandlestickEntity.Sell);
-        BearishSignal.generateBearishSignal(stock, refPriceDateMap, stockPriceVoList, candlestickList, StockPriceEntity.PRICE_TYPE_DAILY);
+        List<CandlestickEntity> bullCandlestickList = this.candlestickSrv.getCandlestickListByType(stock.getStockCode(), CandlestickEntity.Buy);
+        List<CandlestickEntity> bearCandlestickList = this.candlestickSrv.getCandlestickListByType(stock.getStockCode(), CandlestickEntity.Sell);
+        
+        List<StockSignalEntity> todaySignalList = new ArrayList<StockSignalEntity>();
+    	todaySignalList.addAll(BullishSignal.generateBullishSignal(stock, refPriceDateMap, stockPriceVoList, bullCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+    	todaySignalList.addAll(BearishSignal.generateBearishSignal(stock, refPriceDateMap, stockPriceVoList, bearCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+    	this.stockSignalSrv.saveStockSignalList(todaySignalList);
+    	for(StockSignalEntity stockSignal : todaySignalList) {
+   			this.stockSignalDateSrv.saveStockSignalDateList(stockSignal.getStockSignalDateList());
+    	}
+    	
+    	if( size > 1 ) {
+	        for(int i=0; i<size; i++) {
+	        	stockPriceVoList.remove(stockPriceVoList.size()-1);
+	        	todaySignalList = new ArrayList<StockSignalEntity>();
+	        	todaySignalList.addAll(BullishSignal.generateBullishSignal(stock, refPriceDateMap, stockPriceVoList, bullCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+	        	todaySignalList.addAll(BearishSignal.generateBearishSignal(stock, refPriceDateMap, stockPriceVoList, bearCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+	        	this.stockSignalSrv.saveStockSignalList(todaySignalList);	
+	        	for(StockSignalEntity stockSignal : todaySignalList) {
+	        		this.stockSignalDateSrv.saveStockSignalDateList(stockSignal.getStockSignalDateList());
+	        	}
+	        }
+    	}
 		return;
 	}
+	
 	
 	private Map<Date,BigDecimal> getRefPriceDateMap() throws Exception {
 		List<StockPriceEntity> dailyStockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(StockSrv.INDEXHANGSENGHSI, 100);

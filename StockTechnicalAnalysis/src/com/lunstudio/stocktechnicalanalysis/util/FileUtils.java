@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +13,24 @@ import java.util.List;
 
 public class FileUtils {
 	private final static String NEW_LINE = "\n";
+
+	public static String readFromFile(String filepath) throws Exception {
+		StringBuffer buf = new StringBuffer();
+		try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
+		    String line;
+		    while ((line = br.readLine()) != null) {
+		    	buf.append(line).append("\n");
+		    }
+		}
+		return buf.toString();
+	}
+
+	public static void writeToFile(String filepath, String content) throws Exception {
+		try(BufferedWriter bw = new BufferedWriter(new FileWriter(filepath))) {
+			bw.write(content);
+		}
+		return;
+	}
 
 	public static void writeToFile(List<String> dataList, String filePath) throws Exception {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));

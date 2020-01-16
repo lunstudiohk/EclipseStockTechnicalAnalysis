@@ -1,7 +1,9 @@
 package com.lunstudio.stocktechnicalanalysis.init;
 
-import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.google.firebase.database.DataSnapshot;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.firebase.FirebaseDao;
 import com.lunstudio.stocktechnicalanalysis.firebase.StockPrice;
@@ -18,7 +21,6 @@ import com.lunstudio.stocktechnicalanalysis.service.FirebaseSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockPriceSrv;
 import com.lunstudio.stocktechnicalanalysis.service.StockSrv;
 import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
-import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 
 @Component
 public class InitStockPriceToFirebase {
@@ -34,7 +36,10 @@ public class InitStockPriceToFirebase {
 	@Autowired
 	private FirebaseSrv firebaseSrv;
 	
-	private static final Integer INIT_SIZE = 2500;
+	private static final String ALL = "ALL";
+	private static final String UPDATE = "U";
+	private static final String HOUSEKEEP = "H";
+	private static final String CLEAR = "C";
 	
 	public static void main(String[] args) {
 		try{
@@ -51,82 +56,98 @@ public class InitStockPriceToFirebase {
 		return;
 	}
 
-	private void start(String[] stockCode) throws Exception {
-		if( stockCode == null || stockCode.length == 0 ) {
-			this.clearStockPrice();
-		}
-		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
-		for(StockEntity stock : stockList) {
-			if( stockCode != null && stockCode.length > 0 && stockCode[0].equals(stock.getStockCode()) ) {
-				this.updateToFirebase(stock);
-			} else if( stockCode == null || stockCode.length == 0 ) {
-				//Filter for test
-				if( !stock.getStockCode().equals("HKG:0700")
-						&& !stock.getStockCode().equals("HKG:2318")
-						&& !stock.getStockCode().equals("HKG:0939")
-						&& !stock.getStockCode().equals("HKG:0005")
-						//&& !stock.getStockCode().equals("HKG:0016")
-						//&& !stock.getStockCode().equals("HKG:0388")
-						&& !stock.getStockCode().equals("INDEXHANGSENG:HSI")) { 
-					continue;
-				}
-				this.updateToFirebase(stock);
-			}
+	private void start(String[] parameter) throws Exception {
+		switch(parameter[0]) {
+				case UPDATE:
+					this.updateStockPrice(parameter[1], Integer.parseInt(parameter[2]));
+					break;
+				case HOUSEKEEP:
+					this.housekeepStockPrice(parameter[1], Integer.parseInt(parameter[2]));
+					break;
+				case CLEAR:
+					this.clearStockPrice(parameter[1]);
+					break;					
 		}
 		return;
 	}
-		
-	private void updateToFirebase(StockEntity stock) throws Exception {
-		logger.info("Initial Stock Price: " + stock.getStockCode());
+	
+	private void updateStockPrice(String stockCode, int size) throws Exception {
+		logger.info("Update stock price: " + stockCode);
+		if( ALL.equals(stockCode) ) {
+			List<StockEntity> stockList = this.stockSrv.getStockInfoList();
+			for(StockEntity stock : stockList) {
+				this.updateToFirebase(stock, size);
+			}
+		} else {
+			StockEntity stock = this.stockSrv.getStockInfo(stockCode);
+			this.updateToFirebase(stock, size);
+		}
+		return;
+	}
+	
+	private void housekeepStockPrice(String stockCode, int size) throws Exception {
+		logger.info("Housekeep stock price: " + stockCode);
+		if( ALL.equals(stockCode) ) {
+			List<StockEntity> stockList = this.stockSrv.getStockInfoList();
+			for(StockEntity stock : stockList) {
+				this.housekeepOnFirebase(stock.getStockCode(), size);
+			}
+		} else {
+			this.housekeepOnFirebase(stockCode, size);
+		}
+		return;
+	}
+	
+	private void housekeepOnFirebase(String stockCode, int size) throws Exception {
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		List<DataSnapshot> dataSnapshot = this.firebaseSrv.getFromFirebase(FirebaseDao.getInstance().getStockPriceRef().orderByChild("stock").equalTo(stockCode));
+		List<String> keyList = new ArrayList<String>();
+		for(DataSnapshot data : dataSnapshot) {
+			keyList.add(data.getKey());
+		}
+		dataSnapshot = null;	//Release memory
+	    Collections.sort(keyList, Collections.reverseOrder());         
+
+		for(int i=size; i<keyList.size(); i++) {
+			dataMap.put(keyList.get(i), null);
+		}
+		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceRef(), dataMap);
+		return;
+	}
+	
+	
+	private void updateToFirebase(StockEntity stock, int size) throws Exception {
 		String stockCode = stock.getStockCode();
-		
-		List<StockPriceVo> stockPriceVoList = this.stockPriceSrv.getFirbaseStockPriceVoList(stockCode, null);
-		
+		logger.info(String.format("Processing on stock: %s", stockCode));
+		List<StockPrice> stockPriceList = this.stockPriceSrv.getFirbaseStockPriceList(stockCode, size+250);
 		Map<String, Object> stockPriceMap = new HashMap<String, Object>();
-		
-		int startIndex = stockPriceVoList.size() - InitStockPriceToFirebase.INIT_SIZE;
+		int startIndex = stockPriceList.size() - size;
 		if( startIndex < 0 ) {
 			startIndex = 0;
 		}
-		int endIndex = stockPriceVoList.size();
-		Date startDate = stockPriceVoList.get(startIndex).getTradeDate();
-		logger.info("Start Date: " + stockPriceVoList.get(startIndex).getTradeDate());
+		int endIndex = stockPriceList.size();
 		for(int i=startIndex; i<endIndex; i++) {
-			StockPriceVo stockPriceVo = stockPriceVoList.get(i);
-			StockPrice stockPrice = new StockPrice();
-			stockPrice.setS(stockPriceVo.getStockCode());
-			stockPrice.setT(stockPriceVo.getTradeDate().toString());
-			//stockPrice.setPrice(stockPriceVo.getPriceData());
-			stockPrice.setData(stockPriceVo.getDataList());
-			String key = String.format("%s%s", stock.getStockShortCode(), DateUtils.getShortDateString(stockPriceVo.getTradeDate()));
-			stockPriceMap.put(key, stockPrice);
-			//this.logger.info(stockPriceVo.getDataList());
+			StockPrice stockPrice = stockPriceList.get(i);
+			String key = String.format("%s%s", stock.getStockShortCode(), DateUtils.getShortDateString(stockPrice.getDate()));
+			stockPriceMap.put(key, stockPrice.getData());
 		}
+		logger.info(String.format("No. of records to be updated: %s", stockPriceMap.size()));
 		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceRef(), stockPriceMap);
-		
-		stockPriceVoList = this.stockPriceSrv.getFirbaseStockPriceWeeklyVoList(stockCode, null);
-		stockPriceMap = new HashMap<String, Object>();
-		
-		for(int i=0; i<stockPriceVoList.size(); i++) {
-			StockPriceVo stockPriceVo = stockPriceVoList.get(i);
-			if( stockPriceVo.getTradeDate().compareTo(startDate) < 0 ) {
-				continue;
-			}
-			StockPrice stockPrice = new StockPrice();
-			stockPrice.setS(stockPriceVo.getStockCode());
-			stockPrice.setT(stockPriceVo.getTradeDate().toString());
-			stockPrice.setData(stockPriceVo.getDataList());
-			String key = String.format("%s%s", stock.getStockShortCode(), DateUtils.getShortDateString(stockPriceVo.getTradeDate()));
-			stockPriceMap.put(key, stockPrice);
-		}
-		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceWeeklyRef(), stockPriceMap);
-		
-		return;	
+		return;
 	}
 	
-	private void clearStockPrice() throws Exception {
-		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceRef(), "");
-		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceWeeklyRef(), "");
+	private void clearStockPrice(String stockCode) throws Exception {
+		logger.info("Clear stock price: " + stockCode);
+		if( ALL.equals(stockCode) ) {
+			this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceRef(), "");
+		} else {
+			Map<String, Object> dataMap = new HashMap<String, Object>();
+			List<DataSnapshot> dataSnapshot = this.firebaseSrv.getFromFirebase(FirebaseDao.getInstance().getStockPriceRef().orderByChild("stock").equalTo(stockCode));
+			for(DataSnapshot data : dataSnapshot) {
+				dataMap.put(data.getKey(), null);
+			}
+			this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceRef(), dataMap);
+		}
 		return;
 	}
 }

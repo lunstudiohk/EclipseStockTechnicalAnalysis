@@ -22,6 +22,7 @@ import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockOptionsStatEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockVolatilityEntity;
+import com.lunstudio.stocktechnicalanalysis.firebase.StockPrice;
 import com.lunstudio.stocktechnicalanalysis.firebase.StockPriceData;
 import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
 import com.lunstudio.stocktechnicalanalysis.util.MathUtils;
@@ -74,6 +75,9 @@ public class StockPriceSrv {
 	@Autowired
 	private OptionsSrv optionSrv;
 	
+	public static final Integer ORDER_BY_ASC = 0;
+	public static final Integer ORDER_BY_DESC = 1;
+	
 	public void saveStockPrice(StockPriceEntity stockPriceEntity) {
 		this.stockPriceDao.save(stockPriceEntity);
 		return;
@@ -91,7 +95,9 @@ public class StockPriceSrv {
 	public List<StockPriceEntity> getDailyStockPriceList(Date tradeDate) {
 		return this.stockPriceDao.getStockPriceList(tradeDate, StockPriceEntity.PRICE_TYPE_DAILY);
 	}
-
+	/*
+	 * Get stock price after the startDate (not include the startDate)
+	 */
 	public List<StockPriceEntity> getDailyStockPriceList(String stockCode, Date startDate) {
 		return this.stockPriceDao.getStockPriceListAfter(stockCode, startDate, StockPriceEntity.PRICE_TYPE_DAILY);
 	}
@@ -124,6 +130,22 @@ public class StockPriceSrv {
 		return this.stockPriceDao.getLastStockPriceList(stockCode, size, StockPriceEntity.PRICE_TYPE_DAILY);
 	}
 
+	public List<Date> getLastDailyStockPriceTradeDateList(String stockCode, Integer size, Integer orderBy) {
+		List<StockPriceEntity> entityList = this.stockPriceDao.getLastStockPriceList(stockCode, size, StockPriceEntity.PRICE_TYPE_DAILY);
+		List<Date> dateList = new ArrayList<Date>();
+		if( orderBy == ORDER_BY_ASC ) {
+			for(StockPriceEntity entity : entityList) {
+				dateList.add(entity.getTradeDate());
+			}
+		} else {
+			for(StockPriceEntity entity : entityList) {
+				dateList.add(0, entity.getTradeDate());
+			}
+		}
+		return dateList;
+	}
+	
+	
 	public List<StockPriceEntity> getLastWeeklyStockPriceEntityList(String stockCode, Integer size) {
 		return this.stockPriceDao.getLastStockPriceList(stockCode, size, StockPriceEntity.PRICE_TYPE_WEEKLY);
 	}
@@ -350,7 +372,30 @@ public class StockPriceSrv {
 	}
 	
 	
-	
+	public List<StockPrice> getFirbaseStockPriceList(String stockCode, Integer size) throws Exception {
+		List<StockPriceEntity> stockPriceList = this.getLastDailyStockPriceEntityList(stockCode, size);
+		this.generateDailyMacdTechnicalIndicator(stockCode, stockPriceList, 12, 26, 9);
+		this.generateDailyRsiTechnicalIndicator(stockCode, stockPriceList, 5, 14);
+		this.generateDailyMovingAverageTechnicalIndicator(stockCode, stockPriceList, 10, 20, 50);
+		
+		List<StockPrice> dataList = new ArrayList<StockPrice>();
+		for(StockPriceEntity entity : stockPriceList) {
+			StockPrice stockPrice = new StockPrice(entity.getStockCode(), entity.getTradeDate());
+			stockPrice.setPrice(entity.getOpenPrice().doubleValue(), entity.getClosePrice().doubleValue(), entity.getDayHigh().doubleValue(), entity.getDayLow().doubleValue(), entity.getDayVolume().doubleValue());
+			stockPrice.setRsi("5", entity.getDailyShortRsi().doubleValue());
+			stockPrice.setRsi("14", entity.getDailyLongRsi().doubleValue());
+			
+			stockPrice.setSma("10", entity.getDailyShortSma().doubleValue());
+			stockPrice.setSma("20", entity.getDailyMediumSma().doubleValue());
+			stockPrice.setSma("50", entity.getDailyLongSma().doubleValue());
+			
+			stockPrice.setMacd(entity.getDailyMacd().doubleValue(), entity.getDailyMacdSignal().doubleValue());
+			dataList.add(stockPrice);
+		}
+		
+		
+		return dataList;
+	}
 	
 	public List<StockPriceData> getFirbaseStockPriceDataList(String stockCode, Integer size) throws Exception {
 		List<StockPriceEntity> stockPriceList = this.getLastDailyStockPriceEntityList(stockCode, size);

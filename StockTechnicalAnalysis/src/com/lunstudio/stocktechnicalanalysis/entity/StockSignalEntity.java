@@ -3,6 +3,7 @@ package com.lunstudio.stocktechnicalanalysis.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,11 +11,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name="tb_signalparameter")
-public class SignalParameterEntity extends BaseEntity implements Serializable {
+@Table(name="tb_stocksignal")
+public class StockSignalEntity extends BaseEntity implements Serializable {
 
-	public static final String BUY = "B";
-	public static final String SELL = "S";
+	public static final String SIGNAL_TYPE_BUY = "B";
+	public static final String SIGNAL_TYPE_SELL = "S";
 	
 	public static final Integer MACD_BELOW_ZERO = 0;
 	public static final Integer MACD_ABOVE_ZERO = 1;
@@ -56,30 +57,35 @@ public class SignalParameterEntity extends BaseEntity implements Serializable {
 	private String stockCode;
 	
 	@Id
-	private String signalType;
+	private Date tradeDate;
+
+	@Id
+	private Integer signalSeq;
 	
 	@Id
+	private String signalType;	//Buy or Sell
+	
 	private Integer type;
 	
-	@Id
-	private Integer period = 10;
-	
-	@Id
-	private Date tradeDate;
-	
-	private Integer count;
+	private Integer period = 20;
 	
 	private String priceType;
+	
+	private BigDecimal targetReturn;
+	
+	private BigDecimal confident;
+	
+	private Integer count;
 	
 	private BigDecimal upperMin;
 	private BigDecimal upperMedian;
 	private BigDecimal upperMax;
-	private BigDecimal upperDayMedian;
+	private Integer upperDayMedian;
 	
 	private BigDecimal lowerMin;
 	private BigDecimal lowerMedian;
 	private BigDecimal lowerMax;
-	private BigDecimal lowerDayMedian;
+	private Integer lowerDayMedian;
 
 	private BigDecimal upperDailyRsi;
 	private BigDecimal lowerDailyRsi;
@@ -101,7 +107,27 @@ public class SignalParameterEntity extends BaseEntity implements Serializable {
 	private BigDecimal upperPriceDiff;
 
 	private Integer candlestickType;
-		
+	
+	private Integer completed = 0;
+	
+	@Transient
+	private Integer dayCount;
+	
+	@Transient
+	private BigDecimal maxPrice;
+	
+	@Transient
+	private Integer maxPriceDayCount;
+	
+	@Transient
+	private BigDecimal minPrice;
+	
+	@Transient
+	private Integer minPriceDayCount;
+	
+	@Transient
+	private List<StockSignalDateEntity> stockSignalDateList;
+	
 	@Transient
 	private Boolean isEmpty = true;
 	
@@ -304,19 +330,19 @@ public class SignalParameterEntity extends BaseEntity implements Serializable {
 		this.isEmpty = false;
 	}
 
-	public BigDecimal getUpperDayMedian() {
+	public Integer getUpperDayMedian() {
 		return upperDayMedian;
 	}
 
-	public void setUpperDayMedian(BigDecimal upperDayMedian) {
+	public void setUpperDayMedian(Integer upperDayMedian) {
 		this.upperDayMedian = upperDayMedian;
 	}
 
-	public BigDecimal getLowerDayMedian() {
+	public Integer getLowerDayMedian() {
 		return lowerDayMedian;
 	}
 
-	public void setLowerDayMedian(BigDecimal lowerDayMedian) {
+	public void setLowerDayMedian(Integer lowerDayMedian) {
 		this.lowerDayMedian = lowerDayMedian;
 	}
 
@@ -361,7 +387,51 @@ public class SignalParameterEntity extends BaseEntity implements Serializable {
 		this.longStrength = longStrength;
 	}
 
-	public boolean isSame(SignalParameterEntity that) {
+	public BigDecimal getTargetReturn() {
+		return targetReturn;
+	}
+
+	public void setTargetReturn(BigDecimal targetReturn) {
+		this.targetReturn = targetReturn;
+	}
+
+	public BigDecimal getConfident() {
+		return confident;
+	}
+
+	public void setConfident(BigDecimal confident) {
+		this.confident = confident;
+	}
+
+	public Integer getSignalSeq() {
+		return signalSeq;
+	}
+
+	public void setSignalSeq(Integer signalSeq) {
+		this.signalSeq = signalSeq;
+		for(StockSignalDateEntity signalDate : this.getStockSignalDateList()) {
+			signalDate.setSignalSeq(signalSeq);
+		}
+	}
+
+
+	public List<StockSignalDateEntity> getStockSignalDateList() {
+		return stockSignalDateList;
+	}
+
+	public void setStockSignalDateList(List<StockSignalDateEntity> stockSignalDateList) {
+		this.stockSignalDateList = stockSignalDateList;
+	}
+
+	public Integer getCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(Integer completed) {
+		this.completed = completed;
+	}
+
+	public boolean isSame(StockSignalEntity that) {
 		if( this.count != that.count ) {
 			return false;
 		}

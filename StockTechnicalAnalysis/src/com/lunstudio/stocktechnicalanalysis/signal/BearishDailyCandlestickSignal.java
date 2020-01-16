@@ -10,10 +10,11 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.lunstudio.stocktechnicalanalysis.candlestick.BearishCandlestickPatterns;
 import com.lunstudio.stocktechnicalanalysis.candlestick.BullishCandlestickPatterns;
 import com.lunstudio.stocktechnicalanalysis.candlestick.BullishCandlestickPatterns.BullishPatterns;
 import com.lunstudio.stocktechnicalanalysis.entity.CandlestickEntity;
-import com.lunstudio.stocktechnicalanalysis.entity.SignalParameterEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockSignalEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 
@@ -39,17 +40,17 @@ public class BearishDailyCandlestickSignal extends BearishSignal {
 	}
 
 	@Override
-	public List<SignalParameterEntity> getSignalParameterList() throws Exception {		
-		List<SignalParameterEntity> finalList = new ArrayList<SignalParameterEntity>();
+	public List<StockSignalEntity> getSignalParameterList() throws Exception {		
+		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
 		finalList.addAll(this.getSignalParameterList(20));
 		//finalList.addAll(this.getSignalParameterList(20));
 		return finalList;
 	}
 
-	public List<SignalParameterEntity> getSignalParameterList(Integer period) throws Exception {
+	public List<StockSignalEntity> getSignalParameterList(Integer period) throws Exception {
 		super.period = period;
 		
-		List<SignalParameterEntity> finalList = new ArrayList<SignalParameterEntity>();
+		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
 		
 		//Empty Signal
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getEmptyParameterList()));
@@ -61,7 +62,7 @@ public class BearishDailyCandlestickSignal extends BearishSignal {
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getRsiTypeParameterList()));
 
 		//MACD-Type
-		Integer[] macdType = {SignalParameterEntity.MACD_ABOVE_ZERO, SignalParameterEntity.MACD_BELOW_ZERO};
+		Integer[] macdType = {StockSignalEntity.MACD_ABOVE_ZERO, StockSignalEntity.MACD_BELOW_ZERO};
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getMacdTypeParameterList(macdType)));
 		
 		//SMA-Type
@@ -70,7 +71,7 @@ public class BearishDailyCandlestickSignal extends BearishSignal {
 	}
 	
 	@Override
-	public boolean isValid(SignalParameterEntity signal, Integer tradeIndex) throws Exception {
+	public boolean isValid(StockSignalEntity signal, Integer tradeIndex) throws Exception {
 		
 		if( candlestickDateMap.containsKey(this.stockPriceVoList.get(tradeIndex).getTradeDate()) ) {
 			if( signal.isEmpty() ) {
@@ -101,7 +102,7 @@ public class BearishDailyCandlestickSignal extends BearishSignal {
 	}
 	
 	@Override
-	public SignalParameterEntity findInvalidSignal(SignalParameterEntity signal1, SignalParameterEntity signal2) throws Exception {
+	public StockSignalEntity findInvalidSignal(StockSignalEntity signal1, StockSignalEntity signal2) throws Exception {
 		if( signal1.isEmpty() && signal2.isEmpty() ) {
 			return null;
 		}
@@ -116,11 +117,14 @@ public class BearishDailyCandlestickSignal extends BearishSignal {
 		return null;
 	}
 
-	public static String getSignalDesc(SignalParameterEntity signal) {
+	public static String getSignalDesc(StockSignalEntity signal) {
 		StringBuffer buf = new StringBuffer();
-		buf.append(String.format("%s [賣出 - %s]: ", signal.getStockCode(), BullishCandlestickPatterns.getBullishCandlestickPatternDesc(signal.getType()-offset)));
+		buf.append(String.format("%s [賣出 - %s]: ", signal.getStockCode(), BearishCandlestickPatterns.getBearishCandlestickPatternDesc(signal.getType()-offset)));
 		buf.append(BullishSignal.getSignalDesc(signal));
 		return buf.toString();
 	}
 
+	public static String getSignalShortDesc(StockSignalEntity signal) {
+		return BearishCandlestickPatterns.getBearishCandlestickPatternDesc(signal.getType()-offset);
+	}
 }

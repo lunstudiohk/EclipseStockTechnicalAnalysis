@@ -12,8 +12,10 @@ import com.lunstudio.stocktechnicalanalysis.util.SystemUtils;
 
 public class FirebaseDao {
 	
-	private static final String StockPriceData = "StockPriceData";
 	private static final String StockPrice = "StockPrice";
+	private static final String StockSignal = "StockSignal";
+	
+	private static final String StockPriceData = "StockPriceData";
 	private static final String StockPriceWeekly = "StockPriceWeekly";
 	private static final String WarrantPriceData = "WarrantPriceData";
 	private static final String CbbcPriceData = "CbbcPriceData";
@@ -80,6 +82,10 @@ public class FirebaseDao {
 	
 	public DatabaseReference getStockPriceRef() {
 		return this.ref.child(StockPrice);
+	}
+	
+	public DatabaseReference getStockSignalRef() {
+		return this.ref.child(StockSignal);
 	}
 	
 	public DatabaseReference getStockPriceWeeklyRef() {

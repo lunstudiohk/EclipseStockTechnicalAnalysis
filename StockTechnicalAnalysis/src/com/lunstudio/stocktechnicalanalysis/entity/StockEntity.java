@@ -85,7 +85,7 @@ public class StockEntity extends BaseEntity implements Serializable {
 	public String getStockHkexCode() {
 		return stockHkexCode;
 	}
-
+	
 	public void setStockHkexCode(String stockHkexCode) {
 		this.stockHkexCode = stockHkexCode;
 	}

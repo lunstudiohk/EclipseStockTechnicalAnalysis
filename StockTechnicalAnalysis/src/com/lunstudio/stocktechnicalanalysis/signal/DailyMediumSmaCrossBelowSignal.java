@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.lunstudio.stocktechnicalanalysis.entity.SignalParameterEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockSignalEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 
@@ -55,16 +55,16 @@ public class DailyMediumSmaCrossBelowSignal extends BearishSignal {
 	}
 
 	@Override
-	public List<SignalParameterEntity> getSignalParameterList() throws Exception {
-		List<SignalParameterEntity> finalList = new ArrayList<SignalParameterEntity>();
+	public List<StockSignalEntity> getSignalParameterList() throws Exception {
+		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
 		finalList.addAll(this.getSignalParameterList(20));
 		return finalList;
 	}
 	
-	public List<SignalParameterEntity> getSignalParameterList(Integer period) throws Exception {
+	public List<StockSignalEntity> getSignalParameterList(Integer period) throws Exception {
 		super.period = period;
 		
-		List<SignalParameterEntity> finalList = new ArrayList<SignalParameterEntity>();
+		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
 		
 		//Empty Signal
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getEmptyParameterList()));
@@ -79,10 +79,11 @@ public class DailyMediumSmaCrossBelowSignal extends BearishSignal {
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getCandlestickTypeParameterList()));
 		
 		//SMA-Period
-		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaPeriodParameterList()));
+		//finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaPeriodParameterList()));
+		finalList.addAll(SignalParameterValidator.getLongestSmaPeriodSignal(super.getValidSignalList(SignalParameterGenerator.getSmaPeriodParameterList())));
 
 		//MACD-Type
-		Integer[] macdType = {SignalParameterEntity.MACD_ABOVE_ZERO, SignalParameterEntity.MACD_BELOW_ZERO};
+		Integer[] macdType = {StockSignalEntity.MACD_ABOVE_ZERO, StockSignalEntity.MACD_BELOW_ZERO};
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getMacdTypeParameterList(macdType)));
 
 		//SMA-Type
@@ -91,7 +92,7 @@ public class DailyMediumSmaCrossBelowSignal extends BearishSignal {
 	}
 
 	@Override
-	public SignalParameterEntity findInvalidSignal(SignalParameterEntity signal1, SignalParameterEntity signal2) throws Exception {
+	public StockSignalEntity findInvalidSignal(StockSignalEntity signal1, StockSignalEntity signal2) throws Exception {
 		if( signal1.isEmpty() && signal2.isEmpty() ) {
 			return null;
 		}
@@ -108,7 +109,7 @@ public class DailyMediumSmaCrossBelowSignal extends BearishSignal {
 	}
 
 	@Override
-	public boolean isValid(SignalParameterEntity signal, Integer tradeIndex) throws Exception {
+	public boolean isValid(StockSignalEntity signal, Integer tradeIndex) throws Exception {
 		if( this.mediumSmaList.indexOf(-1*tradeIndex) != -1 ) {
 			if( signal.isEmpty() ) {
 				return true;
@@ -147,13 +148,22 @@ public class DailyMediumSmaCrossBelowSignal extends BearishSignal {
 		return false;
 	}
 
-	public static String getSignalDesc(SignalParameterEntity signal) {
+	public static String getSignalDesc(StockSignalEntity signal) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(String.format("%s [賣出 - 跌穿20MA]: ", signal.getStockCode()));
 		if( signal.getLowerPeriod() != null ) {
 			buf.append(String.format("[升穿20MA多於 %s日] ", signal.getLowerPeriod()));
 		}
 		buf.append(BullishSignal.getSignalDesc(signal));
+		return buf.toString();
+	}
+	
+	public static String getSignalShortDesc(StockSignalEntity signal) {
+		StringBuffer buf = new StringBuffer();
+		buf.append("跌穿20MA");
+		if( signal.getLowerPeriod() != null ) {
+			buf.append(String.format("  升穿20MA多於 %s日", signal.getLowerPeriod()));
+		}
 		return buf.toString();
 	}
 

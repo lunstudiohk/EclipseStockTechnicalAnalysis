@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.lunstudio.stocktechnicalanalysis.entity.CandlestickEntity;
-import com.lunstudio.stocktechnicalanalysis.entity.SignalParameterEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockSignalEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.util.MathUtils;
@@ -27,8 +27,11 @@ public abstract class BearishSignal extends GeneralSignal {
 	
 	private static final Logger logger = LogManager.getLogger();
 
+	private static final Integer tradeCount = 10;
+	private static final Integer maxReturn = -5;
+
 	public BearishSignal(StockEntity stock, String priceType, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, Integer type) throws Exception{
-		super(stock, priceType, refPriceDateMap, stockPriceVoList, SignalParameterEntity.SELL, type);
+		super(stock, priceType, refPriceDateMap, stockPriceVoList, StockSignalEntity.SIGNAL_TYPE_SELL, type);
 		return;
 	}
 		
@@ -36,9 +39,9 @@ public abstract class BearishSignal extends GeneralSignal {
 		double[] minReturn = minStats.getSortedValues();
 		
 		if( StockPriceEntity.PRICE_TYPE_DAILY.equals(this.priceType) ) {
-			if( minReturn.length >= 10 ) {
+			if( minReturn.length >= tradeCount ) {
 				int index = (int) Math.floor(minReturn.length * 0.9);	//90%
-				if( minReturn[index] < -3 ) {	// lesser than -3%
+				if( minReturn[index] < maxReturn ) {	// lesser than -3%
 					return true;
 				}
 			}
@@ -50,8 +53,11 @@ public abstract class BearishSignal extends GeneralSignal {
 		return false;
 	}
 	
-	public static void generateBearishSignal(StockEntity stock, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, List<CandlestickEntity> candlestickList, String priceType) throws Exception {
-		List<SignalParameterEntity> signalList = new ArrayList<SignalParameterEntity>();
+	public static List<StockSignalEntity> generateBearishSignal(StockEntity stock, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, List<CandlestickEntity> candlestickList, String priceType) throws Exception {
+		List<StockSignalEntity> todaySignalList = new ArrayList<StockSignalEntity>();
+		int signalSeq = 1;
+		//Date today = stockPriceVoList.get(stockPriceVoList.size()-1).getTradeDate();
+		List<StockSignalEntity> signalList = new ArrayList<StockSignalEntity>();
 		if( StockPriceEntity.PRICE_TYPE_DAILY.equals(priceType) ) {
 			for(int i=1; i<=21; i++) {
 				BearishSignal bearishSignal = BearishSignal.getDailyBearishSignal(stock, StockPriceEntity.PRICE_TYPE_DAILY, refPriceDateMap, stockPriceVoList, i, candlestickList);
@@ -70,24 +76,46 @@ public abstract class BearishSignal extends GeneralSignal {
 			}
 		}
 		 */
-		Comparator<SignalParameterEntity> compareByStockCode = new Comparator<SignalParameterEntity>() {
+		Comparator<StockSignalEntity> compareByStockCode = new Comparator<StockSignalEntity>() {
 		    @Override
-		    public int compare(SignalParameterEntity s1, SignalParameterEntity s2) {
+		    public int compare(StockSignalEntity s1, StockSignalEntity s2) {
 		        return s1.getStockCode().compareTo(s2.getStockCode());
 		    }
 		};
 		Collections.sort(signalList, compareByStockCode);
-		for(SignalParameterEntity signal : signalList) {
-			logger.info(signal.getTradeDate() + " : " + getDailyBearishSignalDesc(signal));
+		for(StockSignalEntity signal : signalList) {
+			//if( signal.getTradeDate().compareTo(today) == 0 ) { 
+				logger.info(signal.getTradeDate() + " : " + getDailyBearishSignalDesc(signal));
+				signal.setSignalSeq(signalSeq++);
+				todaySignalList.add(signal);
+			//}
 		}
-		return;
+		
+		return todaySignalList;
 	}
 
-	public static String getSignalDesc(SignalParameterEntity signal) {
+	public static String getSignalDesc(StockSignalEntity signal) {
 		return signal.toString();
 	}
 	
-	private static String getDailyBearishSignalDesc(SignalParameterEntity signal) {
+	public static String getDailyBearishPrimarySignalDesc(StockSignalEntity signal) {
+		switch(signal.getType()) {
+		case 1:
+			return DailyMacdCrossBelowSignal.getSignalShortDesc(signal);
+		case 2:
+			return DailyShortSmaCrossBelowSignal.getSignalShortDesc(signal);
+		case 3:
+			return DailyMediumSmaCrossBelowSignal.getSignalShortDesc(signal);
+		case 4:
+			return DailyLongSmaCrossBelowSignal.getSignalShortDesc(signal);
+		case 5:	case 6:	case 7:	case 8:	case 9:	case 10: case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19: case 20: case 21:
+			return BearishDailyCandlestickSignal.getSignalShortDesc(signal);
+		default:
+			return null;
+		}		
+	}
+	
+	public static String getDailyBearishSignalDesc(StockSignalEntity signal) {
 		switch(signal.getType()) {
 		case 1:
 			return DailyMacdCrossBelowSignal.getSignalDesc(signal);

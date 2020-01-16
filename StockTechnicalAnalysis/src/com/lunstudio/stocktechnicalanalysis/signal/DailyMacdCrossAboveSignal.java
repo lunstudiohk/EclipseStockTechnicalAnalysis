@@ -1,6 +1,7 @@
 package com.lunstudio.stocktechnicalanalysis.signal;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.lunstudio.stocktechnicalanalysis.entity.SignalParameterEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockSignalEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 
@@ -26,17 +27,17 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 	}
 	
 	@Override
-	public List<SignalParameterEntity> getSignalParameterList() throws Exception {		
-		List<SignalParameterEntity> finalList = new ArrayList<SignalParameterEntity>();
+	public List<StockSignalEntity> getSignalParameterList() throws Exception {		
+		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
 		finalList.addAll(this.getSignalParameterList(20));
 		//finalList.addAll(this.getSignalParameterList(20));
 		return finalList;
 	}
 	
-	public List<SignalParameterEntity> getSignalParameterList(Integer period) throws Exception {
+	public List<StockSignalEntity> getSignalParameterList(Integer period) throws Exception {
 		super.period = period;
 		
-		List<SignalParameterEntity> finalList = new ArrayList<SignalParameterEntity>();
+		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
 		
 		//Empty Signal
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getEmptyParameterList()));
@@ -48,7 +49,7 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getRsiTypeParameterList()));
 		
 		//MACD-Type
-		Integer[] macdType = { SignalParameterEntity.MACD_ABOVE_ZERO, SignalParameterEntity.MACD_BELOW_ZERO, SignalParameterEntity.MACD_CROSS_ZERO };
+		Integer[] macdType = { StockSignalEntity.MACD_ABOVE_ZERO, StockSignalEntity.MACD_BELOW_ZERO, StockSignalEntity.MACD_CROSS_ZERO };
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getMacdTypeParameterList(macdType)));
 		
 		//MACD-Relative
@@ -70,7 +71,7 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 	}
 	
 	@Override
-	public boolean isValid(SignalParameterEntity signal, Integer tradeIndex) throws Exception {
+	public boolean isValid(StockSignalEntity signal, Integer tradeIndex) throws Exception {
 		int macdIndex = this.macdCrossTradeIndexList.indexOf(tradeIndex);
 		if( macdIndex > 0 ) {
 			if( signal.isEmpty() ) {
@@ -117,7 +118,7 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 	}
 
 	@Override
-	public SignalParameterEntity findInvalidSignal(SignalParameterEntity signal1, SignalParameterEntity signal2) throws Exception {
+	public StockSignalEntity findInvalidSignal(StockSignalEntity signal1, StockSignalEntity signal2) throws Exception {
 		//RSI-Range
 		if( signal1.getUpperDailyRsi() != null && signal2.getUpperDailyRsi() != null ) {
 			return SignalParameterValidator.getValidRsiRangeSignal(signal1, signal2);
@@ -133,7 +134,7 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 		return null;
 	}
 	
-	public static String getSignalDesc(SignalParameterEntity signal) {
+	public static String getSignalDesc(StockSignalEntity signal) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(String.format("%s [買入 - MACD升穿]: ", signal.getStockCode()));
 		if( signal.getLowerPriceDiff() != null ) {
@@ -146,5 +147,16 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 		return buf.toString();
 	}
 	
+	public static String getSignalShortDesc(StockSignalEntity signal) {
+		StringBuffer buf = new StringBuffer();
+		buf.append("MACD升穿");
+		if( signal.getLowerPriceDiff() != null ) {
+			buf.append(String.format("  已下跌多於 %s%%", signal.getLowerPriceDiff().setScale(1, RoundingMode.HALF_UP)));
+		}
+		if( signal.getLowerPeriod() != null ) {
+			buf.append(String.format("  下跌多於 %s日", signal.getLowerPeriod()));
+		}
+		return buf.toString();
+	}
 	
 }
