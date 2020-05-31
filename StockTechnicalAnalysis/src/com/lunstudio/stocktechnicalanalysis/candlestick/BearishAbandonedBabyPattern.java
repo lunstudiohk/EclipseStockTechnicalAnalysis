@@ -23,13 +23,13 @@ public class BearishAbandonedBabyPattern extends BearishCandlestickPatterns impl
 		
 		if( firstCandlestick.isHollow() && !firstCandlestick.isShortBody() ) {
 			if( secondCandlestick.isShortBody() ) {
-				if( firstCandlestick.getDayHigh().compareTo(secondCandlestick.getDayLow()) < 0 ) {
+				if( firstCandlestick.getHighPrice().compareTo(secondCandlestick.getDayLow()) < 0 ) {
 					if( thirdCandlestick.isFilled() ) {
-						if( secondCandlestick.getDayLow().compareTo(thirdCandlestick.getDayHigh()) > 0 ) {
+						if( secondCandlestick.getDayLow().compareTo(thirdCandlestick.getHighPrice()) > 0 ) {
 							if( thirdCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyHalf()) <= 0 ) {
 								super.init(thirdCandlestick);
 								super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
-								super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayHigh());
+								super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 								return true;	
 							}
 						}

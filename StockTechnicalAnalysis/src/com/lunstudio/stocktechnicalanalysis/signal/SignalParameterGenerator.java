@@ -33,7 +33,7 @@ public class SignalParameterGenerator {
 		*/
 		return parameterList;
 	}
-	
+	/*
 	public static List<StockSignalEntity> getLowerSmaParameterList() throws Exception {
 		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
 		StockSignalEntity parameter = null;
@@ -44,7 +44,7 @@ public class SignalParameterGenerator {
 		}
 		return parameterList;
 	}
-	
+	*/
 	public static List<StockSignalEntity> getRsiTypeParameterList() throws Exception {
 		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
 		StockSignalEntity parameter = new StockSignalEntity();
@@ -55,7 +55,7 @@ public class SignalParameterGenerator {
 		parameterList.add(parameter);
 		return parameterList;
 	}
-	
+	/*
 	public static List<StockSignalEntity> getSmaParameterList() throws Exception {
 		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
 		StockSignalEntity parameter = null;
@@ -72,7 +72,7 @@ public class SignalParameterGenerator {
 		}
 		return parameterList;
 	}
-
+*/
 	public static List<StockSignalEntity> getCandlestickTypeParameterList() throws Exception {
 		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
 		StockSignalEntity parameter = null;
@@ -88,19 +88,7 @@ public class SignalParameterGenerator {
 		}
 		return parameterList;
 	}
-	/*
-	public static List<SignalParameterEntity> getDownCandlestickTypeParameterList() throws Exception {
-		List<SignalParameterEntity> parameterList = new ArrayList<SignalParameterEntity>();
-		SignalParameterEntity parameter = null;
-		Integer[] type = { SignalParameterEntity.CANDLESTICK_FILLED, SignalParameterEntity.CANDLESTICK_HALLOW, SignalParameterEntity.CANDLESTICK_OPENGAPDOWN, SignalParameterEntity.CANDLESTICK_HIGHGAPDOWN };
-		for(Integer val : type) {
-			parameter = new SignalParameterEntity();
-			parameter.setCandlestickType(val);
-			parameterList.add(parameter);
-		}
-		return parameterList;
-	}
-	*/
+	
 	public static List<StockSignalEntity> getSmaTypeParameterList() throws Exception {
 		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
 		StockSignalEntity parameter = null;
@@ -118,7 +106,6 @@ public class SignalParameterGenerator {
 	public static List<StockSignalEntity> getMacdTypeParameterList(Integer[] type) throws Exception {
 		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
 		StockSignalEntity parameter = null;
-		//Integer[] type = { SignalParameterEntity.MACD_ABOVE_ZERO, SignalParameterEntity.MACD_BELOW_ZERO, SignalParameterEntity.MACD_CROSS_ZERO };
 		for(Integer val : type) {
 			parameter = new StockSignalEntity();
 			parameter.setMacdType(val);
@@ -188,6 +175,34 @@ public class SignalParameterGenerator {
 			parameter = new StockSignalEntity();
 			parameter.setLowerPeriod(i);
 			parameterList.add(parameter);
+		}
+		return parameterList;
+	}
+	
+	public static List<StockSignalEntity> getSmaUpperPriceDiffParameterList() throws Exception {
+		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
+		StockSignalEntity parameter = null;
+		for(BigDecimal sma : StockSignalEntity.SMA) {
+			for(int i=1; i<=20; i++) {
+				parameter = new StockSignalEntity();
+				parameter.setUpperDailySma(sma);
+				parameter.setUpperPriceDiff(BigDecimal.valueOf(i));
+				parameterList.add(parameter);
+			}
+		}
+		return parameterList;
+	}
+	
+	public static List<StockSignalEntity> getSmaLowerPriceDiffParameterList() throws Exception {
+		List<StockSignalEntity> parameterList = new ArrayList<StockSignalEntity>();
+		StockSignalEntity parameter = null;
+		for(BigDecimal sma : StockSignalEntity.SMA) {
+			for(int i=-1; i>=-20; i--) {
+				parameter = new StockSignalEntity();
+				parameter.setLowerDailySma(sma);
+				parameter.setLowerPriceDiff(BigDecimal.valueOf(i));
+				parameterList.add(parameter);
+			}
 		}
 		return parameterList;
 	}

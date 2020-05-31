@@ -131,6 +131,10 @@ public class StockSignalEntity extends BaseEntity implements Serializable {
 	@Transient
 	private Boolean isEmpty = true;
 	
+	public String getKeyString() {
+		return String.format("%s%s%s%s%s", this.stockCode, this.tradeDate.toString(), this.signalSeq, this.tradeDate.toString(), this.signalType );
+	}
+		
 	public String getStockCode() {
 		return stockCode;
 	}

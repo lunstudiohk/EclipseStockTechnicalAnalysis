@@ -19,7 +19,7 @@ public class BearishBeltHoldPattern extends BearishCandlestickPatterns implement
 		int index = super.tradeDateMap.get(tradeDate);
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
-		if( firstCandlestick.getDayHigh().compareTo(secondCandlestick.getOpenPrice()) < 0 ) {
+		if( firstCandlestick.getHighPrice().compareTo(secondCandlestick.getOpenPrice()) < 0 ) {
 			if( secondCandlestick.isFilled() ) {
 				if( secondCandlestick.isShortLowerShadow() ) {
 					if( secondCandlestick.isLongBody() ) {

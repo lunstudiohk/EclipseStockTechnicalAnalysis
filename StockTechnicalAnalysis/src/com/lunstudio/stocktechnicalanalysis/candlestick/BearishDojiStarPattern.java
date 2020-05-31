@@ -25,7 +25,7 @@ public class BearishDojiStarPattern extends BearishCandlestickPatterns implement
 					if( secondCandlestick.isDoji() ) {
 						super.init(secondCandlestick);
 						super.candlestickEntity.setConfirmPrice(secondCandlestick.getDayLow());
-						super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayHigh());
+						super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 						return true;
 					}
 				}

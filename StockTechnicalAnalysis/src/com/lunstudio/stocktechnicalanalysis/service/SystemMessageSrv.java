@@ -34,4 +34,9 @@ public class SystemMessageSrv {
 		return;
 	}
 	
+	public void saveSystemInfoMessage(String messageContent) throws Exception {
+		SystemMessageEntity entity = new SystemMessageEntity(SystemMessageEntity.INFO, messageContent);
+		this.systemMessageDao.save(entity);
+		return;
+	}
 }

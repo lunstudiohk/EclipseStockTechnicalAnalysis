@@ -88,6 +88,11 @@ public class DailyShortSmaCrossAboveSignal extends BullishSignal {
 
 		//SMA-Type
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaTypeParameterList()));
+		
+		//SAM-Price-Diff
+		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaUpperPriceDiffParameterList()));
+		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaLowerPriceDiffParameterList()));
+				
 		return finalList;
 	}
 
@@ -105,6 +110,13 @@ public class DailyShortSmaCrossAboveSignal extends BullishSignal {
 		if( signal1.getLowerPeriod() != null && signal2.getLowerPeriod() != null) {
 			return SignalParameterValidator.getValidSmaPeriodSignal(signal1, signal2);
 		}
+		
+		//SAM-Price-Diff
+		if( signal1.getUpperDailySma() != null && signal1.getUpperPriceDiff() != null && signal2.getUpperDailySma() != null && signal2.getUpperPriceDiff() != null ) {
+			return SignalParameterValidator.getValidSmaUpperPriceDiff(signal1, signal2);
+		} else if( signal1.getLowerDailySma() != null && signal1.getLowerPriceDiff() != null && signal2.getLowerDailySma() != null && signal2.getLowerPriceDiff() != null ) {
+			return SignalParameterValidator.getValidSmaLowerPriceDiff(signal1, signal2);
+		}		
 		return null;
 	}
 
@@ -144,6 +156,11 @@ public class DailyShortSmaCrossAboveSignal extends BullishSignal {
 			if( SignalParameterValidator.isSmaTypeValid(stockPriceVoList, signal, tradeIndex) ) {
 				return true;
 			}
+			
+			//SAM-Price-Diff
+			if( SignalParameterValidator.isSmaPriceDiffValid(stockPriceVoList, signal, tradeIndex) ) {
+				return true;
+			}			
 		}
 		return false;
 	}
@@ -158,12 +175,13 @@ public class DailyShortSmaCrossAboveSignal extends BullishSignal {
 		return buf.toString();
 	}
 
-	public static String getSignalShortDesc(StockSignalEntity signal) {
-		StringBuffer buf = new StringBuffer();
-		buf.append("升穿10MA");
+	public static List<String> getSignalShortDesc(StockSignalEntity signal) {
+		List<String> lists = new ArrayList<String>();
+		lists.add("升穿10MA");
 		if( signal.getLowerPeriod() != null ) {
-			buf.append(String.format("  跌穿10MA多於 %s日", signal.getLowerPeriod()));
+			lists.add(String.format("跌穿10MA多於 %s日", signal.getLowerPeriod()));
 		}
-		return buf.toString();
+		lists.addAll(GeneralSignal.getSecondarySignalDesc(signal));
+		return lists;
 	}
 }

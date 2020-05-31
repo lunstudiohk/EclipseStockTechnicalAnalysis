@@ -44,7 +44,7 @@ public class StockSignal extends FirebaseData {
 		Map<String, Object> low = new HashMap<String, Object>();
 		low.put("min", entity.getLowerMax().doubleValue());
 		low.put("median", entity.getLowerMedian().doubleValue());
-		low.put("max", entity.getLowerMax().doubleValue());
+		low.put("max", entity.getLowerMin().doubleValue());
 		low.put("day", entity.getLowerDayMedian().doubleValue());
 		signal.put("low", low);
 		

@@ -52,10 +52,15 @@ public class FirebaseQuery {
 	private void start(String[] args) throws Exception {
 		logger.info("Start.....");
 		final Semaphore semaphore = new Semaphore(0);
-		DatabaseReference ref = FirebaseDao.getInstance().getStockSignalRef();
-		ref.orderByChild("stock").equalTo("HKG:0700").addValueEventListener(new ValueEventListener() {
+		
+		//DatabaseReference ref = FirebaseDao.getInstance().getStockSignalRef();
+		//ref.orderByChild("stock").equalTo("HKG:0700").addValueEventListener(new ValueEventListener() {
+		
 		//DatabaseReference ref = FirebaseDao.getInstance().getStockPriceRef();
 		//ref.orderByChild("date").equalTo("2020-01-03").addValueEventListener(new ValueEventListener() {
+		
+		DatabaseReference ref = FirebaseDao.getInstance().getStockTradeDateRef();
+		ref.orderByKey().limitToLast(50).addValueEventListener(new ValueEventListener() {
 		
 		//DatabaseReference ref = FirebaseDao.getInstance().getStockSignalRef();
 		//ref.orderByChild("stock").equalTo("INDEXHANGSENG:HSI").limitToLast(50).addValueEventListener(new ValueEventListener() {

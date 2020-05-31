@@ -143,7 +143,7 @@ public class GetStockImplVol {
 		Map<String, String> stockCodeMap = new HashMap<String, String>();
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
-			stockCodeMap.put(stock.getStockAtsCode(), stock.getStockCode());
+			//stockCodeMap.put(stock.getStockAtsCode(), stock.getStockCode());
 		}
 		return stockCodeMap;
 	}

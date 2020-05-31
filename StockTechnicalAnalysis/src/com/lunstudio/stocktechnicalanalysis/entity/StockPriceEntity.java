@@ -16,7 +16,6 @@ import org.json.simple.JSONObject;
 
 import com.lunstudio.stocktechnicalanalysis.util.DateUtils;
 
-import eu.verdelhan.ta4j.Tick;
 
 @Entity
 @Table(name = "tb_stockprice")
@@ -42,42 +41,23 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 
 	private BigDecimal openPrice;
 	private BigDecimal closePrice;
-	private BigDecimal dayHigh;
-	private BigDecimal dayLow;
-	private BigDecimal dayVolume;
+	private BigDecimal highPrice;
+	private BigDecimal lowPrice;
+	private BigDecimal volume;
+	
+	private BigDecimal macd;
+	
+	private BigDecimal macdSignal;
+		
+	private BigDecimal shortRsi;
+	
+	private BigDecimal longRsi;
 
-	@Transient
-	private BigDecimal dailyMacd;
+	private BigDecimal shortSma;
 	
-	@Transient
-	private BigDecimal dailyMacdSignal;
-
-	@Transient
-	private BigDecimal dailyMacdHistogram;
+	private BigDecimal mediumSma;
 	
-	@Transient
-	private BigDecimal weeklyMacdSignal;
-	
-	@Transient
-	private BigDecimal weeklyMacd;
-	
-	@Transient
-	private BigDecimal weeklyMacdHistogram;
-	
-	@Transient
-	private BigDecimal dailyShortRsi;
-	
-	@Transient
-	private BigDecimal dailyLongRsi;
-
-	@Transient
-	private BigDecimal dailyShortSma;
-	
-	@Transient
-	private BigDecimal dailyMediumSma;
-	
-	@Transient
-	private BigDecimal dailyLongSma;
+	private BigDecimal longSma;
 	
 	public StockPriceEntity() {
 		super();
@@ -90,9 +70,9 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		this.tradeDate = that.tradeDate;
 		this.openPrice = that.openPrice.add(BigDecimal.ZERO);
 		this.closePrice = that.closePrice.add(BigDecimal.ZERO);
-		this.dayHigh = that.dayHigh.add(BigDecimal.ZERO);
-		this.dayLow = that.dayLow.add(BigDecimal.ZERO);
-		this.dayVolume = that.dayVolume.add(BigDecimal.ZERO);
+		this.highPrice = that.highPrice.add(BigDecimal.ZERO);
+		this.lowPrice = that.lowPrice.add(BigDecimal.ZERO);
+		this.volume = that.volume.add(BigDecimal.ZERO);
 		return;
 	}
 	
@@ -102,8 +82,8 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		this.setTradeDate(Date.valueOf(tradeDate));
 		this.setPriceType(type);
 		this.setOpenPrice(new BigDecimal((String)json.get("1. open")));
-		this.setDayHigh(new BigDecimal((String)json.get("2. high")));
-		this.setDayLow(new BigDecimal((String)json.get("3. low")));
+		this.setHighPrice(new BigDecimal((String)json.get("2. high")));
+		this.setLowPrice(new BigDecimal((String)json.get("3. low")));
 		this.setClosePrice(new BigDecimal((String)json.get("4. close")));
 		this.setDayVolume(new BigDecimal((String)json.get("5. volume")));
 		return;
@@ -115,103 +95,130 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		this.setTradeDate(tradeDate);
 		this.setPriceType(type);
 		this.setOpenPrice(new BigDecimal((String)json.get("1. open")));
-		this.setDayHigh(new BigDecimal((String)json.get("2. high")));
-		this.setDayLow(new BigDecimal((String)json.get("3. low")));
+		this.setHighPrice(new BigDecimal((String)json.get("2. high")));
+		this.setLowPrice(new BigDecimal((String)json.get("3. low")));
 		this.setClosePrice(new BigDecimal((String)json.get("4. close")));
 		this.setDayVolume(new BigDecimal((String)json.get("5. volume")));
 		return;
 	}
 	
-	public BigDecimal getDailyShortSma() {
-		return dailyShortSma;
+	public static StockPriceEntity getStooqStockPriceEntity(String stockCode, String stooq) {
+		StockPriceEntity stockPrice = new StockPriceEntity();
+		//Date,Open,High,Low,Close,Volume 
+		//2020-05-20,54.8,54.95,54,54.15,4703873
+		String[] token = stooq.split(",");
+		if( token.length >= 5 ) {
+			stockPrice.setStockCode(stockCode);
+			stockPrice.setPriceType("D");
+			stockPrice.setTradeDate(DateUtils.getDateFromString(token[0]));
+			stockPrice.setOpenPrice(new BigDecimal(token[1]));
+			stockPrice.setHighPrice(new BigDecimal(token[2]));
+			stockPrice.setLowPrice(new BigDecimal(token[3]));
+			stockPrice.setClosePrice(new BigDecimal(token[4]));
+			if( token.length > 5 ) {
+				stockPrice.setDayVolume(new BigDecimal(token[5]));
+			} else {
+				//System.out.println(String.format("%s - %s : No Volume", stockCode, token[0]));
+			}
+			return stockPrice;
+		} else {
+			System.out.println(String.format("%s - %s", stockCode, stooq));
+			return null;
+		}
+		
+	}
+	
+	public BigDecimal getHighPrice() {
+		return highPrice;
 	}
 
-	public void setDailyShortSma(BigDecimal dailyShortSma) {
-		this.dailyShortSma = dailyShortSma;
+	public void setHighPrice(BigDecimal highPrice) {
+		this.highPrice = highPrice;
 	}
 
-	public BigDecimal getDailyMediumSma() {
-		return dailyMediumSma;
+	public BigDecimal getLowPrice() {
+		return lowPrice;
 	}
 
-	public void setDailyMediumSma(BigDecimal dailyMediumSma) {
-		this.dailyMediumSma = dailyMediumSma;
+	public void setLowPrice(BigDecimal lowPrice) {
+		this.lowPrice = lowPrice;
 	}
 
-	public BigDecimal getDailyLongSma() {
-		return dailyLongSma;
+	public BigDecimal getVolume() {
+		return volume;
 	}
 
-	public void setDailyLongSma(BigDecimal dailyLongSma) {
-		this.dailyLongSma = dailyLongSma;
+	public void setVolume(BigDecimal volume) {
+		this.volume = volume;
 	}
 
-	public BigDecimal getDailyShortRsi() {
-		return dailyShortRsi;
+	public BigDecimal getShortSma() {
+		return shortSma;
 	}
 
-	public void setDailyShortRsi(BigDecimal dailyShortRsi) {
-		this.dailyShortRsi = dailyShortRsi;
+	public void setShortSma(BigDecimal shortSma) {
+		this.shortSma = shortSma;
 	}
 
-	public BigDecimal getDailyLongRsi() {
-		return dailyLongRsi;
+	public BigDecimal getMediumSma() {
+		return mediumSma;
 	}
 
-	public void setDailyLongRsi(BigDecimal dailyLongRsi) {
-		this.dailyLongRsi = dailyLongRsi;
+	public void setMediumSma(BigDecimal mediumSma) {
+		this.mediumSma = mediumSma;
 	}
 
-	public BigDecimal getWeeklyMacdSignal() {
-		return weeklyMacdSignal;
+	public BigDecimal getLongSma() {
+		return longSma;
 	}
 
-	public void setWeeklyMacdSignal(BigDecimal weeklyMacdSignal) {
-		this.weeklyMacdSignal = weeklyMacdSignal;
+	public void setLongSma(BigDecimal longSma) {
+		this.longSma = longSma;
 	}
 
-	public BigDecimal getWeeklyMacd() {
-		return weeklyMacd;
+	public BigDecimal getShortRsi() {
+		return shortRsi;
 	}
 
-	public void setWeeklyMacd(BigDecimal weeklyMacd) {
-		this.weeklyMacd = weeklyMacd;
+	public void setShortRsi(BigDecimal shortRsi) {
+		this.shortRsi = shortRsi;
 	}
 
-	public BigDecimal getWeeklyMacdHistogram() {
-		return weeklyMacdHistogram;
+	public BigDecimal getLongRsi() {
+		return longRsi;
 	}
 
-	public void setWeeklyMacdHistogram(BigDecimal weeklyMacdHistogram) {
-		this.weeklyMacdHistogram = weeklyMacdHistogram;
+	public void setLongRsi(BigDecimal longRsi) {
+		this.longRsi = longRsi;
 	}
 
-	public BigDecimal getDailyMacdHistogram() {
-		return dailyMacdHistogram;
+	public BigDecimal getMacdHistogram() {
+		//return macdHistogram;
+		return this.getMacd().subtract(this.getMacdSignal());
 	}
-
-	public void setDailyMacdHistogram(BigDecimal dailyMacdHistogram) {
-		this.dailyMacdHistogram = dailyMacdHistogram;
+/*
+	public void setMacdHistogram(BigDecimal dailyMacdHistogram) {
+		this.macdHistogram = dailyMacdHistogram;
 	}
-
+*/
 	public Date getTradeDate() {
 		return tradeDate;
 	}
 
-	public BigDecimal getDailyMacd() {
-		return dailyMacd;
+	public BigDecimal getMacd() {
+		return macd;
 	}
 
-	public void setDailyMacd(BigDecimal dailyMacd) {
-		this.dailyMacd = dailyMacd;
+	public void setMacd(BigDecimal macd) {
+		this.macd = macd;
 	}
 
-	public BigDecimal getDailyMacdSignal() {
-		return dailyMacdSignal;
+	public BigDecimal getMacdSignal() {
+		return macdSignal;
 	}
 
-	public void setDailyMacdSignal(BigDecimal dailyMacdSignal) {
-		this.dailyMacdSignal = dailyMacdSignal;
+	public void setMacdSignal(BigDecimal macdSignal) {
+		this.macdSignal = macdSignal;
 	}
 
 	public void setTradeDate(Date tradeDate) {
@@ -250,28 +257,20 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		this.closePrice = closePrice;
 	}
 
-	public BigDecimal getDayHigh() {
-		return dayHigh;
-	}
-
-	public void setDayHigh(BigDecimal dayHigh) {
-		this.dayHigh = dayHigh;
-	}
-
 	public BigDecimal getDayLow() {
-		return dayLow;
+		return lowPrice;
 	}
 
 	public void setDayLow(BigDecimal dayLow) {
-		this.dayLow = dayLow;
+		this.lowPrice = dayLow;
 	}
 
 	public BigDecimal getDayVolume() {
-		return dayVolume;
+		return volume;
 	}
 
 	public void setDayVolume(BigDecimal dayVolume) {
-		this.dayVolume = dayVolume;
+		this.volume = dayVolume;
 	}
 
 	public boolean isHollow() {
@@ -287,22 +286,22 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		}
 		return false;
 	}
-
+/*
 	public Tick toTick() {
         ZonedDateTime date = DateUtils.getLocalDate(this.tradeDate).atStartOfDay(ZoneId.systemDefault());
         String open = this.openPrice.toString();
-        String high = this.dayHigh.toString();
-        String low = this.dayLow.toString();
+        String high = this.highPrice.toString();
+        String low = this.lowPrice.toString();
         String close = this.closePrice.toString();
         String volume = "0";
     	try{
-    		volume = this.dayVolume.toString(); //Long.toString(this.dayVolume);
+    		volume = this.volume.toString(); //Long.toString(this.dayVolume);
     	}catch(Exception e) {
     		
     	}
 		return new Tick(date, open, high, low, close, volume);
 	}
-
+*/
 	@Override
     public boolean equals(Object obj) {
 		if( this == obj ) {
@@ -320,6 +319,9 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 	}
 	
 	public boolean isSame(StockPriceEntity that) {
+		if( that == null ) {
+			return false;
+		}
 		if( this.tradeDate.compareTo(that.tradeDate) != 0 ) {
 			return false;
 		}
@@ -332,16 +334,24 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		if( this.openPrice.compareTo(that.openPrice) != 0 ) {
 			return false;
 		}
-		if( this.dayLow.compareTo(that.dayLow) != 0 ) {
+		if( this.lowPrice.compareTo(that.lowPrice) != 0 ) {
 			return false;
 		}
-		if( this.dayHigh.compareTo(that.dayHigh) != 0 ) {
+		if( this.highPrice.compareTo(that.highPrice) != 0 ) {
 			return false;
 		}
-		BigDecimal upperLimit = this.dayVolume.multiply(BigDecimal.valueOf(1.05));
-		BigDecimal lowerLimit = this.dayVolume.multiply(BigDecimal.valueOf(0.95));
-		if( that.dayVolume.compareTo(upperLimit) > 0 || that.dayVolume.compareTo(lowerLimit) < 0 ) {
+		if( that.volume == null && that.volume != null ) {
 			return false;
+		}
+		if( that.volume != null && that.volume == null ) {
+			return false;
+		}
+		if( that.volume != null && that.volume != null ) {
+			BigDecimal upperLimit = this.volume.multiply(BigDecimal.valueOf(1.05));
+			BigDecimal lowerLimit = this.volume.multiply(BigDecimal.valueOf(0.95));
+			if( that.volume.compareTo(upperLimit) > 0 || that.volume.compareTo(lowerLimit) < 0 ) {
+				return false;
+			}
 		}
 		return true;
 	}

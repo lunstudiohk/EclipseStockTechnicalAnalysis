@@ -65,6 +65,11 @@ public class BullishDailyCandlestickSignal extends BullishSignal {
 		
 		//SMA-Type
 		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaTypeParameterList()));
+		
+		//SAM-Price-Diff
+		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaUpperPriceDiffParameterList()));
+		finalList.addAll(super.getValidSignalList(SignalParameterGenerator.getSmaLowerPriceDiffParameterList()));
+		
 		return finalList;
 	}
 	
@@ -95,6 +100,11 @@ public class BullishDailyCandlestickSignal extends BullishSignal {
 			if( SignalParameterValidator.isSmaTypeValid(stockPriceVoList, signal, tradeIndex) ) {
 				return true;
 			}
+			
+			//SAM-Price-Diff
+			if( SignalParameterValidator.isSmaPriceDiffValid(stockPriceVoList, signal, tradeIndex) ) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -112,6 +122,12 @@ public class BullishDailyCandlestickSignal extends BullishSignal {
 		if( signal1.getLowerPeriod() != null && signal2.getLowerPeriod() != null) {
 			return SignalParameterValidator.getValidSmaPeriodSignal(signal1, signal2);
 		}
+		//SAM-Price-Diff
+		if( signal1.getUpperDailySma() != null && signal1.getUpperPriceDiff() != null && signal2.getUpperDailySma() != null && signal2.getUpperPriceDiff() != null ) {
+			return SignalParameterValidator.getValidSmaUpperPriceDiff(signal1, signal2);
+		} else if( signal1.getLowerDailySma() != null && signal1.getLowerPriceDiff() != null && signal2.getLowerDailySma() != null && signal2.getLowerPriceDiff() != null ) {
+			return SignalParameterValidator.getValidSmaLowerPriceDiff(signal1, signal2);
+		}
 		return null;
 	}
 
@@ -122,7 +138,10 @@ public class BullishDailyCandlestickSignal extends BullishSignal {
 		return buf.toString();
 	}
 
-	public static String getSignalShortDesc(StockSignalEntity signal) {
-		return BullishCandlestickPatterns.getBullishCandlestickPatternDesc(signal.getType()-offset);
+	public static List<String> getSignalShortDesc(StockSignalEntity signal) {
+		List<String> lists = new ArrayList<String>();
+		lists.add(BullishCandlestickPatterns.getBullishCandlestickPatternDesc(signal.getType()-offset));
+		lists.addAll(GeneralSignal.getSecondarySignalDesc(signal));
+		return lists;
 	}
 }

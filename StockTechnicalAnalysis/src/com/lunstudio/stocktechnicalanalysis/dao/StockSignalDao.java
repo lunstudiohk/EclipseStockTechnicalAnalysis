@@ -13,4 +13,5 @@ public interface StockSignalDao extends BaseDao {
 	
 	public List<StockSignalEntity> getIncompletedStockSignalList() throws Exception;
 	
+	public List<StockSignalEntity> getInCompleteStockSignalList() throws Exception;
 }

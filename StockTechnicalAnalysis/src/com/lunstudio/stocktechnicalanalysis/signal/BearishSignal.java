@@ -98,7 +98,7 @@ public abstract class BearishSignal extends GeneralSignal {
 		return signal.toString();
 	}
 	
-	public static String getDailyBearishPrimarySignalDesc(StockSignalEntity signal) {
+	public static List<String> getDailyBearishPrimarySignalDesc(StockSignalEntity signal) {
 		switch(signal.getType()) {
 		case 1:
 			return DailyMacdCrossBelowSignal.getSignalShortDesc(signal);

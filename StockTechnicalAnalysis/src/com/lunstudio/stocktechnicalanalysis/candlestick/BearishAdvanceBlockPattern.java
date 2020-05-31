@@ -35,7 +35,7 @@ public class BearishAdvanceBlockPattern extends BearishCandlestickPatterns imple
 												if( thirdCandlestick.getUpperShadow().compareTo(firstCandlestick.getUpperShadow()) > 0 ) {
 													super.init(thirdCandlestick);
 													super.candlestickEntity.setConfirmPrice(thirdCandlestick.getBodyHalf());
-													super.candlestickEntity.setStoplossPrice(thirdCandlestick.getDayHigh());
+													super.candlestickEntity.setStoplossPrice(thirdCandlestick.getHighPrice());
 													return true;
 												}
 											}

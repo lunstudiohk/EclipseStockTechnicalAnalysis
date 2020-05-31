@@ -23,12 +23,12 @@ public class BearishHangingManPattern extends BearishCandlestickPatterns impleme
 			if( secondCandlestick.getLowerShadow().compareTo(secondCandlestick.getBody().multiply(two)) > 0 ) {
 				if( secondCandlestick.isFilled() ) {
 					if( secondCandlestick.isShortBody() ) {
-						if( CandleStickVo.isSamePrice(secondCandlestick.getOpenPrice(), secondCandlestick.getDayHigh()) ) {
+						if( CandleStickVo.isSamePrice(secondCandlestick.getOpenPrice(), secondCandlestick.getHighPrice()) ) {
 							if( secondCandlestick.isLongLowerShadow() ) {
 								if( secondCandlestick.getUpperShadow().compareTo(secondCandlestick.getBody()) < 0 ) {
 									super.init(secondCandlestick);
 									super.candlestickEntity.setConfirmPrice(secondCandlestick.getLowerShadowHalf());
-									super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayHigh());
+									super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 									return true;
 								}
 							}

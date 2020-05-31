@@ -30,7 +30,7 @@ public class BearishHaramiPattern extends BearishCandlestickPatterns implements 
 							} else {
 								super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyHalf());
 							}
-							super.candlestickEntity.setStoplossPrice(firstCandlestick.getDayHigh());
+							super.candlestickEntity.setStoplossPrice(firstCandlestick.getHighPrice());
 							return true;
 						}
 					}

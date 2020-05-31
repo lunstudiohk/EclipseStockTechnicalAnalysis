@@ -30,7 +30,7 @@ public class BullishConcealingBabySwallowPattern extends BullishCandlestickPatte
 						if( thirdCandlestick.isGapDown(secondCandlestick) ) {
 							if( thirdCandlestick.isLongUpperShadow() ) {
 								if( forthCandlestick.isFilled() ) {
-									if( thirdCandlestick.getDayHigh().compareTo(forthCandlestick.getTop()) < 0 ) {
+									if( thirdCandlestick.getHighPrice().compareTo(forthCandlestick.getTop()) < 0 ) {
 										if( thirdCandlestick.getDayLow().compareTo(forthCandlestick.getBottom()) > 0 ) {
 											super.init(forthCandlestick);
 											super.candlestickEntity.setConfirmPrice(thirdCandlestick.getBodyHalf());

@@ -145,4 +145,21 @@ public class StockPriceDaoImpl extends BaseDaoImpl implements StockPriceDao {
         	return null;
         }
 	}
+
+	@Override
+	public List<StockPriceEntity> getNoVolumeStockPriceList(String stockCode) {
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StockPriceEntity> query = builder.createQuery(StockPriceEntity.class);
+        Root<StockPriceEntity> stockPriceRoot = query.from(StockPriceEntity.class);
+        query.select(stockPriceRoot);
+        
+        Predicate primaryKey = builder.and(
+        		builder.equal(stockPriceRoot.get("stockCode"), stockCode),
+        		builder.equal(stockPriceRoot.get("volume"), null)
+        	);
+        query.where(primaryKey);
+        query.orderBy(builder.asc(stockPriceRoot.get("tradeDate")));
+        return session.createQuery(query).list(); 
+	}
 }

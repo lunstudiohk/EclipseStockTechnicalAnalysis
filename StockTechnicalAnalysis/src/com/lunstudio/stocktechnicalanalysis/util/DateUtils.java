@@ -16,17 +16,22 @@ public class DateUtils {
 	private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private final static SimpleDateFormat shortDateFormat = new SimpleDateFormat("yyMMdd");
+	private final static SimpleDateFormat longDateFormat = new SimpleDateFormat("yyyyMMdd");
 	private final static SimpleDateFormat googleDateTimeFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss"); // 6/10/2016 15:59:59
 	private final static SimpleDateFormat googleTradeDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	private final static SimpleDateFormat googleHistoricalDateFormat = new SimpleDateFormat("MMM dd, yyyy");
 	private final static SimpleDateFormat hkexDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 	private final static SimpleDateFormat csvDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-	
+	private final static SimpleDateFormat weekFormatter = new SimpleDateFormat("EE");
+
 	//private static final SimpleDateFormat googleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private static Calendar firstCal = Calendar.getInstance();
 	private static Calendar secondCal = Calendar.getInstance();
 	
+	public static String getDayOfWeek(Date theDate) {
+		return weekFormatter.format(theDate);
+	}
 	public static String calendarDateToString(Calendar date) {
 		return dateFormat.format(date.getTime());
 	}
@@ -112,6 +117,10 @@ public class DateUtils {
 		return shortDateFormat.format(date);
 	}
 	
+	public static String getLongDateString(Date date) {
+		return longDateFormat.format(date);
+	}
+		
 	public static String getGoogleHistoricalDate(Date date) {
 		return googleHistoricalDateFormat.format(date);
 	}
@@ -153,7 +162,11 @@ public class DateUtils {
 	public static String getDateString(Timestamp timestamp) {
 		return dateFormat.format(timestamp);
 	}
-	
+
+	public static String getDateString(Date date) {
+		return dateFormat.format(date);
+	}
+
 	public static String getFirebaseDateString(Date date) {
 		return dateFormat.format(date);
 	}

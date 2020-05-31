@@ -1,7 +1,9 @@
 package com.lunstudio.stocktechnicalanalysis.service;
 
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,4 +38,37 @@ public class StockSignalDateSrv {
 	public List<StockSignalDateEntity> getStockSignalDateList(String stockCode, Date tradeDate, Integer signalSeq, String signalType, Integer order) throws Exception {
 		return this.stockSignalDateDao.getStockSignalDateList(stockCode, tradeDate, signalSeq, signalType, order);
 	}
+	
+	public List<StockSignalDateEntity> getStockSignalHistoricalDateList(String stockCode, Date startDate) throws Exception {
+		return this.stockSignalDateDao.getStockSignalHistoricalDateList(stockCode, startDate);
+	}
+	
+	/**
+	 * Only get the Current Signal Date
+	 * @param startDate Inclusive
+	 * @return
+	 * @throws Exception
+	 */
+	public List<StockSignalDateEntity> getStockSignalTradeDateList(Date startDate) throws Exception {
+		return this.stockSignalDateDao.getStockSignalTradeDateList(null, startDate);
+	}
+	
+	public Map<String, StockSignalDateEntity> getStockSignalTradeDateMap(String stockCode, Date startDate) throws Exception {
+		Map<String, StockSignalDateEntity> keyMap = new HashMap<String, StockSignalDateEntity>();
+		List<StockSignalDateEntity> stockSignalList = this.stockSignalDateDao.getStockSignalTradeDateList(stockCode, startDate);
+		for(StockSignalDateEntity stockSignal : stockSignalList) {
+			keyMap.put(stockSignal.getKeyString(), stockSignal);
+		}
+		return keyMap;
+	}
+	
+	public Map<String, StockSignalDateEntity> getStockSignalTradeDateMap(Date startDate) throws Exception {
+		Map<String, StockSignalDateEntity> keyMap = new HashMap<String, StockSignalDateEntity>();
+		List<StockSignalDateEntity> stockSignalList = this.stockSignalDateDao.getStockSignalTradeDateList(null, startDate);
+		for(StockSignalDateEntity stockSignal : stockSignalList) {
+			keyMap.put(stockSignal.getKeyString(), stockSignal);
+		}
+		return keyMap;
+	}
+		
 }

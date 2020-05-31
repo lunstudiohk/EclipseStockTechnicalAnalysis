@@ -1,5 +1,6 @@
 package com.lunstudio.stocktechnicalanalysis.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.lunstudio.stocktechnicalanalysis.dao.StockDao;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 
 
 @Service
@@ -81,4 +83,6 @@ public class StockSrv {
 			return String.format("HKG:%s", StringUtils.right(hkexCode, 4));
 		}
 	}
+	
+	
 }

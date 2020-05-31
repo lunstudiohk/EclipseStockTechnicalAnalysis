@@ -86,9 +86,29 @@ public abstract class GeneralSignal {
 				finalList.add(signal);
 			}
 		}
+		
 		return finalList;
 	}
-		
+	
+	protected List<StockSignalEntity> getTheMaxConfidentSignal(List<StockSignalEntity> signalList) throws Exception {
+		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
+		//Get the max confident signal
+		for(int i=0; i<signalList.size(); i++) {
+			if( finalList.isEmpty() ) {
+				finalList.add(signalList.get(i));
+			} else {
+				try {
+				if( finalList.get(0).getConfident().compareTo(signalList.get(i).getConfident()) < 0 ) {
+					finalList.set(0, signalList.get(i));
+				}
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return finalList;
+	}
+	
 	protected List<StockSignalEntity> getValidSignalList(List<StockSignalEntity> signalList) throws Exception {
 		List<StockSignalEntity> list = new ArrayList<StockSignalEntity>();
 		for(StockSignalEntity signal : signalList ) {
@@ -96,7 +116,8 @@ public abstract class GeneralSignal {
 				list.add(signal);
 			}
 		}
-		return this.filterInvalidSignal(list);
+		//return this.filterInvalidSignal(list);
+		return this.getTheMaxConfidentSignal(list);
 	}
 	
 	private boolean isValidSignal(StockSignalEntity signal) throws Exception {
@@ -112,6 +133,7 @@ public abstract class GeneralSignal {
 		
 		//Only generate today stock signal
 		if( !tradeIndexList.contains(stockPriceVoList.size()-1) ) {
+			//Comment for Debug
 			return false;
 		}
 		
@@ -120,8 +142,9 @@ public abstract class GeneralSignal {
 		DescriptiveStatistics maxStats = new DescriptiveStatistics();
 		DescriptiveStatistics minPeriodStats = new DescriptiveStatistics();
 		DescriptiveStatistics minStats = new DescriptiveStatistics();
-		Date tradeDate = this.stockPriceVoList.get(stockPriceVoList.size()-1).getTradeDate();
+		Date tradeDate = this.stockPriceVoList.get(tradeIndexList.get(tradeIndexList.size()-1)).getTradeDate();
 		for(int tradeIndex: tradeIndexList) {
+			//tradeDate = this.stockPriceVoList.get(tradeIndex).getTradeDate();
 			BigDecimal min = BigDecimal.valueOf(999);
 			BigDecimal max = BigDecimal.valueOf(-999);
 			int maxPeriod = -1;
@@ -171,6 +194,9 @@ public abstract class GeneralSignal {
 		if( StockSignalEntity.SIGNAL_TYPE_BUY.equals(this.signalType) ) {
 			double[] maxReturn = maxStats.getSortedValues();
 			int index = this.getMinIndex(maxReturn, 3);
+			if( index == -1 ) {
+				return false;
+			}
 			confident = 100* (maxReturn.length - index) / (double) maxReturn.length;
 			target = maxReturn[index];
 			if( confident < 90) {
@@ -180,6 +206,9 @@ public abstract class GeneralSignal {
 			double[] minReturn = minStats.getSortedValues();
 			int index = this.getMaxIndex(minReturn, -3);
 			confident = 100 * (index+1) / (double) minReturn.length;
+			if( index == -1 ) {
+				return false;
+			}
 			target = minReturn[index];
 			if( confident < 90) {
 				return false;
@@ -203,6 +232,7 @@ public abstract class GeneralSignal {
 		signal.setLowerDayMedian(BigDecimal.valueOf(minPeriodStats.getPercentile(50)).setScale(0, RoundingMode.HALF_UP).intValue());
 		signal.setTradeDate(tradeDate);
 		
+		/*
 		if( this.stockPriceVoList.size() > 50 ) {
 			signal.setLongStrength(this.getRelativeStrength(50));
 		}
@@ -212,7 +242,7 @@ public abstract class GeneralSignal {
 		if( this.stockPriceVoList.size() > 10 ) {
 			signal.setShortStrength(this.getRelativeStrength(10));
 		}
-		
+		*/
 		signal.setConfident(BigDecimal.valueOf(confident).setScale(2, RoundingMode.HALF_UP));
 		signal.setTargetReturn(BigDecimal.valueOf(target));
 	
@@ -341,6 +371,13 @@ public abstract class GeneralSignal {
 			}
 		}
 
+		if( signal.getUpperDailySma() != null && signal.getUpperPriceDiff() != null ) {
+			buf.append(String.format("[高於%sMA %s%%]", signal.getUpperDailySma(), signal.getUpperPriceDiff()));
+		} 
+		if( signal.getLowerDailySma() != null && signal.getLowerPriceDiff() != null ) {
+			buf.append(String.format("[低於%sMA %s%%]", signal.getLowerDailySma(), signal.getLowerPriceDiff()));
+		}
+		
 		buf.append(String.format("[回報: %s, 信心: %s]", signal.getTargetReturn(), signal.getConfident()));
 		buf.append(String.format("[次數: %s次] ", signal.getCount()));
 		buf.append(String.format("[未來: %s日] ", signal.getPeriod()));
@@ -349,68 +386,81 @@ public abstract class GeneralSignal {
 		}
 		buf.append(String.format("[升幅(%s): %s, %s, %s] ", signal.getUpperDayMedian(), signal.getUpperMin(), signal.getUpperMedian(), signal.getUpperMax()));
 		buf.append(String.format("[跌幅(%s): %s, %s, %s] ", signal.getLowerDayMedian(), signal.getLowerMax(), signal.getLowerMedian(), signal.getLowerMin()));
-		//buf.append("\n");
-		//buf.append(signal.getStockSignalDateList());
+		
+		//Display Date
+		//Comment for Debug
+		/*
+		buf.append("\n");
+		buf.append(signal.getStockSignalDateList());
+		*/
 		return buf.toString();
 	}
 	
-	public static String getSecondarySignalDesc(StockSignalEntity signal) {
-		StringBuffer buf = new StringBuffer();
+	public static List<String> getSecondarySignalDesc(StockSignalEntity signal) {
+		List<String> lists = new ArrayList<String>();
 		
 		if( signal.getRsiType() != null ) {
 			if( StockSignalEntity.RSI_ABOVE.compareTo(signal.getRsiType()) == 0 ) {
-				buf.append("RSI-5 > RSI-14");
+				lists.add("RSI-5 > RSI-14");
 			} else if( StockSignalEntity.RSI_BELOW.compareTo(signal.getRsiType()) == 0 ) {
-				buf.append("RSI-5 < RSI-14");
+				lists.add("RSI-5 < RSI-14");
 			}
 		}
 		if( signal.getLowerDailyRsi() != null && signal.getUpperDailyRsi() != null ) {
-			buf.append(String.format("RSI: %s - %s", signal.getLowerDailyRsi().setScale(0), signal.getUpperDailyRsi().setScale(0)));
+			lists.add(String.format("RSI: %s - %s", signal.getLowerDailyRsi().setScale(0), signal.getUpperDailyRsi().setScale(0)));
 		}
 		if( signal.getMacdType() != null ) {
 			if( StockSignalEntity.MACD_ABOVE_ZERO == signal.getMacdType() ) {
-				buf.append("MACD > 0");
+				lists.add("MACD > 0");
 			} else if( StockSignalEntity.MACD_BELOW_ZERO == signal.getMacdType() ) {
-				buf.append("MACD < 0");
+				lists.add("MACD < 0");
 			} else if( StockSignalEntity.MACD_CROSS_ZERO == signal.getMacdType() ) {
-				buf.append("MACD 升穿 0");
+				lists.add("MACD 升穿 0");
 			} else if( StockSignalEntity.MACD_HIGHER == signal.getMacdType() ) {
-				buf.append("MACD > 上次MACD");
+				lists.add("MACD > 上次MACD");
 			} else if( StockSignalEntity.MACD_LOWER == signal.getMacdType() ) {
-				buf.append("MACD < 上次MACD");
+				lists.add("MACD < 上次MACD");
 			}
 		}
 		if( signal.getCandlestickType() != null ) {
 			if( StockSignalEntity.CANDLESTICK_HALLOW.compareTo(signal.getCandlestickType()) == 0 ) {
-				buf.append("陽蠋");
+				lists.add("陽蠋");
 			} else if( StockSignalEntity.CANDLESTICK_FILLED.compareTo(signal.getCandlestickType()) == 0 ) {
-				buf.append("陰蠋");
+				lists.add("陰蠋");
 			} else if( StockSignalEntity.CANDLESTICK_FILLED_GAPUP.compareTo(signal.getCandlestickType()) == 0 ) {
-				buf.append("裂口高開陰蠋");
+				lists.add("裂口高開陰蠋");
 			} else if( StockSignalEntity.CANDLESTICK_FILLED_GAPDOWN.compareTo(signal.getCandlestickType()) == 0 ) {
-				buf.append("裂口低開陰蠋");
+				lists.add("裂口低開陰蠋");
 			} else if( StockSignalEntity.CANDLESTICK_HALLOW_GAPUP.compareTo(signal.getCandlestickType()) == 0 ) {
-				buf.append("裂口高開陽蠋");
+				lists.add("裂口高開陽蠋");
 			} else if( StockSignalEntity.CANDLESTICK_HALLOW_GAPDOWN.compareTo(signal.getCandlestickType()) == 0 ) {
-				buf.append("裂口高開陽蠋");
+				lists.add("裂口高開陽蠋");
 			}
 		}
 		
 		if( signal.getSmaType() != null ) {
 			if( StockSignalEntity.SMA_SHORT_MEDIUM_LONG.compareTo(signal.getSmaType()) == 0 ) {
-				buf.append("10MA > 20MA > 50MA");
+				lists.add("10MA > 20MA > 50MA");
 			} else if( StockSignalEntity.SMA_SHORT_LONG_MEDIUM.compareTo(signal.getSmaType()) == 0 ) {
-				buf.append("10MA > 50MA > 20MA");
+				lists.add("10MA > 50MA > 20MA");
 			} else if( StockSignalEntity.SMA_MEDIUM_SHORT_LONG.compareTo(signal.getSmaType()) == 0 ) {
-				buf.append("20MA > 10MA > 50MA");
+				lists.add("20MA > 10MA > 50MA");
 			} else if( StockSignalEntity.SMA_MEDIUM_LONG_SHORT.compareTo(signal.getSmaType()) == 0 ) {
-				buf.append("20MA > 50MA > 10MA");
+				lists.add("20MA > 50MA > 10MA");
 			} else if( StockSignalEntity.SMA_LONG_MEDIUM_SHORT.compareTo(signal.getSmaType()) == 0 ) {
-				buf.append("50MA > 20MA > 10MA");
+				lists.add("50MA > 20MA > 10MA");
 			} else if( StockSignalEntity.SMA_LONG_SHORT_MEDIUM.compareTo(signal.getSmaType()) == 0 ) {
-				buf.append("50MA > 10MA > 20MA");
+				lists.add("50MA > 10MA > 20MA");
 			}
 		}
-		return buf.toString();
+		
+		if( signal.getUpperDailySma() != null && signal.getUpperPriceDiff() != null ) {
+			lists.add(String.format("高於%sMA %s%%", signal.getUpperDailySma().setScale(0), signal.getUpperPriceDiff().setScale(0)));
+		} 
+		if( signal.getLowerDailySma() != null && signal.getLowerPriceDiff() != null ) {
+			lists.add(String.format("低於%sMA %s%%", signal.getLowerDailySma().setScale(0), signal.getLowerPriceDiff().setScale(0)));
+		}
+		
+		return lists;
 	}
 }

@@ -50,7 +50,7 @@ public class InitStockPrice {
 	}
 
 	private void start(String[] args) throws Exception {
-		if( args == null ) {
+		if( args[0].equals("D") ) {
 			this.initDailyStockPrice();
 		} else if( args[0].equals("W") ) {
 			this.initWeeklyStockPrice();
@@ -68,11 +68,38 @@ public class InitStockPrice {
 				continue;
 			}
 			*/
+			try {
+				this.getStockDailyHistorialPriceFromStooq(stock);
+				Thread.sleep(3000);
+			} catch(Exception e) {
+				logger.error(e.getMessage());
+			}
+			
+			/*
 			StockPriceEntity stockPrice = this.stockPriceSrv.getLatestDailyStockPriceEntity(stock.getStockCode());
 			if( stockPrice == null ) {
 				try {
 					long startTime = System.currentTimeMillis();
 					this.getStockDailyHistorialPrice(stock);
+					Thread.sleep(1000);
+					}catch(Exception e) {
+					logger.error(e.getMessage());
+				}
+			}
+			*/
+		}
+		return;
+	}
+	
+	
+	private void initWeeklyStockPrice() throws Exception {
+		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
+		for(StockEntity stock : stockList) {
+			StockPriceEntity stockPrice = this.stockPriceSrv.getLatestWeeklyStockPriceEntity(stock.getStockCode());
+			if( stockPrice == null ) {
+				try {
+					long startTime = System.currentTimeMillis();
+					this.getStockWeeklyHistorialPrice(stock);
 					while(System.currentTimeMillis()-startTime < 20000 ) {
 						Thread.sleep(1000);
 					}
@@ -84,27 +111,27 @@ public class InitStockPrice {
 		return;
 	}
 	
-	private void initWeeklyStockPrice() throws Exception {
-		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
-		for(StockEntity stock : stockList) {
-			try {
-				long startTime = System.currentTimeMillis();
-				this.getStockWeeklyHistorialPrice(stock);
-				while(System.currentTimeMillis()-startTime < 20000 ) {
-					Thread.sleep(1000);
+	private void getStockDailyHistorialPriceFromStooq(StockEntity stock) throws Exception {
+		logger.info(String.format("Get Stock Daily Price: %s-%s", stock.getStockCode(), stock.getStockName()));
+		List<StockPriceEntity> stockPriceList = new ArrayList<StockPriceEntity>();
+		List<String> contentList = HttpUtils.getStooqStockPriceListCsv(stock, StockPriceInitDate, new Date(System.currentTimeMillis()));
+		if( contentList.size() > 1 ) {
+			for(int i=1; i<contentList.size(); i++) {
+				StockPriceEntity stockPrice = StockPriceEntity.getStooqStockPriceEntity(stock.getStockCode(), contentList.get(i));
+				if( stockPrice != null ) {
+					stockPriceList.add(stockPrice);
 				}
-			}catch(Exception e) {
-				logger.error(e.getMessage());
 			}
 		}
+		logger.info("No. of records created: " + stockPriceList.size());
+		this.stockPriceSrv.saveStockPrice(stockPriceList);
 		return;
 	}
-	
 	
 	//AlphaVantage
 	private void getStockDailyHistorialPrice(StockEntity stock) throws Exception {
 		logger.info(String.format("Get Stock Daily Price: %s-%s", stock.getStockCode(), stock.getStockCname()));
-		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "full"));	//compact
+		String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "full"));	//compact or full
 		//String jsonData = HttpUtils.getInstance().sendHttpsGet(String.format(SystemUtils.getTimeSeriesDailyUrl(), stock.getStockYahooCode(), "compact"));
 		List<StockPriceEntity> stockPriceList = new ArrayList<StockPriceEntity>();
 		JSONParser jsonParser = new JSONParser();
@@ -116,6 +143,7 @@ public class InitStockPrice {
 				stockPriceList.add(stockPrice);
 			}
 		}
+		logger.info("No. of records created: " + stockPriceList.size());
 		this.stockPriceSrv.saveStockPrice(stockPriceList);
 		return;
 	}
@@ -140,6 +168,7 @@ public class InitStockPrice {
 				}
 			}
 		}
+		logger.info("No. of records created: " + stockPriceList.size());
 		this.stockPriceSrv.saveStockPrice(stockPriceList);
 		return;
 	}

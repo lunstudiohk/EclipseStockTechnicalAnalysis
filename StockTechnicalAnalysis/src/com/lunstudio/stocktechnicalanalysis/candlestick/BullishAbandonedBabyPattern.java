@@ -23,9 +23,9 @@ public class BullishAbandonedBabyPattern extends BullishCandlestickPatterns impl
 		
 		if( firstCandlestick.isFilled() && !firstCandlestick.isShortBody() ) {
 			if( secondCandlestick.isShortBody() ) {
-				if( firstCandlestick.getDayLow().compareTo(secondCandlestick.getDayHigh()) > 0 ) {
+				if( firstCandlestick.getDayLow().compareTo(secondCandlestick.getHighPrice()) > 0 ) {
 					if( thirdCandlestick.isHollow() ) {
-						if( secondCandlestick.getDayHigh().compareTo(thirdCandlestick.getDayLow()) < 0 ) {
+						if( secondCandlestick.getHighPrice().compareTo(thirdCandlestick.getDayLow()) < 0 ) {
 							if( thirdCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyHalf()) >= 0 ) {
 								super.init(thirdCandlestick);
 								super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());

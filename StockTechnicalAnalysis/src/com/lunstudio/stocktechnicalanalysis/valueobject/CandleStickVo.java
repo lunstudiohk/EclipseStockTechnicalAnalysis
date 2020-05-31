@@ -29,9 +29,9 @@ public class CandleStickVo extends StockPriceEntity {
 		this.setTradeDate(stockPrice.getTradeDate());
 		this.setOpenPrice(stockPrice.getOpenPrice());
 		this.setClosePrice(stockPrice.getClosePrice());
-		this.setDayHigh(stockPrice.getDayHigh());
-		this.setDayLow(stockPrice.getDayLow());
-		this.setDayVolume(stockPrice.getDayVolume());
+		this.setHighPrice(stockPrice.getHighPrice());
+		this.setLowPrice(stockPrice.getLowPrice());
+		this.setVolume(stockPrice.getDayVolume());
 		return;
 	}
 	
@@ -112,11 +112,11 @@ public class CandleStickVo extends StockPriceEntity {
 	}
 	
 	public BigDecimal getUpperShadow() {
-		return this.getDayHigh().subtract(this.getTop());
+		return this.getHighPrice().subtract(this.getTop());
 	}
 	
 	public BigDecimal getUpperShadowPercentage() {
-		return (this.getDayHigh().subtract(this.getTop())).setScale(5).divide(this.getTop(), RoundingMode.HALF_UP);
+		return (this.getHighPrice().subtract(this.getTop())).setScale(5).divide(this.getTop(), RoundingMode.HALF_UP);
 	}
 	
 	public boolean isLongUpperShadow() {
@@ -148,7 +148,7 @@ public class CandleStickVo extends StockPriceEntity {
 	}
 	
 	public boolean isGapUp(CandleStickVo prevDate) {
-		return this.getOpenPrice().compareTo(prevDate.getDayHigh()) > 0;
+		return this.getOpenPrice().compareTo(prevDate.getHighPrice()) > 0;
 	}
 	
 	public boolean isOpenInsideBody(CandleStickVo anotherCandlestick) {

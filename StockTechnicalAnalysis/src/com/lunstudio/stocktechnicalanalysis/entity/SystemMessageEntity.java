@@ -15,6 +15,7 @@ public class SystemMessageEntity extends BaseEntity implements Serializable {
 
 	public static final String ERROR = "E";
 	public static final String WARNING = "W";
+	public static final String INFO = "I";
 
 	/**
 	 * 

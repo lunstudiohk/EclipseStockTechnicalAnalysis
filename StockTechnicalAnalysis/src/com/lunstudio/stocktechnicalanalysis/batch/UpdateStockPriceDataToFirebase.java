@@ -66,6 +66,8 @@ public class UpdateStockPriceDataToFirebase {
 		Map<String, Object> stockPriceSummaryMap = new HashMap<String, Object>();
  		for(StockEntity stock : stockList) {
 			stockPriceSummaryMap.put(stock.getStockCode(), this.updateStockPriceDataToFirebase(stock, updateDays));
+			//Debug 
+			break;
 		}
  		this.firebaseSrv.setValueToFirebase(FirebaseDao.getInstance().getStockPriceSummaryRef(), null);
  		this.firebaseSrv.updateToFirebase(FirebaseDao.getInstance().getStockPriceSummaryRef(), stockPriceSummaryMap);

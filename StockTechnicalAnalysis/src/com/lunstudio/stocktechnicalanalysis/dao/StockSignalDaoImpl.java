@@ -68,4 +68,19 @@ public class StockSignalDaoImpl extends BaseDaoImpl implements StockSignalDao {
         return session.createQuery(query).list(); 
 	}
 
+	@Override
+	public List<StockSignalEntity> getInCompleteStockSignalList() throws Exception {
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StockSignalEntity> query = builder.createQuery(StockSignalEntity.class);
+        Root<StockSignalEntity> signalRoot = query.from(StockSignalEntity.class);
+        query.select(signalRoot);
+        
+       	Predicate primaryKey = builder.lessThan(signalRoot.get("completed"), 20);
+        query.where(primaryKey);
+        return session.createQuery(query).list(); 
+	}
+
+	
+	  
 }

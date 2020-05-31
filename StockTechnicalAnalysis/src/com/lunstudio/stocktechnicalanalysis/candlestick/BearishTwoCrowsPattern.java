@@ -30,7 +30,7 @@ public class BearishTwoCrowsPattern extends BearishCandlestickPatterns implement
 								if( thirdCandlestick.isCloseInsideBody(firstCandlestick) ) {
 									super.init(thirdCandlestick);
 									super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
-									super.candlestickEntity.setStoplossPrice(thirdCandlestick.getDayHigh());
+									super.candlestickEntity.setStoplossPrice(thirdCandlestick.getHighPrice());
 									return true;
 								}
 							}

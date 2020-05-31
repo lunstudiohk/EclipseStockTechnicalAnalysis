@@ -65,4 +65,51 @@ public class StockSignalDateDaoImpl extends BaseDaoImpl implements StockSignalDa
         return session.createQuery(query).list();
 	}
 
+	@Override
+	public List<StockSignalDateEntity> getStockSignalTradeDateList(String stockCode, Date startDate) throws Exception {
+		
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StockSignalDateEntity> query = builder.createQuery(StockSignalDateEntity.class);
+        Root<StockSignalDateEntity> signalDateRoot = query.from(StockSignalDateEntity.class);
+        query.select(signalDateRoot);
+        
+       	Predicate primaryKey = null;
+       	if( stockCode == null && startDate != null ) {
+       		primaryKey = builder.and(
+       			builder.greaterThanOrEqualTo(signalDateRoot.get("tradeDate"), startDate),
+               	builder.equal(signalDateRoot.get("tradeDate"), signalDateRoot.get("signalDate"))
+       		);
+       	} else if( stockCode != null && startDate != null ) { 
+       		primaryKey = builder.and(
+           		builder.greaterThanOrEqualTo(signalDateRoot.get("tradeDate"), startDate),
+           		builder.equal(signalDateRoot.get("stockCode"), stockCode),
+               	builder.equal(signalDateRoot.get("tradeDate"), signalDateRoot.get("signalDate"))
+           	);
+       	}
+       	query.where(primaryKey);
+        return session.createQuery(query).list();
+	}
+	
+	@Override
+	public List<StockSignalDateEntity> getStockSignalHistoricalDateList(String stockCode, Date startDate) throws Exception {
+		
+		Session session = this.sessionFactory.getCurrentSession();
+	    CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<StockSignalDateEntity> query = builder.createQuery(StockSignalDateEntity.class);
+        Root<StockSignalDateEntity> signalDateRoot = query.from(StockSignalDateEntity.class);
+        query.select(signalDateRoot);
+        
+       	Predicate primaryKey = null;
+       	if( stockCode == null && startDate != null ) {
+       		primaryKey = builder.greaterThanOrEqualTo(signalDateRoot.get("tradeDate"), startDate);
+       	} else if( stockCode != null && startDate != null ) { 
+       		primaryKey = builder.and(
+           		builder.greaterThanOrEqualTo(signalDateRoot.get("tradeDate"), startDate),
+           		builder.equal(signalDateRoot.get("stockCode"), stockCode));
+       	}
+       	query.where(primaryKey);
+        return session.createQuery(query).list();
+	}	
+
 }

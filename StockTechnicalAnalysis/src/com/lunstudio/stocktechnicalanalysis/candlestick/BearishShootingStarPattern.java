@@ -27,7 +27,7 @@ public class BearishShootingStarPattern extends BearishCandlestickPatterns imple
 							if( CandleStickVo.isSamePrice(secondCandlestick.getClosePrice(), secondCandlestick.getDayLow()) ) {
 								super.init(secondCandlestick);
 								super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
-								super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayHigh());
+								super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 								return true;
 							}
 						}

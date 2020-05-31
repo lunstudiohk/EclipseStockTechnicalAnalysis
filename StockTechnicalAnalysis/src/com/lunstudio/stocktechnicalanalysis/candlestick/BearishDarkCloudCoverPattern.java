@@ -26,7 +26,7 @@ public class BearishDarkCloudCoverPattern extends BearishCandlestickPatterns imp
 						if( firstCandlestick.getOpenPrice().compareTo(secondCandlestick.getClosePrice()) < 0 ) {
 							super.init(secondCandlestick);
 							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
-							super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayHigh());
+							super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 							return true;
 						}
 					}

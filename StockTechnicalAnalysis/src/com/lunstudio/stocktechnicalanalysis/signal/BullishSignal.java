@@ -77,16 +77,14 @@ public abstract class BullishSignal extends GeneralSignal {
 		};
 		Collections.sort(signalList, compareByStockCode);
 		for(StockSignalEntity signal : signalList) {
-			//if( signal.getTradeDate().compareTo(today) == 0 ) { 
-				logger.info(signal.getTradeDate() + " : " + getDailyBullishSignalDesc(signal));
-				signal.setSignalSeq(signalSeq++);
-				todaySignalList.add(signal);
-			//}
+			logger.info(signal.getTradeDate() + " : " + getDailyBullishSignalDesc(signal));
+			signal.setSignalSeq(signalSeq++);
+			todaySignalList.add(signal);
 		}
 		return todaySignalList;
 	}
 
-	public static String getDailyBullishPrimarySignalDesc(StockSignalEntity signal) {
+	public static List<String> getDailyBullishPrimarySignalDesc(StockSignalEntity signal) {
 		switch(signal.getType()) {
 		case 1:
 			return DailyMacdCrossAboveSignal.getSignalShortDesc(signal);

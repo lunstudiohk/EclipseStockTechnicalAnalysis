@@ -65,45 +65,55 @@ public class GenerateStockSignal {
 
 	private void start(String[] args) throws Exception {
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
-		Map<Date,BigDecimal> refPriceDateMap = this.getRefPriceDateMap();
+		Map<Date,BigDecimal> refPriceDateMap = null;	//this.getRefPriceDateMap();
 		
 		for(StockEntity stock : stockList) {
-			/*
-			if( !stock.getStockCode().equals("HKG:3888") 
-					&& !stock.getStockCode().equals("INDEXHANGSENG:HSI") 
-				) {
+			if( !stock.getStockCode().equals("0700.HK") ) {
 				continue;
 			}
-			*/
-			this.generateSignalStat(refPriceDateMap, stock, Integer.parseInt(args[0]));
+			if( stock.getStockRegion().equals(args[0]) ) {
+				this.generateSignalStat(refPriceDateMap, stock, Integer.parseInt(args[1]));
+			}
 		}
+		//Comment for Debug
         this.stockSignalSrv.updateIncompletedStockSignal();
 		return;
 	}
 	
 	private void generateSignalStat(Map<Date,BigDecimal> refPriceDateMap, StockEntity stock, Integer size) throws Exception {
+		System.out.println(String.format("Processing stock: %s - %s", stock.getStockCname(), stock.getStockCode()));
 		List<StockPriceEntity> dailyStockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(stock.getStockCode(), HISTORICAL_SIZE);
+		if( dailyStockPriceList == null || dailyStockPriceList.isEmpty() ) {
+			return;
+		}
 		//List<StockPriceEntity> weeklyStockPriceList = this.stockPriceSrv.getLastWeeklyStockPriceEntityList(stock.getStockCode(), null);
         List<StockPriceVo> stockPriceVoList = this.stockPriceSrv.getStockPriceVoList(stock, dailyStockPriceList, new ArrayList<StockPriceEntity>() /*weeklyStockPriceList*/);
         List<CandlestickEntity> bullCandlestickList = this.candlestickSrv.getCandlestickListByType(stock.getStockCode(), CandlestickEntity.Buy);
         List<CandlestickEntity> bearCandlestickList = this.candlestickSrv.getCandlestickListByType(stock.getStockCode(), CandlestickEntity.Sell);
         
         List<StockSignalEntity> todaySignalList = new ArrayList<StockSignalEntity>();
+        
+        //Generate the latest day
+        /*
     	todaySignalList.addAll(BullishSignal.generateBullishSignal(stock, refPriceDateMap, stockPriceVoList, bullCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
-    	todaySignalList.addAll(BearishSignal.generateBearishSignal(stock, refPriceDateMap, stockPriceVoList, bearCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+    	todaySignalList.addAll(BearishSignal.generateBearishSignal(stock, refPriceDateMap, stockPriceVoList, bearCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));   	
     	this.stockSignalSrv.saveStockSignalList(todaySignalList);
     	for(StockSignalEntity stockSignal : todaySignalList) {
    			this.stockSignalDateSrv.saveStockSignalDateList(stockSignal.getStockSignalDateList());
-    	}
-    	
+        }
+    	*/
+        
+    	/* Generate for last $size days*/
     	if( size > 1 ) {
-	        for(int i=0; i<size; i++) {
-	        	stockPriceVoList.remove(stockPriceVoList.size()-1);
+	        for(int i=0; i<size && stockPriceVoList.size() > 20; i++) {
+	        	//stockPriceVoList.remove(stockPriceVoList.size()-1);
 	        	todaySignalList = new ArrayList<StockSignalEntity>();
-	        	todaySignalList.addAll(BullishSignal.generateBullishSignal(stock, refPriceDateMap, stockPriceVoList, bullCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
-	        	todaySignalList.addAll(BearishSignal.generateBearishSignal(stock, refPriceDateMap, stockPriceVoList, bearCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+	        	todaySignalList.addAll(BullishSignal.generateBullishSignal(stock, refPriceDateMap, stockPriceVoList.subList(0, stockPriceVoList.size()-i), bullCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+	        	todaySignalList.addAll(BearishSignal.generateBearishSignal(stock, refPriceDateMap, stockPriceVoList.subList(0, stockPriceVoList.size()-i), bearCandlestickList, StockPriceEntity.PRICE_TYPE_DAILY));
+	        	//Comment for Debug
 	        	this.stockSignalSrv.saveStockSignalList(todaySignalList);	
 	        	for(StockSignalEntity stockSignal : todaySignalList) {
+	        		//Comment for Debug
 	        		this.stockSignalDateSrv.saveStockSignalDateList(stockSignal.getStockSignalDateList());
 	        	}
 	        }
@@ -111,10 +121,10 @@ public class GenerateStockSignal {
 		return;
 	}
 	
-	
+	/*
 	private Map<Date,BigDecimal> getRefPriceDateMap() throws Exception {
 		List<StockPriceEntity> dailyStockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(StockSrv.INDEXHANGSENGHSI, 100);
 		return this.stockPriceSrv.getStockClosePriceDateMap(dailyStockPriceList);
 	}
-	
+	*/
 }

@@ -11,8 +11,8 @@ public class StockData extends FirebaseData{
 	public StockData(StockEntity stock) {
 		super();
 		this.c = stock.getStockCname();
-		this.isHSI = stock.getIsHSI();
-		this.isHSCE = stock.getIsHSCE();
+//		this.isHSI = stock.getHsiRatio()!=null?true:false;
+//		this.isHSCE = stock.getHsceiRatio()!=null?true:false;
 		this.s = stock.getStockCode();
 		return;
 	}

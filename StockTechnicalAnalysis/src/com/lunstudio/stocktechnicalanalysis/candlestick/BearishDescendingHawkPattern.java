@@ -29,10 +29,10 @@ public class BearishDescendingHawkPattern extends BearishCandlestickPatterns imp
 						} else {
 							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
 						}
-						if( firstCandlestick.getDayHigh().compareTo(secondCandlestick.getDayHigh()) > 0 ) {
-							super.candlestickEntity.setStoplossPrice(firstCandlestick.getDayHigh());
+						if( firstCandlestick.getHighPrice().compareTo(secondCandlestick.getHighPrice()) > 0 ) {
+							super.candlestickEntity.setStoplossPrice(firstCandlestick.getHighPrice());
 						} else {
-							super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayHigh());
+							super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 						}
 						return true;
 					}

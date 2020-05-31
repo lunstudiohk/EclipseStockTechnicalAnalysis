@@ -32,7 +32,7 @@ public class BearishThreeBlackCrowsPattern extends BearishCandlestickPatterns im
 								if( thirdCandlestick.getClosePrice().compareTo(secondCandlestick.getClosePrice()) < 0 ) {
 									super.init(thirdCandlestick);
 									super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
-									super.candlestickEntity.setStoplossPrice(thirdCandlestick.getDayHigh());
+									super.candlestickEntity.setStoplossPrice(thirdCandlestick.getHighPrice());
 									return true;		
 								}
 							}

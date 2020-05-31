@@ -103,7 +103,7 @@ public class UpdateStockSignalToFirebase {
 		} else if( stock == null && size != null ) {
 			List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(StockSrv.INDEXHANGSENGHSCEI, size);
 			Date startDate = stockPriceList.get(0).getTradeDate();
-			stockSignalList = this.stockSignalSrv.getAllStockSignalListAfter(startDate);
+			stockSignalList = this.stockSignalSrv.getStockSignalListAfter(null, startDate);
 		} else if( stock != null && size == null ) {
 			stockSignalList = this.stockSignalSrv.getStockSignalList(stock.getStockCode());
 		} else {

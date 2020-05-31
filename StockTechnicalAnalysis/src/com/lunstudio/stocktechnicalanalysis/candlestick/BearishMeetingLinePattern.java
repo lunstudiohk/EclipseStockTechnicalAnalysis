@@ -26,7 +26,7 @@ public class BearishMeetingLinePattern extends BearishCandlestickPatterns implem
 						if( CandleStickVo.isSamePrice(firstCandlestick.getClosePrice(), secondCandlestick.getClosePrice()) ) {
 							super.init(secondCandlestick);
 							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
-							super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayHigh());
+							super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 							return true;	
 						}
 					}

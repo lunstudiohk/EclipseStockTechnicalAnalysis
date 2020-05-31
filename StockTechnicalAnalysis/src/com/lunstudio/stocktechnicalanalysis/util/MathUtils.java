@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import eu.verdelhan.ta4j.Trade;
-import eu.verdelhan.ta4j.TradingRecord;
 
 public class MathUtils {
 
@@ -40,6 +38,13 @@ public class MathUtils {
 		}
 	}
 	
+	public static BigDecimal getPrecentage(BigDecimal fraction, BigDecimal total) {
+		if( fraction == null || total == null || total.compareTo(BigDecimal.ZERO) == 0 ) {
+			return BigDecimal.ZERO;
+		} else {
+			return (fraction.divide(total, 3, RoundingMode.HALF_UP)).multiply(BigDecimal.valueOf(100)).setScale(1);
+		}
+	}
 	
 	/*
 	public static double getRoundedValue(BigDecimal val) {

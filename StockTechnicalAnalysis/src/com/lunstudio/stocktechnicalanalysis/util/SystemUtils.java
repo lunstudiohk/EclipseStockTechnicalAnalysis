@@ -8,6 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class SystemUtils {
 
+	@Value("${YAHOO.STOCK_PRICE_URL}")
+	private String YAHOO_STOCK_PRICE_URL;
+	@Value("${NASDAQ.STOCK_PRICE_URL}")
+	private String NASDAQ_STOCK_PRICE_URL;
+	@Value("${STOOQ.STOCK_PRICE_URL}")
+	private String STOOQ_STOCK_PRICE_URL;
+	
     @Value("${FIREBASE.ACCOUNT_KEY}")
     private String FIREBASE_ACCOUNT_KEY;
 
@@ -97,6 +104,9 @@ public class SystemUtils {
     
     @Value("${GOOGLE.LATEST_VHSI_URL}")
     private String LATEST_VHSI_URL;
+    
+    @Value("${HSI.INDEX_PE_DIV}")
+    private String INDEX_PE_DIV;
     
     private static SystemUtils instance;
     
@@ -228,4 +238,21 @@ public class SystemUtils {
     public static final String getLatestVHSIUrl() {
     	return SystemUtils.getInstance().LATEST_VHSI_URL;
     }
+    
+    public static final String getIndexPeDivUrl() {
+    	return SystemUtils.getInstance().INDEX_PE_DIV;
+    }
+    
+    public static final String getYahooStockPriceUrl() {
+    	return SystemUtils.getInstance().YAHOO_STOCK_PRICE_URL;
+    }
+    
+    public static final String getNasdaqStockPriceUrl() {
+    	return SystemUtils.getInstance().NASDAQ_STOCK_PRICE_URL;
+    }
+    
+    public static final String getStooqStockPriceUrl() {
+    	return SystemUtils.getInstance().STOOQ_STOCK_PRICE_URL;
+    }
+
 }

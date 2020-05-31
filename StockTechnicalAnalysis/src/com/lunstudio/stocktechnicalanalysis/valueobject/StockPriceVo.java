@@ -94,7 +94,7 @@ public class StockPriceVo extends BaseEntity {
 		this.tradeDate = entity.getTradeDate();
 		this.openPrice = entity.getOpenPrice();
 		this.closePrice = entity.getClosePrice();
-		this.dayHigh = entity.getDayHigh();
+		this.dayHigh = entity.getHighPrice();
 		this.dayLow = entity.getDayLow();
 		this.dayVolume = entity.getDayVolume();
 		return;

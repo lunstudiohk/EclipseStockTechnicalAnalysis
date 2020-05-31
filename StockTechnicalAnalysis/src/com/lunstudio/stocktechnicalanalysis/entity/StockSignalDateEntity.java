@@ -43,6 +43,10 @@ public class StockSignalDateEntity extends BaseEntity implements Serializable {
 	
 	private Integer lowDay;
 
+	public String getKeyString() {
+		return String.format("%s%s%s%s%s", this.stockCode, this.tradeDate.toString(), this.signalSeq, this.signalDate, this.signalType );
+	}
+	
 	public String getStockCode() {
 		return stockCode;
 	}

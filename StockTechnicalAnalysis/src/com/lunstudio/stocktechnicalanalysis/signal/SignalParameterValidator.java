@@ -26,6 +26,40 @@ public class SignalParameterValidator {
 		return false;
 	}
 	
+	public static boolean isSmaPriceDiffValid(List<StockPriceVo> stockPriceVoList, StockSignalEntity signal, Integer tradeIndex) {
+		StockPriceVo vo = stockPriceVoList.get(tradeIndex);
+		if( signal.getUpperDailySma() != null ) {
+			if( signal.getUpperDailySma().intValue() == 10 ) {
+				if( MathUtils.getPriceDiff(vo.getDailyShortSma(), vo.getClosePrice(), 2).compareTo(signal.getUpperPriceDiff()) > 0 ) {
+					return true;
+				}
+			} else if( signal.getUpperDailySma().intValue() == 20 ) {
+				if( MathUtils.getPriceDiff(vo.getDailyMediumSma(), vo.getClosePrice(), 2).compareTo(signal.getUpperPriceDiff()) > 0 ) {
+					return true;
+				}
+			} else if( signal.getUpperDailySma().intValue() == 50 ) {
+				if( MathUtils.getPriceDiff(vo.getDailyLongSma(), vo.getClosePrice(), 2).compareTo(signal.getUpperPriceDiff()) > 0 ) {
+					return true;
+				}
+			}
+		} else if( signal.getLowerDailySma() != null ) {
+			if( signal.getLowerDailySma().intValue() == 10 ) {
+				if( MathUtils.getPriceDiff(vo.getDailyShortSma(), vo.getClosePrice(), 2).compareTo(signal.getLowerPriceDiff()) < 0 ) {
+					return true;
+				}
+			} else if( signal.getLowerDailySma().intValue() == 20 ) {
+				if( MathUtils.getPriceDiff(vo.getDailyMediumSma(), vo.getClosePrice(), 2).compareTo(signal.getLowerPriceDiff()) < 0 ) {
+					return true;
+				}
+			} else if( signal.getLowerDailySma().intValue() == 50 ) {
+				if( MathUtils.getPriceDiff(vo.getDailyLongSma(), vo.getClosePrice(), 2).compareTo(signal.getLowerPriceDiff()) < 0 ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static boolean isSmaTypeValid(List<StockPriceVo> stockPriceVoList, StockSignalEntity signal, Integer tradeIndex) {
 		StockPriceVo vo = stockPriceVoList.get(tradeIndex);
 		if( signal.getSmaType() != null ) {
@@ -339,6 +373,22 @@ public class SignalParameterValidator {
 			list.add(longestPeriodSignal);
 		}
 		return list;
+	}
+	
+	public static StockSignalEntity getValidSmaUpperPriceDiff(StockSignalEntity signal1, StockSignalEntity signal2) {
+		if( signal1.getUpperPriceDiff().compareTo(signal2.getUpperPriceDiff()) < 0 ) {
+			return signal1;
+		} else {
+			return signal2;
+		}
+	}
+	
+	public static StockSignalEntity getValidSmaLowerPriceDiff(StockSignalEntity signal1, StockSignalEntity signal2) {
+		if( signal1.getLowerPriceDiff().compareTo(signal2.getLowerPriceDiff()) > 0 ) {
+			return signal1;
+		} else {
+			return signal2;
+		}
 	}
 	
 }

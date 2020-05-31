@@ -48,7 +48,7 @@ public class InitCandlestick {
 
 	private void start(String[] args) throws Exception {
 		if( args.length == 2 ) {
-			this.generateCandlestick(args[0], Integer.parseInt(args[1]));
+			this.generateCandlestick(args[0], args[1], Integer.parseInt(args[2]));
 		} else {
 			this.initCandlestick(args[0]);
 		}
@@ -56,27 +56,29 @@ public class InitCandlestick {
 		return;
 	}
 	
-	private void generateCandlestick(String priceType, Integer size) throws Exception {
+	private void generateCandlestick(String stockRegion, String priceType, Integer size) throws Exception {
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
-			//if( !"HKG:0700".equals(stock.getStockCode()) ) continue;
-			List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastStockPriceEntityList(stock.getStockCode(), size, priceType);
-			if( stockPriceList.size() > 2 ) {
-				this.candleStickSrv.deleteCandleStick(stock.getStockCode(),stockPriceList.get(2).getTradeDate(), priceType);
+			if( stock.getStockRegion().equals(stockRegion) ) {
+				List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastStockPriceEntityList(stock.getStockCode(), size, priceType);
+				if( stockPriceList.size() > 2 ) {
+					//Delete after 2 because of candle stick generate from index 2(3rd) sticks
+					this.candleStickSrv.deleteCandleStick(stock.getStockCode(),stockPriceList.get(2).getTradeDate(), priceType);
+				}
+				List<CandlestickEntity> bullishCandlestickList = this.candleStickSrv.generateBullishCandleStick(stockPriceList);
+				logger.info(String.format("%s - Bullish Candle Stick Count: %s", stock.getStockCode(), bullishCandlestickList.size()));
+				for(CandlestickEntity candlestick : bullishCandlestickList) {
+					candlestick.setPriceType(priceType);
+				}
+				this.candleStickSrv.saveCandlestickList(bullishCandlestickList);
+				
+				List<CandlestickEntity> bearishCandlestickList = this.candleStickSrv.generateBearishCandleStick(stockPriceList);
+				logger.info(String.format("%s - Bearish Candle Stick Count: %s", stock.getStockCode(), bearishCandlestickList.size()));
+				for(CandlestickEntity candlestick : bearishCandlestickList) {
+					candlestick.setPriceType(priceType);
+				}
+				this.candleStickSrv.saveCandlestickList(bearishCandlestickList);
 			}
-			List<CandlestickEntity> bullishCandlestickList = this.candleStickSrv.generateBullishCandleStick(stockPriceList);
-			logger.info(String.format("%s - Bullish Candle Stick Count: %s", stock.getStockCode(), bullishCandlestickList.size()));
-			for(CandlestickEntity candlestick : bullishCandlestickList) {
-				candlestick.setPriceType(priceType);
-			}
-			this.candleStickSrv.saveCandlestickList(bullishCandlestickList);
-			
-			List<CandlestickEntity> bearishCandlestickList = this.candleStickSrv.generateBearishCandleStick(stockPriceList);
-			logger.info(String.format("%s - Bearish Candle Stick Count: %s", stock.getStockCode(), bearishCandlestickList.size()));
-			for(CandlestickEntity candlestick : bearishCandlestickList) {
-				candlestick.setPriceType(priceType);
-			}
-			this.candleStickSrv.saveCandlestickList(bearishCandlestickList);
 		}
 		return;
 	}
@@ -85,9 +87,11 @@ public class InitCandlestick {
 		List<StockEntity> stockList = this.stockSrv.getStockInfoList();
 		for(StockEntity stock : stockList) {
 			//if( !"HKG:0388".equals(stock.getStockCode()) && !"HKG:2318".equals(stock.getStockCode()) && !"HKG:1299".equals(stock.getStockCode()) ) continue;
-			//if( !"HKG:0700".equals(stock.getStockCode()) ) continue;
+			//if( !"HKG:2688".equals(stock.getStockCode()) ) continue;
 			List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getLastStockPriceEntityList(stock.getStockCode(), null, priceType);
-			
+			if(stockPriceList == null || stockPriceList.isEmpty() ) {
+				continue;
+			}
 			//List<CandlestickEntity> candlestickList = new ArrayList<CandlestickEntity>();
 			
 			List<CandlestickEntity> bullishCandlestickList = this.candleStickSrv.generateBullishCandleStick(stockPriceList);

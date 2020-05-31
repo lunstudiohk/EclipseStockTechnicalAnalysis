@@ -175,12 +175,14 @@ public class GetStockOptions {
 	
 	private String getStockCode(String line, List<StockEntity> stockList) {
 		for(StockEntity stock: stockList) {
+			/*
 			if( stock.getStockAtsCode() != null ) {
 				String token = String.format("CLASS %s", stock.getStockAtsCode());
 				if( line.indexOf(token) != -1 ) {
 					return stock.getStockCode();
 				}
 			}
+			*/
 		}
 		return null;
 	}

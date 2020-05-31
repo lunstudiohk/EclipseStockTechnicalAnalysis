@@ -10,4 +10,8 @@ public interface StockSignalDateDao extends BaseDao {
 	public StockSignalDateEntity findByPrimaryKey(String stockCode, Date tradeDate, Integer signalSeq, String signalType, Date signalDate) throws Exception;
 	
 	public List<StockSignalDateEntity> getStockSignalDateList(String stockCode, Date tradeDate, Integer signalSeq, String signalType, Integer order) throws Exception;
+	
+	public List<StockSignalDateEntity> getStockSignalTradeDateList(String stockCode, Date startDate) throws Exception;
+	
+	public List<StockSignalDateEntity> getStockSignalHistoricalDateList(String stockCode, Date startDate) throws Exception;
 }

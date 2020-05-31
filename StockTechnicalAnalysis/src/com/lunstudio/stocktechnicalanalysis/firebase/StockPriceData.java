@@ -60,16 +60,16 @@ public class StockPriceData extends FirebaseData{
 		this.t = stockPrice.getTradeDate().toString();
 		this.o = stockPrice.getOpenPrice().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.c = stockPrice.getClosePrice().setScale(3, RoundingMode.HALF_UP).doubleValue();
-		this.h = stockPrice.getDayHigh().setScale(3, RoundingMode.HALF_UP).doubleValue();
+		this.h = stockPrice.getHighPrice().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.l = stockPrice.getDayLow().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.v = stockPrice.getDayVolume().longValue();
-		this.sr = stockPrice.getDailyShortRsi().setScale(5, RoundingMode.HALF_UP).doubleValue();
-		this.lr = stockPrice.getDailyLongRsi().setScale(5, RoundingMode.HALF_UP).doubleValue();
-		this.dm = stockPrice.getDailyMacd().setScale(5, RoundingMode.HALF_UP).doubleValue();
-		this.dms = stockPrice.getDailyMacdSignal().setScale(5, RoundingMode.HALF_UP).doubleValue();
-		this.ss = stockPrice.getDailyShortSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
-		this.ms = stockPrice.getDailyMediumSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
-		this.ls = stockPrice.getDailyLongSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
+		this.sr = stockPrice.getShortRsi().setScale(5, RoundingMode.HALF_UP).doubleValue();
+		this.lr = stockPrice.getLongRsi().setScale(5, RoundingMode.HALF_UP).doubleValue();
+		this.dm = stockPrice.getMacd().setScale(5, RoundingMode.HALF_UP).doubleValue();
+		this.dms = stockPrice.getMacdSignal().setScale(5, RoundingMode.HALF_UP).doubleValue();
+		this.ss = stockPrice.getShortSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
+		this.ms = stockPrice.getMediumSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
+		this.ls = stockPrice.getLongSma().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		return;
 	}
 

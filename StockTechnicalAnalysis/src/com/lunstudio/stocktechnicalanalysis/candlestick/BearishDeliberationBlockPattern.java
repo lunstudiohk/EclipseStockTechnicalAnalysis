@@ -30,7 +30,7 @@ public class BearishDeliberationBlockPattern extends BearishCandlestickPatterns 
 							if( thirdCandlestick.isGapUp(secondCandlestick) ) {
 								super.init(thirdCandlestick);
 								super.candlestickEntity.setConfirmPrice(thirdCandlestick.getBodyHalf());
-								super.candlestickEntity.setStoplossPrice(thirdCandlestick.getDayHigh());
+								super.candlestickEntity.setStoplossPrice(thirdCandlestick.getHighPrice());
 								return true;
 							}
 						}

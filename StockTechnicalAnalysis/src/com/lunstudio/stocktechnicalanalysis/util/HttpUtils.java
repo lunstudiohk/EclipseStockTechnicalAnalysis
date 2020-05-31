@@ -11,10 +11,13 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,18 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 public class HttpUtils {
 
 	private final static String NEW_LINE = "\n";
@@ -224,7 +239,7 @@ public class HttpUtils {
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);
-
+		
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), encoding));
 	    
 		String inputLine;
@@ -249,5 +264,59 @@ public class HttpUtils {
 		}
 		System.out.println("Call URL : " + buf.toString());
 		return buf.toString();
+	}
+	
+	public static List<String> getYahooStockPriceList(StockEntity stock, Date startDate, Date endDate) throws Exception {
+		
+		//#https://query1.finance.yahoo.com/v7/finance/download/0700.HK?period1=1558618906&period2=1590241306&interval=1d&events=history
+		//YAHOO.STOCK_PRICE_URL=https://query1.finance.yahoo.com/v7/finance/download/%s?period1=%1&period2=%1&interval=1d&events=history
+		String start = Long.valueOf(startDate.getTime()/1000).toString();
+		String end = Long.valueOf(endDate.getTime()/1000).toString();
+		String url = null;
+		if( stock.getStockYahooCode() != null && stock.getStockYahooCode().trim().length() > 0 ) {
+			url = String.format(SystemUtils.getYahooStockPriceUrl(), stock.getStockYahooCode(), start, end);
+		} else {
+			url = String.format(SystemUtils.getYahooStockPriceUrl(), stock.getStockCode(), start, end);
+		}
+		
+		return HttpUtils.downloadCsv(url, "UTF-8");
+	}
+	
+	public static List<String> getNasdaqStockPriceList(StockEntity stock, Date startDate, Date endDate) throws Exception {
+		//NASDAQ.STOCK_PRICE_URL=https://www.nasdaq.com/api/v1/historical/%s/%s/%s/%s
+		//# https://www.nasdaq.com/api/v1/historical/IXIC/index/2020-04-23/2020-05-23
+		//# https://www.nasdaq.com/api/v1/historical/APPL/stock/2020-04-23/2020-05-23
+		String start = DateUtils.getDateString(startDate);
+		String end = DateUtils.getDateString(endDate);
+		String url = null;
+		if( stock.getStockType().equals("I") ) {
+			if( stock.getStockNasdaqCode() != null && stock.getStockNasdaqCode().trim().length() > 0 ) {
+				url = String.format(SystemUtils.getNasdaqStockPriceUrl(), stock.getStockNasdaqCode().substring(1), "index", start, end);
+			} else {
+				url = String.format(SystemUtils.getNasdaqStockPriceUrl(), stock.getStockCode(), "index", start, end);
+			}
+		} else {
+			url = String.format(SystemUtils.getNasdaqStockPriceUrl(), stock.getStockCode(), "stock", start, end);
+		}
+		url = "https://www.nasdaq.com/market-activity/index/indu/historical";
+		return HttpUtils.downloadCsv(url, "UTF-8");
+	}
+	
+	public static List<String> getStooqStockPriceListCsv(StockEntity stock, Date startDate, Date endDate) throws Exception {
+		//STOOQ.STOCK_PRICE_URL=https://stooq.com/q/d/l/?s=%s&d1=%s&d2=%s&i=d
+		//#https://stooq.com/q/d/l/?s=^hsi&d1=19691024&d2=20200522&i=d
+		String start = DateUtils.getLongDateString(startDate);
+		String end = DateUtils.getLongDateString(endDate);
+		String url = null;
+		if( stock.getStockType().equals("I") ) {
+			url = String.format(SystemUtils.getStooqStockPriceUrl(), StringUtils.stripStart(stock.getStockCode(),"0"), start, end);
+		} else {
+			if( stock.getStockRegion().equals("US") ) {
+				url = String.format(SystemUtils.getStooqStockPriceUrl(), StringUtils.stripStart(stock.getStockCode(),"0") + ".US", start, end);
+			} else if( stock.getStockRegion().equals("HK") ) {
+				url = String.format(SystemUtils.getStooqStockPriceUrl(), StringUtils.stripStart(stock.getStockCode(),"0"), start, end);
+			}
+		}
+		return HttpUtils.downloadCsv(url, "UTF-8");
 	}
 }

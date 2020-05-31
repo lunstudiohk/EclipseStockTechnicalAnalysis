@@ -24,7 +24,7 @@ public class BullishDojiStartPattern extends BullishCandlestickPatterns implemen
 				if( secondCandlestick.isGapDown(firstCandlestick) ) {
 					if( secondCandlestick.isDoji() ) {
 						super.init(secondCandlestick);
-						super.candlestickEntity.setConfirmPrice(secondCandlestick.getDayHigh());
+						super.candlestickEntity.setConfirmPrice(secondCandlestick.getHighPrice());
 						super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());
 						return true;
 					}

@@ -11,6 +11,11 @@ import com.lunstudio.stocktechnicalanalysis.entity.CandlestickEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.valueobject.CandleStickVo;
 
+/**
+ * https://www.candlesticker.com/BullishPatterns.aspx?lang=en
+ * @author alankam
+ *
+ */
 public class BullishCandlestickPatterns {
 
 	protected static BigDecimal two = BigDecimal.valueOf(2);
