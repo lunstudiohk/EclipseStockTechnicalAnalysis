@@ -5,3 +5,7 @@ https://www.hkex.com.hk/eng/dwrc/download/dnCSV.asp
 HKEX Cbbc monthly data download
 Products > Securities > Callable Bull / Bear Contracts > Download Historical Data > DOWNLOAD HISTORICAL DATA BY MONTH FOR ALL CBBC
 https://www.hkex.com.hk/eng/cbbc/download/dnCSV.asp#
+
+CNBC
+Stock Link - https://www.cnbc.com/quotes/?symbol=ZM&qsearchterm=facebook
+Json API - https://ts-api.cnbc.com/harmony/app/bars/.HSI/1D/20000601000000/20200725000000/adjusted/EST5EDT.json

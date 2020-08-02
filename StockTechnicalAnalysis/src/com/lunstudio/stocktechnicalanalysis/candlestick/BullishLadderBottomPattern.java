@@ -38,7 +38,7 @@ public class BullishLadderBottomPattern extends BullishCandlestickPatterns imple
 													if( fifthCandlestick.isGapUp(forthCandlestick) ) {
 														super.init(fifthCandlestick);
 														super.candlestickEntity.setConfirmPrice(fifthCandlestick.getClosePrice());
-														super.candlestickEntity.setStoplossPrice(fifthCandlestick.getDayLow());
+														super.candlestickEntity.setStoplossPrice(fifthCandlestick.getLowPrice());
 														return true;
 													}
 												}

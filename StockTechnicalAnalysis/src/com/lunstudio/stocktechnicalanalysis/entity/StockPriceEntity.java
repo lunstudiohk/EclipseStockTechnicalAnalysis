@@ -59,6 +59,40 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 	
 	private BigDecimal longSma;
 	
+	private BigDecimal diffPrice;
+	
+	private BigDecimal bbUpper;
+	
+	private BigDecimal bbLower;
+	
+	private BigDecimal volShortSma;
+	
+	private BigDecimal volMediumSma;
+	
+	private BigDecimal volLongSma;
+	
+	private BigDecimal shortBody;
+	private BigDecimal longBody;
+	
+	private BigDecimal shortCandle;
+	private BigDecimal longCandle;
+	
+	private BigDecimal bodyMedian;	//50-days-body-diff-Median
+	
+	private BigDecimal highlowMedian;	//50-days-high-low-diff-Median
+
+	private BigDecimal shortMinReturn;
+
+	private BigDecimal mediumMinReturn;
+
+	private BigDecimal longMinReturn;
+
+	private BigDecimal shortMaxReturn;
+
+	private BigDecimal mediumMaxReturn;
+
+	private BigDecimal longMaxReturn;
+	
 	public StockPriceEntity() {
 		super();
 		return;
@@ -86,6 +120,20 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		this.setLowPrice(new BigDecimal((String)json.get("3. low")));
 		this.setClosePrice(new BigDecimal((String)json.get("4. close")));
 		this.setDayVolume(new BigDecimal((String)json.get("5. volume")));
+		return;
+	}
+	
+	public StockPriceEntity(String stockCode, String type, JSONObject json) throws Exception{
+		super();
+		this.setStockCode(stockCode);
+		this.setPriceType(type);
+		String tradeDate = (String)json.get("tradeTime");
+		this.setTradeDate(Date.valueOf(String.format("%s-%s-%s", tradeDate.substring(0, 4), tradeDate.substring(4, 6), tradeDate.substring(6, 8))));
+		this.setOpenPrice(new BigDecimal((String)json.get("open")));
+		this.setHighPrice(new BigDecimal((String)json.get("high")));
+		this.setLowPrice(new BigDecimal((String)json.get("low")));
+		this.setClosePrice(new BigDecimal((String)json.get("close")));
+		this.setDayVolume(new BigDecimal((Long)json.get("volume")));
 		return;
 	}
 	
@@ -128,6 +176,127 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		
 	}
 	
+
+	public BigDecimal getShortMinReturn() {
+		return shortMinReturn;
+	}
+
+	public void setShortMinReturn(BigDecimal shortMinReturn) {
+		this.shortMinReturn = shortMinReturn;
+	}
+
+	public BigDecimal getMediumMinReturn() {
+		return mediumMinReturn;
+	}
+
+	public void setMediumMinReturn(BigDecimal mediumMinReturn) {
+		this.mediumMinReturn = mediumMinReturn;
+	}
+
+	public BigDecimal getLongMinReturn() {
+		return longMinReturn;
+	}
+
+	public void setLongMinReturn(BigDecimal longMinReturn) {
+		this.longMinReturn = longMinReturn;
+	}
+
+	public BigDecimal getShortMaxReturn() {
+		return shortMaxReturn;
+	}
+
+	public void setShortMaxReturn(BigDecimal shortMaxReturn) {
+		this.shortMaxReturn = shortMaxReturn;
+	}
+
+	public BigDecimal getMediumMaxReturn() {
+		return mediumMaxReturn;
+	}
+
+	public void setMediumMaxReturn(BigDecimal mediumMaxReturn) {
+		this.mediumMaxReturn = mediumMaxReturn;
+	}
+
+	public BigDecimal getLongMaxReturn() {
+		return longMaxReturn;
+	}
+
+	public void setLongMaxReturn(BigDecimal longMaxReturn) {
+		this.longMaxReturn = longMaxReturn;
+	}
+
+	public BigDecimal getShortBody() {
+		return shortBody;
+	}
+
+	public void setShortBody(BigDecimal shortBody) {
+		this.shortBody = shortBody;
+	}
+
+	public BigDecimal getLongBody() {
+		return longBody;
+	}
+
+	public void setLongBody(BigDecimal longBody) {
+		this.longBody = longBody;
+	}
+
+	public BigDecimal getShortCandle() {
+		return shortCandle;
+	}
+
+	public void setShortCandle(BigDecimal shortCandle) {
+		this.shortCandle = shortCandle;
+	}
+
+	public BigDecimal getLongCandle() {
+		return longCandle;
+	}
+
+	public void setLongCandle(BigDecimal longCandle) {
+		this.longCandle = longCandle;
+	}
+
+	public BigDecimal getHighlowMedian() {
+		return highlowMedian;
+	}
+
+	public void setHighlowMedian(BigDecimal highlowMedian) {
+		this.highlowMedian = highlowMedian;
+	}
+
+	public BigDecimal getBodyMedian() {
+		return bodyMedian;
+	}
+
+	public void setBodyMedian(BigDecimal bodyMedian) {
+		this.bodyMedian = bodyMedian;
+	}
+
+	public BigDecimal getBbUpper() {
+		return bbUpper;
+	}
+
+	public void setBbUpper(BigDecimal bbUpper) {
+		this.bbUpper = bbUpper;
+	}
+
+	public BigDecimal getBbLower() {
+		return bbLower;
+	}
+
+	public void setBbLower(BigDecimal bbLower) {
+		this.bbLower = bbLower;
+	}
+
+	public BigDecimal getDiffPrice() {
+		return diffPrice;
+	}
+
+	public void setDiffPrice(BigDecimal diffPrice) {
+		this.diffPrice = diffPrice;
+	}
+
 	public BigDecimal getHighPrice() {
 		return highPrice;
 	}
@@ -257,14 +426,6 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		this.closePrice = closePrice;
 	}
 
-	public BigDecimal getDayLow() {
-		return lowPrice;
-	}
-
-	public void setDayLow(BigDecimal dayLow) {
-		this.lowPrice = dayLow;
-	}
-
 	public BigDecimal getDayVolume() {
 		return volume;
 	}
@@ -272,7 +433,33 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 	public void setDayVolume(BigDecimal dayVolume) {
 		this.volume = dayVolume;
 	}
+	
+	
+public BigDecimal getVolShortSma() {
+		return volShortSma;
+	}
 
+	public void setVolShortSma(BigDecimal volShortSma) {
+		this.volShortSma = volShortSma;
+	}
+
+	public BigDecimal getVolMediumSma() {
+		return volMediumSma;
+	}
+
+	public void setVolMediumSma(BigDecimal volMediumSma) {
+		this.volMediumSma = volMediumSma;
+	}
+
+	public BigDecimal getVolLongSma() {
+		return volLongSma;
+	}
+
+	public void setVolLongSma(BigDecimal volLongSma) {
+		this.volLongSma = volLongSma;
+	}
+
+	/*
 	public boolean isHollow() {
 		if( this.getClosePrice().compareTo(this.getOpenPrice()) > 0 ) {
 			return true;
@@ -286,6 +473,7 @@ public class StockPriceEntity extends BaseEntity implements Serializable {
 		}
 		return false;
 	}
+*/
 /*
 	public Tick toTick() {
         ZonedDateTime date = DateUtils.getLocalDate(this.tradeDate).atStartOfDay(ZoneId.systemDefault());

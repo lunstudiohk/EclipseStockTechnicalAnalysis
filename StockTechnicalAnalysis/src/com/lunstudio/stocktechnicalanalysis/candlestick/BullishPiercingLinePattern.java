@@ -19,15 +19,18 @@ public class BullishPiercingLinePattern extends BullishCandlestickPatterns imple
 		int index = super.tradeDateMap.get(tradeDate);
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
+		
 		if( firstCandlestick.isFilled() ) {
 			if( secondCandlestick.isHollow() ) {
 				if( secondCandlestick.isGapDown(firstCandlestick) ) {
-					if( secondCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyHalf()) >= 0 ) {
+					if( secondCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyMiddle()) >= 0 ) {
 						if( secondCandlestick.getClosePrice().compareTo(firstCandlestick.getTop()) < 0 ) {
-							super.init(secondCandlestick);
-							super.candlestickEntity.setConfirmPrice(secondCandlestick.getTop());
-							super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());
-							return true;	
+							if( secondCandlestick.getBodyLength().compareTo(secondCandlestick.getBodyMedian()) > 0 ) {
+								super.init(secondCandlestick);
+								super.candlestickEntity.setConfirmPrice(secondCandlestick.getTop());
+								super.candlestickEntity.setStoplossPrice(secondCandlestick.getLowPrice());
+								return true;
+							}
 						}
 					}
 				}

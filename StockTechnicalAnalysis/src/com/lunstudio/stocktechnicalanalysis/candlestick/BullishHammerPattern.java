@@ -1,11 +1,21 @@
 package com.lunstudio.stocktechnicalanalysis.candlestick;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.util.MathUtils;
 import com.lunstudio.stocktechnicalanalysis.valueobject.CandleStickVo;
 
+/**
+ * @see https://www.candlesticker.com/Pattern.aspx?lang=en&Pattern=1101
+ * A candle for which the body is less than or equal to 25% of the entire candle, 
+ * and the upper shadow is less than or equal to 5 percent of the entire candle length. 
+ * Formally, B/WC <= .25 AND US/WC <= .05
+ * @author alankam
+ *
+ */
 public class BullishHammerPattern extends BullishCandlestickPatterns implements CandlestickPattern {
 	
 	public BullishHammerPattern(List<StockPriceEntity> stockPriceList) {
@@ -17,27 +27,24 @@ public class BullishHammerPattern extends BullishCandlestickPatterns implements 
 	@Override
 	public boolean isValid(Date tradeDate) throws Exception {
 		int index = super.tradeDateMap.get(tradeDate);
-		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
-		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
-		if( firstCandlestick.getClosePrice().compareTo(secondCandlestick.getOpenPrice()) > 0 ) {
-			if( secondCandlestick.getLowerShadow().compareTo(secondCandlestick.getBody().multiply(two)) > 0 ) {
-				if( secondCandlestick.isHollow() ) {
-					if( secondCandlestick.isShortBody() ) {
-						if( secondCandlestick.isShortUpperShadow() ) {
-							if( secondCandlestick.isLongLowerShadow() ) {
-								if( secondCandlestick.getUpperShadow().compareTo(secondCandlestick.getBody()) < 0 ) {
-									super.init(secondCandlestick);
-									super.candlestickEntity.setConfirmPrice(secondCandlestick.getTop());
-									super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());
-									return true;
-								}
-							}
-						}
-					}
+		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index));
+		if( BullishHammerPattern.isValid(firstCandlestick) ) {
+			super.init(firstCandlestick);
+			super.candlestickEntity.setConfirmPrice(firstCandlestick.getTop());
+			super.candlestickEntity.setStoplossPrice(firstCandlestick.getLowPrice());
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isValid(CandleStickVo candlestick) throws Exception {
+		if( candlestick.isLongCandlestick() ) {
+			if( candlestick.isShortShadow(candlestick.getUpperShadowLength()) ) {
+				if( candlestick.isLongShadow(candlestick.getLowerShadowLength()) ) {
+					return true;
 				}
 			}
 		}
 		return false;
-	}	
-
+	}
 }

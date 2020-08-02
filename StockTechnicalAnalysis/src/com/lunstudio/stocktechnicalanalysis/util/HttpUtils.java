@@ -38,6 +38,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
 public class HttpUtils {
@@ -50,6 +52,8 @@ public class HttpUtils {
 	
 	private static HttpUtils instance = new HttpUtils();
 	
+	private static final Logger logger = LogManager.getLogger();
+
 	public HttpUtils() {
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -145,7 +149,7 @@ public class HttpUtils {
 		}
 		}
 		URL obj = new URL(buf.toString());
-		System.out.println("Call URL : " + buf.toString());
+		logger.info("Call URL : " + buf.toString());
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);
@@ -162,7 +166,7 @@ public class HttpUtils {
 
 	public static String sendGet(String url) throws Exception {
 		URL obj = new URL(url);
-		System.out.println("Call URL : " + url);
+		logger.info("Call URL : " + url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);
@@ -196,7 +200,7 @@ public class HttpUtils {
 	
 	public String sendHttpsGet(String url) throws Exception {
 		URL obj = new URL(url);
-		System.out.println("Call URL : " + url);
+		logger.info("Call URL : " + url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);
@@ -213,7 +217,7 @@ public class HttpUtils {
 	
 	public static List<String> downloadCsv(String url, String encoding, String filePath) throws Exception {
 		URL obj = new URL(url);
-		System.out.println("Call URL : " + url);
+		logger.info("Call URL : " + url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);
@@ -235,7 +239,7 @@ public class HttpUtils {
 	
 	public static List<String> downloadCsv(String url, String encoding) throws Exception {
 		URL obj = new URL(url);
-		System.out.println("Call URL : " + url);
+		logger.info("Call URL : " + url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 		con.setRequestMethod("GET");
 		con.setRequestProperty("User-Agent", USER_AGENT);

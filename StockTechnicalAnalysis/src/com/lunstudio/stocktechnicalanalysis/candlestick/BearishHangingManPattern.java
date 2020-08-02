@@ -20,14 +20,14 @@ public class BearishHangingManPattern extends BearishCandlestickPatterns impleme
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
 		if( firstCandlestick.getClosePrice().compareTo(secondCandlestick.getOpenPrice()) < 0 ) {
-			if( secondCandlestick.getLowerShadow().compareTo(secondCandlestick.getBody().multiply(two)) > 0 ) {
+			if( secondCandlestick.getLowerShadowLength().compareTo(secondCandlestick.getBodyLength().multiply(two)) > 0 ) {
 				if( secondCandlestick.isFilled() ) {
 					if( secondCandlestick.isShortBody() ) {
 						if( CandleStickVo.isSamePrice(secondCandlestick.getOpenPrice(), secondCandlestick.getHighPrice()) ) {
 							if( secondCandlestick.isLongLowerShadow() ) {
-								if( secondCandlestick.getUpperShadow().compareTo(secondCandlestick.getBody()) < 0 ) {
+								if( secondCandlestick.getUpperShadowLength().compareTo(secondCandlestick.getBodyLength()) < 0 ) {
 									super.init(secondCandlestick);
-									super.candlestickEntity.setConfirmPrice(secondCandlestick.getLowerShadowHalf());
+									super.candlestickEntity.setConfirmPrice(secondCandlestick.getLowerShadowMiddle());
 									super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 									return true;
 								}

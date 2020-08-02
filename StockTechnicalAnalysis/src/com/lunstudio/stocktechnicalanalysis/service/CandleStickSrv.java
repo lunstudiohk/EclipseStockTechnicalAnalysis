@@ -25,6 +25,8 @@ public class CandleStickSrv {
 	@Autowired
 	private CandlestickDao candlestickDao;
 	
+	public static final Integer CANDLESTICK_MAXSIZE = 2; //0-2 = 3th
+	
 	public void deleteCandleStick(String stockCode, Date tradeDate, String priceType) throws Exception {
 		this.candlestickDao.deleteCandlestick(stockCode, tradeDate, priceType);
 		return;
@@ -32,7 +34,7 @@ public class CandleStickSrv {
 	
 	public List<CandlestickEntity> generateBullishCandleStick(List<StockPriceEntity> stockPriceList) throws Exception {
 		List<CandlestickEntity> candlestickList = new ArrayList<CandlestickEntity>();
-		int startIndex = 2;	//Max. 3-days Candle stick pattern
+		int startIndex = CANDLESTICK_MAXSIZE;	//Max. 3-days Candle stick pattern
 		BullishCandlestickPatterns bullishPatterns = new BullishCandlestickPatterns(stockPriceList);
 		for(int i=startIndex; i<stockPriceList.size(); i++) {
 			candlestickList.addAll(bullishPatterns.getBullishCandlestickEntityList(stockPriceList.get(i).getTradeDate()));
@@ -42,7 +44,7 @@ public class CandleStickSrv {
 	
 	public List<CandlestickEntity> generateBearishCandleStick(List<StockPriceEntity> stockPriceList) throws Exception {
 		List<CandlestickEntity> candlestickList = new ArrayList<CandlestickEntity>();
-		int startIndex = 2;	//Max. 3-days Candle stick pattern
+		int startIndex = CANDLESTICK_MAXSIZE;	//Max. 3-days Candle stick pattern
 		BearishCandlestickPatterns bearishPatterns = new BearishCandlestickPatterns(stockPriceList);
 		for(int i=startIndex; i<stockPriceList.size(); i++) {
 			candlestickList.addAll(bearishPatterns.getBearishCandlestickEntityList(stockPriceList.get(i).getTradeDate()));

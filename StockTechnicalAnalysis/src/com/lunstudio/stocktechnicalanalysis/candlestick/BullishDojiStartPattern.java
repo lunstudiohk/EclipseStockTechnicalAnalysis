@@ -20,12 +20,12 @@ public class BullishDojiStartPattern extends BullishCandlestickPatterns implemen
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
 		if( firstCandlestick.isFilled() ) {
-			if( !firstCandlestick.isShortBody() ) {
-				if( secondCandlestick.isGapDown(firstCandlestick) ) {
-					if( secondCandlestick.isDoji() ) {
+			if( secondCandlestick.isGapDown(firstCandlestick) ) {
+				if( secondCandlestick.isDoji() ) {
+					if( secondCandlestick.getCandleLength().compareTo(secondCandlestick.getHighlowMedian()) > 0 ) {
 						super.init(secondCandlestick);
 						super.candlestickEntity.setConfirmPrice(secondCandlestick.getHighPrice());
-						super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());
+						super.candlestickEntity.setStoplossPrice(secondCandlestick.getLowPrice());
 						return true;
 					}
 				}

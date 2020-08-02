@@ -19,14 +19,15 @@ public class BullishMeetingLinePattern extends BullishCandlestickPatterns implem
 		int index = super.tradeDateMap.get(tradeDate);
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
+		
 		if( firstCandlestick.isFilled() ) {
-			if( !firstCandlestick.isShortBody() ) {
+			if( firstCandlestick.getBodyLength().compareTo(firstCandlestick.getBodyMedian()) > 0 ) {
 				if( secondCandlestick.isHollow() ) {
-					if( !secondCandlestick.isShortBody() ) {
+					if( secondCandlestick.getBodyLength().compareTo(secondCandlestick.getBodyMedian()) > 0 ) {
 						if( CandleStickVo.isSamePrice(secondCandlestick.getClosePrice(), firstCandlestick.getClosePrice()) ) {
 							super.init(secondCandlestick);
 							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
-							super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());
+							super.candlestickEntity.setStoplossPrice(secondCandlestick.getLowPrice());
 							return true;	
 						}
 					}

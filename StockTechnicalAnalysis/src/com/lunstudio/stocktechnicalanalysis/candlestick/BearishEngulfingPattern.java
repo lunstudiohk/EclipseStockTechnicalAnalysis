@@ -19,21 +19,21 @@ public class BearishEngulfingPattern extends BearishCandlestickPatterns implemen
 		int index = super.tradeDateMap.get(tradeDate);
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-2));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
-		CandleStickVo thirdCandlestick = new CandleStickVo(super.stockPriceList.get(index));
-		if( firstCandlestick.getDayVolume() == null || secondCandlestick.getDayVolume() == null || firstCandlestick.getDayVolume().compareTo(secondCandlestick.getDayVolume()) > 0 ) {
-			if( secondCandlestick.isHollow() ) {
-				if( thirdCandlestick.isFilled() ) {
-					if( secondCandlestick.getClosePrice().compareTo(thirdCandlestick.getOpenPrice()) < 0 ) {
-						if( secondCandlestick.getOpenPrice().compareTo(thirdCandlestick.getClosePrice()) > 0 ) {
-							super.init(thirdCandlestick);
-							super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
-							super.candlestickEntity.setStoplossPrice(thirdCandlestick.getOpenPrice());
+		//CandleStickVo thirdCandlestick = new CandleStickVo(super.stockPriceList.get(index));
+		//if( firstCandlestick.getDayVolume() == null || secondCandlestick.getDayVolume() == null || firstCandlestick.getDayVolume().compareTo(secondCandlestick.getDayVolume()) > 0 ) {
+			if( firstCandlestick.isHollow() ) {
+				if( secondCandlestick.isFilled() ) {
+					if( secondCandlestick.getClosePrice().compareTo(firstCandlestick.getOpenPrice()) < 0 ) {
+						if( secondCandlestick.getOpenPrice().compareTo(firstCandlestick.getClosePrice()) > 0 ) {
+							super.init(secondCandlestick);
+							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
+							super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());
 							return true;
 						}
 					}
 				}
 			}
-		}		
+		//}		
 		return false;
 	}
 

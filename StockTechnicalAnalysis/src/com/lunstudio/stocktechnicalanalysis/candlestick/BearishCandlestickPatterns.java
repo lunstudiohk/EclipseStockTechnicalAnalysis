@@ -42,15 +42,23 @@ public class BearishCandlestickPatterns {
 		,BearishUpsideGapTwoCrows	//向上跳空雙烏鴉
 		,BearishThreeBlackCrows		//三飛烏鴉
 		,BearishAdvanceBlock		//大敵當前
-		,BearishDeliberationBlock	//步步為營
-		
+		,BearishDeliberationBlock	//步步為營	
 		,BearishTwoCrows			//雙飛烏鴉
+		
+		,BearishUniqueThreeMountainTop	//熊勢獨特三山頂	#
+		,BearishOneBlackCrow		//熊勢一黑鴉	#
+		,BearishThreeInsideDown		//熊勢內困三黑		#
+		,BearishThreeOutsideDown		//熊勢外側三黑		#
+		,BearishSqueezeAlert		//熊勢擠壓警報		#
+		,BearishThreeGapUps		//熊勢三個向上跳空缺口	#
+		,BearishBreakaway			//熊勢分離	#
 	}
 	
 	protected List<StockPriceEntity> stockPriceList = null;
 	protected CandlestickEntity candlestickEntity = null;
 	protected Map<Date, Integer> tradeDateMap = null;
 	protected BearishPatterns pattern;
+	protected String priceType = null;
 	
 	public BearishCandlestickPatterns(List<StockPriceEntity> stockPriceList) {
 		this.stockPriceList = stockPriceList;
@@ -66,6 +74,7 @@ public class BearishCandlestickPatterns {
 		this.candlestickEntity.setStockCode(candlestick.getStockCode());
 		this.candlestickEntity.setTradeDate(candlestick.getTradeDate());
 		this.candlestickEntity.setType(CandlestickEntity.Sell);
+		this.candlestickEntity.setPriceType(this.priceType);
 		this.candlestickEntity.setCandlestickType(this.getBearishCandlestickPattern());
 		return;
 	}
@@ -73,9 +82,9 @@ public class BearishCandlestickPatterns {
 	public List<CandlestickEntity> getBearishCandlestickEntityList(Date tradeDate) throws Exception {
 		List<CandlestickEntity> candlestickList = new ArrayList<CandlestickEntity>();
 		for(BearishPatterns pattern : BearishPatterns.values() ) {
-			//if( pattern != BearishPatterns.BearishThreeInsideDown ) continue;
+			//if( pattern != BearishPatterns.BearishLadderTop ) continue;
 			CandlestickPattern candlestickPattern = this.getBearishCandlestickPattern(pattern);
-			if( candlestickPattern.isValid(tradeDate)) {
+			if( candlestickPattern != null && candlestickPattern.isValid(tradeDate)) {
 				candlestickList.add(candlestickPattern.getCandlestickEntity());
 			}
 		}
@@ -128,6 +137,20 @@ public class BearishCandlestickPatterns {
 			return new BearishDeliberationBlockPattern(this.stockPriceList);
 		case BearishTwoCrows:
 			return new BearishTwoCrowsPattern(this.stockPriceList);
+		case BearishUniqueThreeMountainTop:
+			return new BearishUniqueThreeMountainTop(this.stockPriceList);
+		case BearishOneBlackCrow:
+			return new BearishOneBlackCrow(this.stockPriceList);
+		case BearishThreeInsideDown:
+			return new BearishThreeInsideDown(this.stockPriceList);
+		case BearishThreeOutsideDown:
+			return new BearishThreeOutsideDown(this.stockPriceList);
+		case BearishSqueezeAlert:
+			return new BearishSqueezeAlert(this.stockPriceList);
+		case BearishThreeGapUps:
+			return new BearishThreeGapUps(this.stockPriceList);
+		case BearishBreakaway:
+			return new BearishBreakaway(this.stockPriceList);
 		default:
 			return null;
 		}
@@ -153,6 +176,13 @@ public class BearishCandlestickPatterns {
 		case 15: return "大敵當前";
 		case 16: return "步步為營";
 		case 17: return "雙飛烏鴉";
+		case 18: return "熊勢獨特三山頂";
+		case 19: return "熊勢一黑鴉";
+		case 20: return "熊勢內困三黑";
+		case 21: return "熊勢外側三黑";
+		case 22: return "熊勢擠壓警報";
+		case 23: return "熊勢三個向上跳空缺口";
+		case 24: return "熊勢分離	";
 		default: return "";
 		}
 	}

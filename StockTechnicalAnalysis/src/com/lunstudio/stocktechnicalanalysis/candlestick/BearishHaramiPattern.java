@@ -25,10 +25,10 @@ public class BearishHaramiPattern extends BearishCandlestickPatterns implements 
 					if( firstCandlestick.getOpenPrice().compareTo(secondCandlestick.getClosePrice()) < 0 ) {
 						if( firstCandlestick.getClosePrice().compareTo(secondCandlestick.getOpenPrice()) > 0 ) {
 							super.init(secondCandlestick);
-							if( firstCandlestick.getBodyHalf().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
+							if( firstCandlestick.getBodyMiddle().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
 								super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
 							} else {
-								super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyHalf());
+								super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyMiddle());
 							}
 							super.candlestickEntity.setStoplossPrice(firstCandlestick.getHighPrice());
 							return true;

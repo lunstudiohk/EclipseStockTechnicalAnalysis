@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.lunstudio.stocktechnicalanalysis.entity.StockSignalEntity;
 import com.lunstudio.stocktechnicalanalysis.entity.StockEntity;
+import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
 import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 
 public class DailyMacdCrossAboveSignal extends BullishSignal {
@@ -20,19 +21,22 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 
 	private List<Integer> macdCrossTradeIndexList = null;
 	
-	public DailyMacdCrossAboveSignal(StockEntity stock, String priceType, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, Integer signalType) throws Exception {
-		super(stock, priceType, refPriceDateMap, stockPriceVoList, signalType);
-		this.macdCrossTradeIndexList = SignalUtils.getDailyMacdCrossTradeIndexList(stockPriceVoList);
+	public DailyMacdCrossAboveSignal(StockEntity stock, List<StockPriceVo> stockPriceVoList) throws Exception {
+		super(stock, StockPriceEntity.PRICE_TYPE_DAILY, stockPriceVoList, BullishSignalIndicators.DailyMacdCrossAboveSignal);
+		super.tradeIndexList = SignalUtils.getDailyMacdCrossAboveTradeIndexList(stockPriceVoList);
+		System.out.println(super.tradeIndexList);
+		//this.macdCrossTradeIndexList = SignalUtils.getDailyMacdCrossTradeIndexList(stockPriceVoList);
 		return;
 	}
+	
 	
 	@Override
 	public List<StockSignalEntity> getSignalParameterList() throws Exception {		
 		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
-		finalList.addAll(this.getSignalParameterList(20));
 		//finalList.addAll(this.getSignalParameterList(20));
 		return finalList;
 	}
+	
 	
 	public List<StockSignalEntity> getSignalParameterList(Integer period) throws Exception {
 		super.period = period;
@@ -76,6 +80,7 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 	
 	@Override
 	public boolean isValid(StockSignalEntity signal, Integer tradeIndex) throws Exception {
+		/*
 		int macdIndex = this.macdCrossTradeIndexList.indexOf(tradeIndex);
 		if( macdIndex > 0 ) {
 			if( signal.isEmpty() ) {
@@ -124,6 +129,8 @@ public class DailyMacdCrossAboveSignal extends BullishSignal {
 			}			
 		}
 		return false;
+		*/
+		return true;
 	}
 
 	@Override

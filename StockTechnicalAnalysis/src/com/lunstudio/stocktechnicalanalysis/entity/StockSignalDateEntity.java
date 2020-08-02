@@ -25,13 +25,16 @@ public class StockSignalDateEntity extends BaseEntity implements Serializable {
 	private Date tradeDate;
 
 	@Id
+	private String type;
+	
+	@Id
 	private Integer signalSeq;
 
 	@Id
 	private Date signalDate;
 	
 	@Id
-	private String signalType;
+	private Integer signalType;
 	
 	private BigDecimal signalPrice;
 	
@@ -119,13 +122,22 @@ public class StockSignalDateEntity extends BaseEntity implements Serializable {
 		this.lowDay = lowDay;
 	}
 
-	public String getSignalType() {
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Integer getSignalType() {
 		return signalType;
 	}
 
-	public void setSignalType(String signalType) {
+	public void setSignalType(Integer signalType) {
 		this.signalType = signalType;
 	}
-	
+
+		
 	
 }

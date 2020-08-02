@@ -27,26 +27,18 @@ public abstract class BearishSignal extends GeneralSignal {
 	
 	private static final Logger logger = LogManager.getLogger();
 
-	private static final Integer tradeCount = 10;
 	private static final Integer maxReturn = -5;
 
-	public BearishSignal(StockEntity stock, String priceType, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, Integer type) throws Exception{
-		super(stock, priceType, refPriceDateMap, stockPriceVoList, StockSignalEntity.SIGNAL_TYPE_SELL, type);
+	public BearishSignal(StockEntity stock, String priceType, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, Integer signalType) throws Exception{
+		super(stock, priceType, stockPriceVoList, signalType, StockSignalEntity.SIGNAL_TYPE_SELL);
 		return;
 	}
 		
 	protected boolean isMeetCriteria(DescriptiveStatistics maxStats, DescriptiveStatistics minStats) throws Exception {
 		double[] minReturn = minStats.getSortedValues();
-		
-		if( StockPriceEntity.PRICE_TYPE_DAILY.equals(this.priceType) ) {
-			if( minReturn.length >= tradeCount ) {
-				int index = (int) Math.floor(minReturn.length * 0.9);	//90%
-				if( minReturn[index] < maxReturn ) {	// lesser than -3%
-					return true;
-				}
-			}
-		} else if( StockPriceEntity.PRICE_TYPE_WEEKLY.equals(this.priceType) ) {
-			if( minReturn.length >= 5 && minReturn[minReturn.length-2] < -5 ) {
+		if( minReturn.length >= GeneralSignal.MIN_TRADE_COUNT ) {
+			int index = (int) Math.floor(minReturn.length * 0.9);
+			if( minReturn[index] < maxReturn ) {
 				return true;
 			}
 		}
@@ -56,26 +48,16 @@ public abstract class BearishSignal extends GeneralSignal {
 	public static List<StockSignalEntity> generateBearishSignal(StockEntity stock, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, List<CandlestickEntity> candlestickList, String priceType) throws Exception {
 		List<StockSignalEntity> todaySignalList = new ArrayList<StockSignalEntity>();
 		int signalSeq = 1;
-		//Date today = stockPriceVoList.get(stockPriceVoList.size()-1).getTradeDate();
 		List<StockSignalEntity> signalList = new ArrayList<StockSignalEntity>();
 		if( StockPriceEntity.PRICE_TYPE_DAILY.equals(priceType) ) {
-			for(int i=1; i<=21; i++) {
+			for(int i=1; i<=4; i++) {
 				BearishSignal bearishSignal = BearishSignal.getDailyBearishSignal(stock, StockPriceEntity.PRICE_TYPE_DAILY, refPriceDateMap, stockPriceVoList, i, candlestickList);
 				if( bearishSignal != null ) {
 					signalList.addAll(bearishSignal.getSignalParameterList());
 				}
 			}
 		}
-		/*
-		if( StockPriceEntity.PRICE_TYPE_WEEKLY.equals(priceType) ) {
-			for(int i=100; i<=116; i++) {
-				BullishSignal bullishSignal = BullishSignal.getWeeklyBullishSignal(stock, stockPriceVoList, i, candlestickList);
-				if( bullishSignal != null ) {
-					signalList.addAll(bullishSignal.getSignalParameterList());
-				}
-			}
-		}
-		 */
+/*		
 		Comparator<StockSignalEntity> compareByStockCode = new Comparator<StockSignalEntity>() {
 		    @Override
 		    public int compare(StockSignalEntity s1, StockSignalEntity s2) {
@@ -83,12 +65,11 @@ public abstract class BearishSignal extends GeneralSignal {
 		    }
 		};
 		Collections.sort(signalList, compareByStockCode);
+*/
 		for(StockSignalEntity signal : signalList) {
-			//if( signal.getTradeDate().compareTo(today) == 0 ) { 
-				logger.info(signal.getTradeDate() + " : " + getDailyBearishSignalDesc(signal));
-				signal.setSignalSeq(signalSeq++);
-				todaySignalList.add(signal);
-			//}
+			logger.info(signal.getTradeDate() + " : " + getDailyBearishSignalDesc(signal));
+			signal.setSignalSeq(signalSeq++);
+			todaySignalList.add(signal);
 		}
 		
 		return todaySignalList;
@@ -99,7 +80,7 @@ public abstract class BearishSignal extends GeneralSignal {
 	}
 	
 	public static List<String> getDailyBearishPrimarySignalDesc(StockSignalEntity signal) {
-		switch(signal.getType()) {
+		switch(signal.getSignalType()) {
 		case 1:
 			return DailyMacdCrossBelowSignal.getSignalShortDesc(signal);
 		case 2:
@@ -116,7 +97,7 @@ public abstract class BearishSignal extends GeneralSignal {
 	}
 	
 	public static String getDailyBearishSignalDesc(StockSignalEntity signal) {
-		switch(signal.getType()) {
+		switch(signal.getSignalType()) {
 		case 1:
 			return DailyMacdCrossBelowSignal.getSignalDesc(signal);
 		case 2:

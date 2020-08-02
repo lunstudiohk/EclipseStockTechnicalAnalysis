@@ -29,7 +29,7 @@ public class BearishEveningStarPattern extends BearishCandlestickPatterns implem
 					if( thirdCandlestick.getDayVolume() == null || firstCandlestick.getDayVolume() == null || secondCandlestick.getDayVolume() == null 
 							|| thirdCandlestick.getDayVolume().compareTo(firstCandlestick.getDayVolume()) > 0
 							|| thirdCandlestick.getDayVolume().compareTo(secondCandlestick.getDayVolume()) > 0 ) {
-						if( thirdCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyHalf()) <= 0 ) {
+						if( thirdCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyMiddle()) <= 0 ) {
 							super.init(thirdCandlestick);
 							super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
 							if( secondCandlestick.getHighPrice().compareTo(thirdCandlestick.getHighPrice()) > 0 ) {

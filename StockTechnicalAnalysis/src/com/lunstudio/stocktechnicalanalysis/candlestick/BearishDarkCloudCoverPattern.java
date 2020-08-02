@@ -22,7 +22,7 @@ public class BearishDarkCloudCoverPattern extends BearishCandlestickPatterns imp
 		if( firstCandlestick.isHollow() ) {
 			if( secondCandlestick.isFilled() ) {
 				if( secondCandlestick.isGapUp(firstCandlestick) ) {
-					if( firstCandlestick.getBodyHalf().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
+					if( firstCandlestick.getBodyMiddle().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
 						if( firstCandlestick.getOpenPrice().compareTo(secondCandlestick.getClosePrice()) < 0 ) {
 							super.init(secondCandlestick);
 							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());

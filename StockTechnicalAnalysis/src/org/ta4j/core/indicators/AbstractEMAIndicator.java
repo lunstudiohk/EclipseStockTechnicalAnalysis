@@ -26,6 +26,7 @@ package org.ta4j.core.indicators;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 
+
 /**
  * Base class for Exponential Moving Average implementations.
  */
@@ -46,6 +47,10 @@ public abstract class AbstractEMAIndicator extends RecursiveCachedIndicator<Num>
 
     @Override
     protected Num calculate(int index) {
+    	if (index + 1 < barCount) {
+            // Starting point of the EMA
+            return new SMAIndicator(indicator, barCount).getValue(index);
+        }
         if (index == 0) {
             return indicator.getValue(0);
         }

@@ -135,14 +135,14 @@ public class BearishDailyCandlestickSignal extends BearishSignal {
 
 	public static String getSignalDesc(StockSignalEntity signal) {
 		StringBuffer buf = new StringBuffer();
-		buf.append(String.format("%s [賣出 - %s]: ", signal.getStockCode(), BearishCandlestickPatterns.getBearishCandlestickPatternDesc(signal.getType()-offset)));
+		buf.append(String.format("%s [賣出 - %s]: ", signal.getStockCode(), BearishCandlestickPatterns.getBearishCandlestickPatternDesc(signal.getSignalType()-offset)));
 		buf.append(BullishSignal.getSignalDesc(signal));
 		return buf.toString();
 	}
 
 	public static List<String> getSignalShortDesc(StockSignalEntity signal) {
 		List<String> lists = new ArrayList<String>();
-		lists.add(BearishCandlestickPatterns.getBearishCandlestickPatternDesc(signal.getType()-offset));
+		lists.add(BearishCandlestickPatterns.getBearishCandlestickPatternDesc(signal.getSignalType()-offset));
 		lists.addAll(GeneralSignal.getSecondarySignalDesc(signal));
 		return lists;
 	}

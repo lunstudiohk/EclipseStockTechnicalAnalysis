@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.util.List;
 
 import com.lunstudio.stocktechnicalanalysis.entity.StockPriceEntity;
+import com.lunstudio.stocktechnicalanalysis.util.MathUtils;
 import com.lunstudio.stocktechnicalanalysis.valueobject.CandleStickVo;
 
 public class BullishInvertedHammerPattern extends BullishCandlestickPatterns implements CandlestickPattern {
@@ -21,19 +22,15 @@ public class BullishInvertedHammerPattern extends BullishCandlestickPatterns imp
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
 		if( firstCandlestick.isFilled() ) {
-			if( secondCandlestick.isGapDown(firstCandlestick)) {
-				if( secondCandlestick.isShortBody() ) {
-					if( secondCandlestick.getUpperShadow().compareTo(secondCandlestick.getBody().multiply(two)) >= 0 ) {
-						if( secondCandlestick.isShortLowerShadow() ) {
-							if( secondCandlestick.isLongUpperShadow() ) {
-								if( secondCandlestick.getLowerShadow().compareTo(secondCandlestick.getBody()) < 0 ) {
-									super.init(secondCandlestick);
-									BigDecimal confirmation = secondCandlestick.getTop().add(secondCandlestick.getUpperShadow().divide(two));
-									super.candlestickEntity.setConfirmPrice(confirmation);
-									super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());
-									return true;
-								}
-							}
+			if( secondCandlestick.getOpenPrice().compareTo(firstCandlestick.getClosePrice()) < 0 ) {
+				if( secondCandlestick.getCandleLength().compareTo(secondCandlestick.getHighlowMedian()) >= 0 ) {
+					if( MathUtils.getPrecentage(secondCandlestick.getBodyLength(), secondCandlestick.getCandleLength()).compareTo(BigDecimal.valueOf(25)) < 0 ) {
+						if( MathUtils.getPrecentage(secondCandlestick.getLowerShadowLength(), secondCandlestick.getCandleLength()).compareTo(BigDecimal.valueOf(10)) < 0 ) {
+							super.init(secondCandlestick);
+							BigDecimal confirmation = secondCandlestick.getTop().add(secondCandlestick.getUpperShadowLength().divide(two));
+							super.candlestickEntity.setConfirmPrice(confirmation);
+							super.candlestickEntity.setStoplossPrice(secondCandlestick.getLowPrice());
+							return true;
 						}
 					}
 				}

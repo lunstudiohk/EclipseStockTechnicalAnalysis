@@ -108,6 +108,9 @@ public class SystemUtils {
     @Value("${HSI.INDEX_PE_DIV}")
     private String INDEX_PE_DIV;
     
+    @Value("${CNBC.STOCK_PRICE_URL}")
+    private String CNBC_STOCK_PRICE_URL;
+    
     private static SystemUtils instance;
     
     public static SystemUtils getInstance() {
@@ -255,4 +258,8 @@ public class SystemUtils {
     	return SystemUtils.getInstance().STOOQ_STOCK_PRICE_URL;
     }
 
+    public static final String getCnbcStockPriceUrl() {
+    	return SystemUtils.getInstance().CNBC_STOCK_PRICE_URL;
+    }
+    
 }

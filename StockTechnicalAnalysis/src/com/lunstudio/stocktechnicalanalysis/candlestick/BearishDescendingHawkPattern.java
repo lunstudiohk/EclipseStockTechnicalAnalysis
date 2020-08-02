@@ -24,8 +24,8 @@ public class BearishDescendingHawkPattern extends BearishCandlestickPatterns imp
 				if( firstCandlestick.getClosePrice().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
 					if( firstCandlestick.getOpenPrice().compareTo(secondCandlestick.getOpenPrice()) < 0 ) {
 						super.init(secondCandlestick);
-						if( firstCandlestick.getBodyHalf().compareTo(secondCandlestick.getOpenPrice()) < 0 ) {
-							super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyHalf());	
+						if( firstCandlestick.getBodyMiddle().compareTo(secondCandlestick.getOpenPrice()) < 0 ) {
+							super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyMiddle());	
 						} else {
 							super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
 						}

@@ -33,7 +33,7 @@ public class BullishThreeWhiteSoldiersPattern extends BullishCandlestickPatterns
 										if( secondCandlestick.getClosePrice().compareTo(thirdCandlestick.getClosePrice()) < 0 ) {
 											super.init(thirdCandlestick);
 											super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
-											super.candlestickEntity.setStoplossPrice(thirdCandlestick.getDayLow());
+											super.candlestickEntity.setStoplossPrice(thirdCandlestick.getLowPrice());
 											return true;				
 										}
 									}

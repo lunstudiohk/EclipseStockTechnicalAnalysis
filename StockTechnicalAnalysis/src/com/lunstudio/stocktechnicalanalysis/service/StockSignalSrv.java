@@ -252,7 +252,7 @@ public class StockSignalSrv {
 				highMap.put("median", stockSignal.getUpperMax());
 				subMap.put("high", highMap);
 				
-				List<StockSignalDateEntity> stockSignalDateList = this.stockSignalDateSrv.getStockSignalDateList(stockSignal.getStockCode(), stockSignal.getTradeDate(), stockSignal.getSignalSeq(), stockSignal.getSignalType(), StockSignalDateEntity.DESC);
+				List<StockSignalDateEntity> stockSignalDateList = null;//this.stockSignalDateSrv.getStockSignalDateList(stockSignal.getStockCode(), stockSignal.getTradeDate(), stockSignal.getSignalSeq(), stockSignal.getSignalType(), StockSignalDateEntity.DESC);
 				List<Map<String, Object>> dateMapList = new ArrayList<Map<String, Object>>();
 				for(StockSignalDateEntity dateEntity : stockSignalDateList) {
 					Map<String, Object> dateMap = new HashMap<String, Object>();
@@ -283,15 +283,15 @@ public class StockSignalSrv {
 		List<StockSignalEntity> stockSignalList = this.stockSignalDao.getIncompletedStockSignalList();
 		for(StockSignalEntity stockSignal : stockSignalList) {
 			List<StockPriceEntity> stockPriceList = this.stockPriceSrv.getDailyStockPriceList(stockSignal.getStockCode(), stockSignal.getTradeDate());
-			StockSignalDateEntity stockSignalDate = this.stockSignalDateSrv.getStockSignalDate(stockSignal.getStockCode(), stockSignal.getTradeDate(), 
-					stockSignal.getSignalSeq(), stockSignal.getSignalType(), stockSignal.getTradeDate());
+			StockSignalDateEntity stockSignalDate = null;//this.stockSignalDateSrv.getStockSignalDate(stockSignal.getStockCode(), stockSignal.getTradeDate(), 
+					//stockSignal.getSignalSeq(), stockSignal.getSignalType(), stockSignal.getTradeDate());
 			BigDecimal min = null;
 			BigDecimal max = null;
 			Integer maxPeriod = null;
 			Integer minPeriod = null;
 			for(int i=0; i<20 && i<stockPriceList.size(); i++) {
 				BigDecimal high = stockPriceList.get(i).getHighPrice();
-				BigDecimal low = stockPriceList.get(i).getDayLow();
+				BigDecimal low = stockPriceList.get(i).getLowPrice();
 				BigDecimal highDiff = MathUtils.getPriceDiff(stockSignalDate.getSignalPrice(), high, 2);
 				BigDecimal lowDiff = MathUtils.getPriceDiff(stockSignalDate.getSignalPrice(), low, 2);
 				if( min == null || min.compareTo(lowDiff) > 0 ) {
@@ -317,4 +317,12 @@ public class StockSignalSrv {
 		}
 		return;
 	}
+	
+	public void generateStockSignal(StockEntity stock, Integer size) throws Exception {
+		List<StockPriceEntity> dailyStockPriceList = this.stockPriceSrv.getLastDailyStockPriceEntityList(stock.getStockCode(), null);
+		 
+		return;
+	}
+	
+	
 }

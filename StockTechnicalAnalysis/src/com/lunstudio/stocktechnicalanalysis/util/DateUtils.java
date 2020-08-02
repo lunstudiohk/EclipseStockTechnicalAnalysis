@@ -23,7 +23,8 @@ public class DateUtils {
 	private final static SimpleDateFormat hkexDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 	private final static SimpleDateFormat csvDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private final static SimpleDateFormat weekFormatter = new SimpleDateFormat("EE");
-
+	private final static SimpleDateFormat CnbctDateFormat = new SimpleDateFormat("yyyyMMdd000000");
+	private final static SimpleDateFormat CnbctDateEndFormat = new SimpleDateFormat("yyyyMMdd235900");
 	//private static final SimpleDateFormat googleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	private static Calendar firstCal = Calendar.getInstance();
@@ -82,6 +83,16 @@ public class DateUtils {
 		cal.getActualMinimum(Calendar.DAY_OF_WEEK);
 		Date date = new Date(cal.getTime().getTime());
 		return LocalDate.parse(dateFormat.format(date), DATE_FORMAT);
+	}
+	
+	public static Date getCnbcDate(String date) throws Exception{
+		return new Date(CnbctDateFormat.parse(date).getTime());
+	}
+	public static String getCnbcDateString(Date date) {
+		return CnbctDateFormat.format(date);
+	}
+	public static String getCnbcDateEndString(Date date) {
+		return CnbctDateEndFormat.format(date);
 	}
 	
 	public static long getDayDiff(Date endDate, Date startDate) {

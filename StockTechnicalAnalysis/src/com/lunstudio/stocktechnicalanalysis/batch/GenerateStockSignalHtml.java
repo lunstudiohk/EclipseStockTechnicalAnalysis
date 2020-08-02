@@ -625,7 +625,7 @@ public class GenerateStockSignalHtml {
 
 	    for(int i=0;i<stockSignalList.size();i++) {
 	    	StockSignalEntity stockSignal = stockSignalList.get(i);
-		    StockSignalDateEntity currentStockSignalDate = this.stockSignalDateSrv.getStockSignalDate(stockSignal.getStockCode(), stockSignal.getTradeDate(), stockSignal.getSignalSeq(), stockSignal.getSignalType(), stockSignal.getTradeDate());
+		    StockSignalDateEntity currentStockSignalDate = null;//this.stockSignalDateSrv.getStockSignalDate(stockSignal.getStockCode(), stockSignal.getTradeDate(), stockSignal.getSignalSeq(), stockSignal.getSignalType(), stockSignal.getTradeDate());
 		    String min = "";
 		    String buyMedian = "";
 		    String buyMax = "";

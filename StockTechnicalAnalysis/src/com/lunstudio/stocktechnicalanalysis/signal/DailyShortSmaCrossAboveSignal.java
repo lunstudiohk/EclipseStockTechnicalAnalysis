@@ -20,7 +20,7 @@ public class DailyShortSmaCrossAboveSignal extends BullishSignal {
 	private List<Integer> shortSmaList = null;
 	
 	public DailyShortSmaCrossAboveSignal(StockEntity stock, String priceType, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, Integer signalType) throws Exception {
-		super(stock, priceType, refPriceDateMap, stockPriceVoList, signalType);
+		super(stock, priceType, stockPriceVoList, null);
 		this.shortSmaList = new ArrayList<Integer>();
 		int currentTrend = 0;
 		int previousTrend = 0;

@@ -19,9 +19,10 @@ public class BullishKickingPattern extends BullishCandlestickPatterns implements
 		int index = super.tradeDateMap.get(tradeDate);
 		CandleStickVo firstCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index));
-		if( firstCandlestick.isFilled() && !firstCandlestick.isShortBody() ) {
-			if( secondCandlestick.isHollow() && !secondCandlestick.isShortBody() ) {
-				if( secondCandlestick.isGapUp(firstCandlestick) ) {
+		
+		if( BearishBeltHoldPattern.isValid(firstCandlestick) ) {
+			if( secondCandlestick.isHollow() ) {
+				if( firstCandlestick.getOpenPrice().compareTo(secondCandlestick.getOpenPrice()) < 0  ) {
 					super.init(secondCandlestick);
 					super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
 					super.candlestickEntity.setStoplossPrice(secondCandlestick.getOpenPrice());

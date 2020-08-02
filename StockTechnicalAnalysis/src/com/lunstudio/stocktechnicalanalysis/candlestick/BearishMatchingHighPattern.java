@@ -25,7 +25,7 @@ public class BearishMatchingHighPattern extends BearishCandlestickPatterns imple
 					if( firstCandlestick.getDayVolume() == null || secondCandlestick.getDayVolume() == null || firstCandlestick.getDayVolume().compareTo(secondCandlestick.getDayVolume()) > 0 ) {
 						if( CandleStickVo.isSamePrice(firstCandlestick.getClosePrice(), secondCandlestick.getClosePrice()) ) {
 							super.init(secondCandlestick);
-							super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyHalf());
+							super.candlestickEntity.setConfirmPrice(firstCandlestick.getBodyMiddle());
 							if( firstCandlestick.getHighPrice().compareTo(secondCandlestick.getHighPrice()) > 0 ) {
 								super.candlestickEntity.setStoplossPrice(firstCandlestick.getHighPrice());
 							} else {

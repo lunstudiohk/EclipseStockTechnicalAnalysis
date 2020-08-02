@@ -25,17 +25,19 @@ import com.lunstudio.stocktechnicalanalysis.util.MathUtils;
 import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 
 public abstract class GeneralSignal {
+
+	protected static final Integer MIN_TRADE_COUNT = 5;
 	
 	private static final Logger logger = LogManager.getLogger();
 
 	protected StockEntity stock;
 	protected List<StockPriceVo> stockPriceVoList;
-	protected String signalType;
-	protected Integer type;
+	protected Integer signalType;
+	protected String type;
 	protected String priceType;
 	protected Integer period;
-	protected Map<Date,BigDecimal> refPriceDateMap;
 	protected List<CandlestickEntity> candlestickList;
+	protected List<Integer> tradeIndexList;
 	
 	public abstract List<StockSignalEntity> getSignalParameterList() throws Exception;
 	
@@ -43,16 +45,19 @@ public abstract class GeneralSignal {
 	
 	public abstract boolean isValid(StockSignalEntity parameter, Integer tradeIndex) throws Exception;
 
-	public GeneralSignal(StockEntity stock, String priceType, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, String signalType, Integer type) throws Exception{
+	public List<Integer> getTradeIndexList() {
+		return this.tradeIndexList;
+	}
+	
+	public GeneralSignal(StockEntity stock, String priceType, List<StockPriceVo> stockPriceVoList, Integer signalType, String type) throws Exception{
 		this.stock = stock;
 		this.stockPriceVoList = stockPriceVoList;
 		this.signalType = signalType;
 		this.type = type;
-		this.refPriceDateMap = refPriceDateMap;
 		this.priceType = priceType;
 		return;
 	}
-		
+/*
 	protected List<Integer> getTradeIndexList(StockSignalEntity signal) throws Exception {
 		List<Integer> tradeIndexList = new ArrayList<Integer>();
 		for(int i=0; i<stockPriceVoList.size(); i++) {
@@ -62,7 +67,7 @@ public abstract class GeneralSignal {
 		}
 		return tradeIndexList;
 	}
-	
+*/	
 	protected List<StockSignalEntity> filterInvalidSignal(List<StockSignalEntity> signalList) throws Exception {
 		List<StockSignalEntity> finalList = new ArrayList<StockSignalEntity>();
 		for(int i=0; i<signalList.size()-1; i++) {
@@ -97,44 +102,57 @@ public abstract class GeneralSignal {
 			if( finalList.isEmpty() ) {
 				finalList.add(signalList.get(i));
 			} else {
-				try {
 				if( finalList.get(0).getConfident().compareTo(signalList.get(i).getConfident()) < 0 ) {
 					finalList.set(0, signalList.get(i));
-				}
-				}catch(Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
 		return finalList;
 	}
 	
+	
 	protected List<StockSignalEntity> getValidSignalList(List<StockSignalEntity> signalList) throws Exception {
 		List<StockSignalEntity> list = new ArrayList<StockSignalEntity>();
 		for(StockSignalEntity signal : signalList ) {
+			/*
 			if( this.isValidSignal(signal) ) {
 				list.add(signal);
 			}
+			*/
+			
 		}
+		return list;
 		//return this.filterInvalidSignal(list);
-		return this.getTheMaxConfidentSignal(list);
+		//return this.getTheMaxConfidentSignal(list);
 	}
 	
+	
+	
 	private boolean isValidSignal(StockSignalEntity signal) throws Exception {
-		List<Integer> tradeIndexList = new ArrayList<Integer>();
-		for(int i=0; i<stockPriceVoList.size(); i++) {
+		List<Integer> signalTradeIndexList = new ArrayList<Integer>();
+
+		//======================================================= Review
+		for(int i : this.tradeIndexList ) {
 			if( this.isValid(signal, i) ) {
-				tradeIndexList.add(i);
+				signalTradeIndexList.add(i);
 			}
 		}
-		if( tradeIndexList.isEmpty() ) {
+
+		if( signalTradeIndexList.isEmpty() ) {
 			return false;
 		}
-		
+
 		//Only generate today stock signal
+		/*
 		if( !tradeIndexList.contains(stockPriceVoList.size()-1) ) {
-			//Comment for Debug
 			return false;
+		}
+		*/
+		//======================================================= Review
+		
+		
+		for(int k=GeneralSignal.MIN_TRADE_COUNT; k<signalTradeIndexList.size(); k++) {
+			
 		}
 		
 		List<StockSignalDateEntity> signalDateList = new ArrayList<StockSignalDateEntity>();
@@ -142,8 +160,8 @@ public abstract class GeneralSignal {
 		DescriptiveStatistics maxStats = new DescriptiveStatistics();
 		DescriptiveStatistics minPeriodStats = new DescriptiveStatistics();
 		DescriptiveStatistics minStats = new DescriptiveStatistics();
-		Date tradeDate = this.stockPriceVoList.get(tradeIndexList.get(tradeIndexList.size()-1)).getTradeDate();
-		for(int tradeIndex: tradeIndexList) {
+		Date tradeDate = this.stockPriceVoList.get(signalTradeIndexList.get(signalTradeIndexList.size()-1)).getTradeDate();
+		for(int tradeIndex: signalTradeIndexList) {
 			//tradeDate = this.stockPriceVoList.get(tradeIndex).getTradeDate();
 			BigDecimal min = BigDecimal.valueOf(999);
 			BigDecimal max = BigDecimal.valueOf(-999);
@@ -232,17 +250,6 @@ public abstract class GeneralSignal {
 		signal.setLowerDayMedian(BigDecimal.valueOf(minPeriodStats.getPercentile(50)).setScale(0, RoundingMode.HALF_UP).intValue());
 		signal.setTradeDate(tradeDate);
 		
-		/*
-		if( this.stockPriceVoList.size() > 50 ) {
-			signal.setLongStrength(this.getRelativeStrength(50));
-		}
-		if( this.stockPriceVoList.size() > 20 ) {
-			signal.setMediumStrength(this.getRelativeStrength(20));
-		}
-		if( this.stockPriceVoList.size() > 10 ) {
-			signal.setShortStrength(this.getRelativeStrength(10));
-		}
-		*/
 		signal.setConfident(BigDecimal.valueOf(confident).setScale(2, RoundingMode.HALF_UP));
 		signal.setTargetReturn(BigDecimal.valueOf(target));
 	
@@ -257,6 +264,9 @@ public abstract class GeneralSignal {
 		
 		return true;
 	}
+	
+	
+	
 	
 	private int getMinIndex(double[] maxReturn, double target) {
 		for(int i=0; i<maxReturn.length; i++) {
@@ -275,7 +285,7 @@ public abstract class GeneralSignal {
 		}
 		return -1;
 	}
-	
+	/*
 	private String getRelativeStrength(int period) {
 		BigDecimal stockPriceDiff = this.getStockPriceDiff(period);
 		BigDecimal refPriceDiff = this.getRefPriceDiff(period);
@@ -291,14 +301,14 @@ public abstract class GeneralSignal {
 		}
 		return null;
 	}
- 	
+ 	*/
 	private BigDecimal getStockPriceDiff(int period) {
 		int beginIndex = this.stockPriceVoList.size() - period;
 		int endIndex = this.stockPriceVoList.size()-1;
 		return MathUtils.getPriceDiffOnly(this.stockPriceVoList.get(beginIndex).getClosePrice(), 
 				this.stockPriceVoList.get(endIndex).getClosePrice(), 5);
 	}
-	
+	/*
 	private BigDecimal getRefPriceDiff(int period) {
 		int beginIndex = this.stockPriceVoList.size() - period;
 		int endIndex = this.stockPriceVoList.size()-1;
@@ -307,6 +317,7 @@ public abstract class GeneralSignal {
 		return MathUtils.getPriceDiffOnly(this.refPriceDateMap.get(beginDate), 
 				this.refPriceDateMap.get(endDate), 2);
 	}
+	*/
 	/*
 	protected boolean isMeetCriteria(DescriptiveStatistics maxStats, DescriptiveStatistics minStats) throws Exception {
 		return false;

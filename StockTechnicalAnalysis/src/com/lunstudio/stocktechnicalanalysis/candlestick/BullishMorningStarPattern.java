@@ -23,22 +23,18 @@ public class BullishMorningStarPattern extends BullishCandlestickPatterns implem
 		CandleStickVo secondCandlestick = new CandleStickVo(super.stockPriceList.get(index-1));
 		CandleStickVo thirdCandlestick = new CandleStickVo(super.stockPriceList.get(index));
 		
-		if( firstCandlestick.isFilled() && !firstCandlestick.isShortBody() ) {
-			if( secondCandlestick.isGapDown(firstCandlestick) && secondCandlestick.isShortBody() ) {
+		if( firstCandlestick.isFilled() ) {
+			if( secondCandlestick.isShortBody() && secondCandlestick.getHighPrice().compareTo(firstCandlestick.getClosePrice()) < 0  ) {
 				if( thirdCandlestick.isHollow() && thirdCandlestick.getOpenPrice().compareTo(secondCandlestick.getBottom()) > 0 ) {
-					if( thirdCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyHalf()) >= 0 ) {
-						if( thirdCandlestick.getDayVolume() == null || firstCandlestick.getDayVolume() == null || secondCandlestick.getDayVolume() == null 
-								|| thirdCandlestick.getDayVolume().compareTo(firstCandlestick.getDayVolume()) > 0
-								|| thirdCandlestick.getDayVolume().compareTo(secondCandlestick.getDayVolume()) > 0 ) {
-							super.init(thirdCandlestick);
-							super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
-							if( secondCandlestick.getDayLow().compareTo(thirdCandlestick.getDayLow()) < 0 ) {
-								super.candlestickEntity.setStoplossPrice(secondCandlestick.getDayLow());	
-							} else {
-								super.candlestickEntity.setStoplossPrice(thirdCandlestick.getDayLow());
-							}
-							return true;
+					if( thirdCandlestick.getClosePrice().compareTo(firstCandlestick.getBodyMiddle()) >= 0 ) {
+						super.init(thirdCandlestick);
+						super.candlestickEntity.setConfirmPrice(thirdCandlestick.getClosePrice());
+						if( secondCandlestick.getLowPrice().compareTo(thirdCandlestick.getLowPrice()) < 0 ) {
+							super.candlestickEntity.setStoplossPrice(secondCandlestick.getLowPrice());	
+						} else {
+							super.candlestickEntity.setStoplossPrice(thirdCandlestick.getLowPrice());
 						}
+						return true;
 					}
 				}
 			}

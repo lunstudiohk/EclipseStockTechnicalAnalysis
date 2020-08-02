@@ -28,6 +28,7 @@ public class StockTradeVo extends BaseEntity {
 	private StockPriceVo sellRefSignal;
 	private BigDecimal totalHistogram;
 	private boolean isReadyToSell;
+	private Integer dayCount;
 	
 	public StockTradeVo(String stockCode) {
 		this.stockCode = stockCode;
@@ -146,6 +147,14 @@ public class StockTradeVo extends BaseEntity {
 		this.isReadyToSell = isReadyToSell;
 	}
 
+	public Integer getDayCount() {
+		return dayCount;
+	}
+
+	public void setDayCount(Integer dayCount) {
+		this.dayCount = dayCount;
+	}
+
 	public static String toStringHeader() {
 		return String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
 				"Stock", "Type", "Buy Date", "Buy Price", "Sell Date", "Sell Price", "Profit", "Histogram", 
@@ -154,18 +163,18 @@ public class StockTradeVo extends BaseEntity {
 			);
 	}
 	public String toString() {
-		return String.format("%s, %s, %s, %s, %s, %s, [%s], [%s, %s, %s], [%s, %s, %s]",
-				this.stockCode, this.tradeType, this.buyDate, this.buyPrice, this.sellDate, this.sellPrice, this.getProfit(), 
-				this.buySignal.getDailyMacd(), this.buySignal.getDailyMacdSignal(), this.buySignal.getDailyMacdHistogram(),
-				this.buySignal.getWeeklyMacd(), this.buySignal.getWeeklyMacdSignal(), this.buySignal.getWeeklyMacdHistogram()
+		return String.format("%s, %s, %s, %s, %s, %s, [%s] (%s)",
+				this.stockCode, this.tradeType, this.buyDate, this.buyPrice, this.sellDate, this.sellPrice, this.getProfit(), this.dayCount 
 			);
 	}
 	
 	public BigDecimal getProfit() {
-		if( TRADE_TYPE_LONG.equals(this.tradeType) ) {
-			return MathUtils.getPriceDiff(this.buyPrice, this.sellPrice, 2);
-		} else if( TRADE_TYPE_SHORT.equals(this.tradeType) ) {
-			return MathUtils.getPriceDiff(this.sellPrice, this.buyPrice, 2);
+		if( this.sellPrice != null ) {
+			if( TRADE_TYPE_LONG.equals(this.tradeType) ) {
+				return MathUtils.getPriceDiff(this.buyPrice, this.sellPrice, 2);
+			} else if( TRADE_TYPE_SHORT.equals(this.tradeType) ) {
+				return MathUtils.getPriceDiff(this.sellPrice, this.buyPrice, 2);
+			}
 		}
 		return BigDecimal.ZERO;
 	}

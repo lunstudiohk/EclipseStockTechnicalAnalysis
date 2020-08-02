@@ -112,7 +112,7 @@ public class UpdateStockSignalToFirebase {
 		
 		Map<String, Object> stockSignalMap = new HashMap<String, Object>();
 		for(StockSignalEntity entity : stockSignalList) {
-			entity.setStockSignalDateList(this.stockSignalDateSrv.getStockSignalDateList(entity.getStockCode(), entity.getTradeDate(), entity.getSignalSeq(), entity.getSignalType(), StockSignalDateEntity.ASC));
+			//entity.setStockSignalDateList(this.stockSignalDateSrv.getStockSignalDateList(entity.getStockCode(), entity.getTradeDate(), entity.getSignalSeq(), entity.getSignalType(), StockSignalDateEntity.ASC));
 			String dateStr = DateUtils.getShortDateString(entity.getTradeDate());
 			String key = String.format("%s%s", entity.getStockCode(), dateStr);
 		

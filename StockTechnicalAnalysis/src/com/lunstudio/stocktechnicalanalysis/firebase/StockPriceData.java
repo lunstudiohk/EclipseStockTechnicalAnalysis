@@ -61,7 +61,7 @@ public class StockPriceData extends FirebaseData{
 		this.o = stockPrice.getOpenPrice().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.c = stockPrice.getClosePrice().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.h = stockPrice.getHighPrice().setScale(3, RoundingMode.HALF_UP).doubleValue();
-		this.l = stockPrice.getDayLow().setScale(3, RoundingMode.HALF_UP).doubleValue();
+		this.l = stockPrice.getLowPrice().setScale(3, RoundingMode.HALF_UP).doubleValue();
 		this.v = stockPrice.getDayVolume().longValue();
 		this.sr = stockPrice.getShortRsi().setScale(5, RoundingMode.HALF_UP).doubleValue();
 		this.lr = stockPrice.getLongRsi().setScale(5, RoundingMode.HALF_UP).doubleValue();

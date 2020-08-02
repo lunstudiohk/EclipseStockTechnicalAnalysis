@@ -95,8 +95,16 @@ public class StockPriceVo extends BaseEntity {
 		this.openPrice = entity.getOpenPrice();
 		this.closePrice = entity.getClosePrice();
 		this.dayHigh = entity.getHighPrice();
-		this.dayLow = entity.getDayLow();
+		this.dayLow = entity.getLowPrice();
 		this.dayVolume = entity.getDayVolume();
+		this.dailyShortRsi = entity.getShortRsi();
+		this.dailyLongRsi = entity.getLongRsi();
+		this.dailyMacd = entity.getMacd();
+		this.dailyMacdSignal = entity.getMacdSignal();
+		this.dailyMacdHistogram = entity.getMacd().subtract(entity.getMacdSignal());
+		this.dailyShortSma = entity.getShortSma();
+		this.dailyMediumSma = entity.getMediumSma();
+		this.dailyLongSma = entity.getLongSma();
 		return;
 	}
 	

@@ -25,7 +25,7 @@ public class BullishDailyCandlestickSignal extends BullishSignal {
 	
 	private static int offset = 5;
 	public BullishDailyCandlestickSignal(StockEntity stock, String priceType, Map<Date,BigDecimal> refPriceDateMap, List<StockPriceVo> stockPriceVoList, Integer type, List<CandlestickEntity> candlestickList) throws Exception {
-		super(stock, priceType, refPriceDateMap, stockPriceVoList, type);
+		super(stock, priceType, stockPriceVoList, null);
 		this.candlestickDateMap = new HashMap<Date, CandlestickEntity>();
 		for(CandlestickEntity candlestick : candlestickList) {
 			if( candlestick.getCandlestickType().intValue() == (type-offset) ) {
@@ -133,14 +133,14 @@ public class BullishDailyCandlestickSignal extends BullishSignal {
 
 	public static String getSignalDesc(StockSignalEntity signal) {
 		StringBuffer buf = new StringBuffer();
-		buf.append(String.format("%s [買入 - %s]: ", signal.getStockCode(), BullishCandlestickPatterns.getBullishCandlestickPatternDesc(signal.getType()-offset)));
+		buf.append(String.format("%s [買入 - %s]: ", signal.getStockCode(), BullishCandlestickPatterns.getBullishCandlestickPatternDesc(signal.getSignalType()-offset)));
 		buf.append(BullishSignal.getSignalDesc(signal));
 		return buf.toString();
 	}
 
 	public static List<String> getSignalShortDesc(StockSignalEntity signal) {
 		List<String> lists = new ArrayList<String>();
-		lists.add(BullishCandlestickPatterns.getBullishCandlestickPatternDesc(signal.getType()-offset));
+		lists.add(BullishCandlestickPatterns.getBullishCandlestickPatternDesc(signal.getSignalType()-offset));
 		lists.addAll(GeneralSignal.getSecondarySignalDesc(signal));
 		return lists;
 	}

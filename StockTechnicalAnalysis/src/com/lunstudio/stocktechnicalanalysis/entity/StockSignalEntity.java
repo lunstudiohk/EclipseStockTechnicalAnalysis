@@ -63,11 +63,12 @@ public class StockSignalEntity extends BaseEntity implements Serializable {
 	private Integer signalSeq;
 	
 	@Id
-	private String signalType;	//Buy or Sell
+	private Integer signalType;	
 	
-	private Integer type;
+	@Id
+	private String type;	//Buy or Sell
 	
-	private Integer period = 20;
+	private Integer period = 10;
 	
 	private String priceType;
 	
@@ -143,19 +144,19 @@ public class StockSignalEntity extends BaseEntity implements Serializable {
 		this.stockCode = stockCode;
 	}
 
-	public String getSignalType() {
+	public Integer getSignalType() {
 		return signalType;
 	}
 
-	public void setSignalType(String signalType) {
+	public void setSignalType(Integer signalType) {
 		this.signalType = signalType;
 	}
 
-	public Integer getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(Integer type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 

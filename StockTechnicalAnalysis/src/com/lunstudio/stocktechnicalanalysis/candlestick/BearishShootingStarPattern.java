@@ -22,9 +22,9 @@ public class BearishShootingStarPattern extends BearishCandlestickPatterns imple
 		if( firstCandlestick.isHollow() ) {
 			if( secondCandlestick.isFilled() ) {
 				if( secondCandlestick.isGapUp(firstCandlestick) ) {
-					if( secondCandlestick.getUpperShadow().compareTo(secondCandlestick.getBody().multiply(two)) > 0 ) {
+					if( secondCandlestick.getUpperShadowLength().compareTo(secondCandlestick.getBodyLength().multiply(two)) > 0 ) {
 						if( secondCandlestick.isShortBody() ) {
-							if( CandleStickVo.isSamePrice(secondCandlestick.getClosePrice(), secondCandlestick.getDayLow()) ) {
+							if( CandleStickVo.isSamePrice(secondCandlestick.getClosePrice(), secondCandlestick.getLowPrice()) ) {
 								super.init(secondCandlestick);
 								super.candlestickEntity.setConfirmPrice(secondCandlestick.getClosePrice());
 								super.candlestickEntity.setStoplossPrice(secondCandlestick.getHighPrice());

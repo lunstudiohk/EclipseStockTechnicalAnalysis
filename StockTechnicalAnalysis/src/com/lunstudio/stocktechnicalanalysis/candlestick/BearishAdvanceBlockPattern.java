@@ -27,14 +27,14 @@ public class BearishAdvanceBlockPattern extends BearishCandlestickPatterns imple
 				if( secondCandlestick.getOpenPrice().compareTo(firstCandlestick.getOpenPrice()) > 0 && secondCandlestick.getOpenPrice().compareTo(firstCandlestick.getClosePrice()) < 0 ) {
 					if( secondCandlestick.getClosePrice().compareTo(firstCandlestick.getClosePrice()) > 0 ) {
 
-							if( secondCandlestick.getUpperShadow().compareTo(firstCandlestick.getUpperShadow()) > 0 ) {
+							if( secondCandlestick.getUpperShadowLength().compareTo(firstCandlestick.getUpperShadowLength()) > 0 ) {
 								if( thirdCandlestick.isHollow() ) {
 									if( thirdCandlestick.getOpenPrice().compareTo(secondCandlestick.getOpenPrice()) > 0 && thirdCandlestick.getOpenPrice().compareTo(secondCandlestick.getClosePrice()) < 0 ) {
 										if( thirdCandlestick.getClosePrice().compareTo(secondCandlestick.getClosePrice()) > 0 ) {
-											if( thirdCandlestick.getBody().compareTo(firstCandlestick.getBody()) < 0 && thirdCandlestick.getBody().compareTo(secondCandlestick.getBody()) < 0 ) {
-												if( thirdCandlestick.getUpperShadow().compareTo(firstCandlestick.getUpperShadow()) > 0 ) {
+											if( thirdCandlestick.getBodyLength().compareTo(firstCandlestick.getBodyLength()) < 0 && thirdCandlestick.getBodyLength().compareTo(secondCandlestick.getBodyLength()) < 0 ) {
+												if( thirdCandlestick.getUpperShadowLength().compareTo(firstCandlestick.getUpperShadowLength()) > 0 ) {
 													super.init(thirdCandlestick);
-													super.candlestickEntity.setConfirmPrice(thirdCandlestick.getBodyHalf());
+													super.candlestickEntity.setConfirmPrice(thirdCandlestick.getBodyMiddle());
 													super.candlestickEntity.setStoplossPrice(thirdCandlestick.getHighPrice());
 													return true;
 												}

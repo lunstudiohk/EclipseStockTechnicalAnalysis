@@ -8,6 +8,21 @@ import com.lunstudio.stocktechnicalanalysis.valueobject.StockPriceVo;
 
 public class SignalUtils {
 
+
+	
+	public static List<Integer> getDailyMacdCrossAboveTradeIndexList(List<StockPriceVo> stockPriceVoList) throws Exception {
+		List<Integer> tradeIndexList = new ArrayList<Integer>();
+		for(int i=0; i<stockPriceVoList.size(); i++) {
+			if(stockPriceVoList.get(i).getDailyMacdHistogramChange() != null && stockPriceVoList.get(i).getDailyMacdHistogramChange().compareTo(BigDecimal.ZERO) > 0 ) {
+				tradeIndexList.add(i);
+			}
+		}
+		return tradeIndexList;
+	}
+	
+	
+	
+	
 	public static List<Integer> getDailyMacdCrossTradeIndexList(List<StockPriceVo> stockPriceVoList) throws Exception {
 		List<Integer> macdCrossTradeIndexList = new ArrayList<Integer>();
 		for(int i=0; i<stockPriceVoList.size(); i++) {
